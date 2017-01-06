@@ -61,21 +61,14 @@ if($parseVenues){
 					'categories'=>11,'checkinsCount'=>12,'usersCount'=>13,'tipCount'=>14,'beenHere'=>15);
 					
 	$writeFileName = $csvDir.$venuesDir."all.csv";
-	//$write = fopen($writeFileName,'w');
-	//fwrite($write,implode(',',array_keys($titleToIndex)).$space);
-	
-	$total = $c = 0;
+	$write = fopen($writeFileName,'w');
+	fwrite($write,implode(',',array_keys($titleToIndex)).$space);
 	
 	foreach(scandir($jsonsDir.$venuesDir) as $fileName){
 		if(strpos($fileName,'.json')===false)
 			continue;
 		
-		$total++;
 		$jsonStr = file_get_contents($jsonsDir.$venuesDir.$fileName);
-		if(strpos($jsonStr,'hereNow')!==false)
-			$c++;
-		
-		continue;
 		
 		$jsonArr = json_decode($jsonStr,true);
 		// TODO: make sure that the json i valid
@@ -92,9 +85,6 @@ if($parseVenues){
 		}	
 	}
 }
-
-echo "c=$c outof total=$total";
-exit;
 
 function json2csv($array,$write){
 		
