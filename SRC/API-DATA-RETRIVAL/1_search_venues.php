@@ -12,6 +12,7 @@ $delta = 0.002275; // about 250 meters
 //$inputDir = 'input/';
 $inputDir = 'input/';
 $citiesInputFile = $inputDir."citiesInput.txt";
+$failsOutputFile = "failed_requests.txt";
 $requestCities = 1;
 $parseVenues = 0;
 
@@ -33,21 +34,15 @@ if($requestCities){
 	}
 
 	
-	$foursquare = new FoursquareApi($client_key,$client_secret);
-	requestCityFuncTest($foursquare,"venues/search",$jsonsDir.$venuesDir,$delta);
-	echo "end of test";
-	exit;
+	$foursquare = new FoursquareApi($client_key,$client_secret,$failsOutputFile);
 	
-	// "https://maps.googleapis.com/maps/api/geocode/json?address=ney+york&key=
 	
-	$read = fopen($citiesInputFile,'r') or die ("can't open file");
-	while(!feof($read)){
-		$cityName = trim(fgets($read));
+	$city2idArr = getCity2idArr($citiesInputFile);
+	foreach($city2idArr as $cityName=>$cityId){
 		$boundingBox = $foursquare->getBoundingBox($cityName,$googleApiKey);
 		
-		echo $cityName."<br><br>";
-		print_r($boundingBox);
-		echo "<br>";
+		// TODO: only one time to put in DB: cityId,cityName,boundingBox-details
+		
 		$requestType = "venues/search";
 		requestCityFunc($foursquare,$cityName,$boundingBox,$requestType,$jsonsDir.$venuesDir,$delta);
 	}	
@@ -56,13 +51,15 @@ if($requestCities){
 // parse
 if($parseVenues){
 	$space = "\r\n";
-	$titleToIndex = array('id'=>0,'name'=>1,'url'=>2,'hasMenu'=>3,'phone'=>4,
-					'address'=>5,'city'=>6,'state'=>7,'country'=>8,'lat'=>9,'lon'=>10,
-					'categories'=>11,'checkinsCount'=>12,'usersCount'=>13,'tipCount'=>14,'beenHere'=>15);
+	$titleToIndex = array('cityId'=>0,'id'=>1,'name'=>2,'url'=>3,'hasMenu'=>4,'phone'=>5,
+					'address'=>6,'city'=>7,'state'=>8,'country'=>9,'lat'=>10,'lon'=>11,
+					'categories'=>12,'checkinsCount'=>13,'usersCount'=>14,'tipCount'=>15,'beenHere'=>16);
 					
 	$writeFileName = $csvDir.$venuesDir."all.csv";
 	$write = fopen($writeFileName,'w');
 	fwrite($write,implode(',',array_keys($titleToIndex)).$space);
+	
+	$city2idArr = getCity2idArr($citiesInputFile);
 	
 	foreach(scandir($jsonsDir.$venuesDir) as $fileName){
 		if(strpos($fileName,'.json')===false)
@@ -71,7 +68,8 @@ if($parseVenues){
 		$jsonStr = file_get_contents($jsonsDir.$venuesDir.$fileName);
 		
 		$jsonArr = json_decode($jsonStr,true);
-		// TODO: make sure that the json i valid
+		$cityName = str_replace('_',' ',substr($fileName,0,strpos($fileName,'~')));
+		$cityId = $city2idArr[$cityName];
 		
 		$writeFileName = $csvDir.$venuesDir.str_replace('.json','.csv',$fileName);
 		
@@ -79,7 +77,8 @@ if($parseVenues){
 		$arrToWrite = array();
 		foreach($jsonArr['response']['venues'] as $i=>$venueDetails){ // convert venue json to indexed array and to line in csv
 			$indexedArr = venueJson2indexedArr($venueDetails,$titleToIndex);
-			
+			$indexedArr[[$titleToIndex['cityId']]] = $cityId;
+
 			// write
 			fwrite($write,implode(',',array_values($indexedArr)).$space);
 		}	

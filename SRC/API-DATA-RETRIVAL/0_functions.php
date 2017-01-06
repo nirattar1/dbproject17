@@ -26,12 +26,13 @@ if(!in_array(str_replace('/','',$menusDir),scandir($csvDir)))
 
 
 function getAndSaveJSON($foursquare,$requestType,$params,$fileName,$outputDir){
-	
+	echo "write $outputDir.$fileName";
 	// Perform a request to a public resource
 	$response = $foursquare->GetPublic($requestType,$params);
 	file_put_contents($outputDir.$fileName,$response);
 }
 
+// TODO: remove this test
 function requestCityFuncTest($foursquare,$requestType,$outputDir,$delta){
 	$params = array("sw"=>"33.7052060000000039963197195902,-118.245588999999995394318830222",
 					"ne"=>"33.7955060000000031550371204503,-118.155289",
@@ -65,8 +66,12 @@ function requestCityFunc($foursquare,$cityName,$boundingBox,$requestType,$output
 			
 			// request api only if not exists
 			$fileName = createFileNameByParams($nameParams);
-			if(!in_array($fileName,$outputDirArr))
+			
+			if(!in_array($fileName,$outputDirArr)){
+				echo "write file: ".$fileName. " in ".$outputDir."<br>";
 				getAndSaveJSON($foursquare,$requestType,$params,$fileName,$outputDir);
+			}
+			exit;
 		}
 	}
 }
@@ -144,5 +149,21 @@ function fixString($str){
 	//$str = str_replace(',','',$str);
 	return $str;
 }
+
+function getCity2idArr($fileName){
+	$city2id = array();
+	$read = fopen($fileName,'r') or die ("can't open file");
+	$cityId = 0; //row number
+	while(!feof($read)){
+		$cityName = trim(fgets($read));
+		if($cityName==='')
+			continue;
+		$city2id[$cityName] = $cityId++;
+	}
+	fclose($read);
+	return $city2id;
+}
+
+
 
 ?>
