@@ -55,8 +55,12 @@ class FoursquareApi {
     public $ResponseHeaders = array();
     /** @var String last url sent */
     public $LastUrl;
+    /** @var file handle for writing successul requests */
+	private $requestsOutput;
 	/** @var file handle for writing (appending) failed requests */
 	private $failsOutput;
+	/** @var boolean rate_limit_exceeded */
+	public $rate_limit_exceeded;
 
     /**
      * Constructor for the API
@@ -68,14 +72,16 @@ class FoursquareApi {
      * @param string $language
      * @param string $api_version https://developer.foursquare.com/overview/versioning
      */
-	public function  __construct($client_id = false,$client_secret = false,$failsOutputFile=false, $redirect_uri='', $version='v2', $language='en', $api_version=DEFAULT_VERSION){
+	public function  __construct($client_id = false,$client_secret = false,$requestsOutputFile = false, $failsOutputFile=false, $redirect_uri='', $version='v2', $language='en', $api_version=DEFAULT_VERSION){
 		$this->BaseUrl = "{$this->BaseUrl}$version/";
 		$this->ClientID = $client_id;
 		$this->ClientSecret = $client_secret;
 		$this->ClientLanguage = $language;
 		$this->RedirectUri = $redirect_uri;
         $this->Version = $api_version;
+        $this->requestsOutput = fopen($requestsOutputFile,'a') or die ("can't open file: $requestsOutputFile");
 		$this->failsOutput = fopen($failsOutputFile,'a') or die ("can't open file: $failsOutputFile");
+		$this->rate_limit_exceeded = false;
 	}
     
 	public function setRedirectUri( $uri ) {
@@ -89,6 +95,7 @@ class FoursquareApi {
 	 * Performs a request for a public resource
 	 * @param String $endpoint A particular endpoint of the Foursquare API
 	 * @param Array $params A set of parameters to be appended to the request, defaults to false (none)
+	 * @return json string or null
 	 */
 	public function GetPublic($endpoint,$params=false){
 		// Build the endpoint URL
@@ -101,10 +108,10 @@ class FoursquareApi {
 		$params['v'] = $this->Version;
 		$params['locale'] = $this->ClientLanguage;
 		
-		// Return the result;
-		$response = $this->Request($url,$params);
-		print_r($response);
-		return $response;
+		$isFS = 1;
+		$response = $this->Request($url,$params,$isFS); 
+		
+		return $response; // notice: this might be null
 	}
 	
 
@@ -154,25 +161,12 @@ class FoursquareApi {
 	}
 	
 
-	private function Request($url, $params=false){
+	private function Request($url, $params=false,$isFS){ //$isFS = 0 -> google api, $isFS = 1-> fourSquare api
 	
 		$url = $this->MakeUrl($url,$params);
         $this->LastUrl = $url;
 
-		echo "request url: $url<br>"; 
-		$response = file_get_contents($url);
-		
-		echo "response size = ".strlen($response)."<br>";
-		
-		// TODO: check response code + its json is valid 
-		if($this->isValidJson($response)){
-			echo "valid json";
-			
-			return $response;
-		}else{
-			// TODO: fail outputs
-			echo "failed request: $url<br>";
-		}
+		return $this->requstOrFail($url,$isFS); // if fails 5 times returns null, else - return json string
 	}
 
     /**
@@ -220,19 +214,34 @@ class FoursquareApi {
 	public function getBoundingBox($addr,$key){
 		$geoapi = "https://maps.googleapis.com/maps/api/geocode/json";
 		$params = array("address"=>$addr,"key"=>$key);
-		$response = $this->GET($geoapi,$params);
-		$json = json_decode($response);
-		if ($json->status !== "OK") {
+		$response = $this->Request($geoapi,$params,0);
+		//TODO
+		file_put_contents("bb_".$addr.".json",$response);
+		
+		if($response==null)
 			return null;
-		} else {
-			$boundsArr = $json->results[0]->geometry->bounds;
+		
+		// good response
+		$json = json_decode($response,true);
+
+		$boundsArr = $json['results'][0]['geometry']['bounds'];
 			
-			return array('north_lat' => $boundsArr->northeast->lat,
-						 'south_lat' => $boundsArr->southwest->lat,
-						 'east_lon' => $boundsArr->northeast->lng,
-						 'west_lon' => $boundsArr->southwest->lng);
+		$boundingBox = array('north_lat' => $boundsArr['northeast']['lat'],
+							'south_lat' => $boundsArr['southwest']['lat'],
+							'east_lon' => $boundsArr['northeast']['lng'],
+							'west_lon' => $boundsArr['southwest']['lng']);
+					 
+		// make sure non of them non null
+		foreach($boundingBox as $key=>$val){
+			if(empty($val))
+								
+				return null;
 		}
-	}
+		
+		// good
+		return $boundingBox;
+		
+	}	
 	
 	/**
 	 * MakeUrl
@@ -317,7 +326,6 @@ class FoursquareApi {
 	
 	// TODO: delete this, we don't use it but just in case
 	function getContent($url){
-		echo "request<br>";
 		$ch = curl_init();
 		curl_setopt($ch, CURLOPT_URL,$url);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER,1);
@@ -340,8 +348,6 @@ class FoursquareApi {
 
 		$result = curl_exec($ch);
 		curl_close ($ch);
-		// TODO
-		echo "result:<br>";
 		
 		
 		$header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
@@ -364,22 +370,80 @@ class FoursquareApi {
 		return (json_last_error() == JSON_ERROR_NONE);
 	}
 
-	function loadHtmlOrFail($url){
-		$html = file_get_contents($url);
-
-		//if fails
+	function requstOrFail($url,$isFS){
+		$src = ($isFS ? 'fourSquareAPI' : 'googleMapsAPI');
+		$response = file_get_contents($url);
+		
 		$cntFails = 0;
-		while(($html==false or strlen($html)<200) and $cntFails <5){
-			sleep(4);
-			$html = file_get_contents($url);
+		while($this->isValidResponse($response,$isFS)===false and $cntFails <5){ //if fails - keep asking, 5 times total
+			sleep(2);
+			
+			// write echo request done
+			fwrite($this->requestsOutput,$src.','.$this->LastUrl."\r\n");
+			$response = file_get_contents($url);
 			$cntFails++;
+			
 			//to fail list after 5 attempts
-			if ($cntFails==5){
-				fwrite($this->failsOutput,$url."\r\n");
-				return 0; //$html = 0;
+			if ($cntFails==5){ // give up
+				fwrite($this->failsOutput,$src.','.$this->LastUrl."\r\n");
+				return null;
 			}
 		}
 		
-		return $html;
+		return $response;
 	}
+	
+	function isValidResponse($response,$isFS){
+		if($isFS)
+			$this->isValidFSresponse($response);
+		else
+			$this->isValidGoogleAPIresponse($response);
+		
+	}
+	
+	function isValidFSresponse($response){
+		if($this->isValidJson($response)){
+			// good json
+			$json = json_decode($response);
+			if ( !isset( $json->meta->code ) || 200 !== $json->meta->code ) {
+				// bad response
+				if($json->meta->errorType === "rate_limit_exceeded")
+					$this->rate_limit_exceeded = true;
+				
+				return false;
+			}else{
+				// good response
+				return true;
+			}
+		}else{
+			// bad json
+			return false;
+		}
+	}
+			
+	function isValidGoogleAPIresponse($response){
+		if(!in_array("test.json",scandir('.')))
+			file_put_contents("test.json",$response);
+		
+		
+		if($this->isValidJson($response)){
+			// good json
+			$json = json_decode($response,true);
+			if ($json['status'] !== "OK"){
+				// bad response 
+				echo "not OK<br>";
+				return false;
+			}else{
+				// good response
+				echo "good google<br>";
+				return true;
+			}
+		}else{
+			// bad json
+			echo "bad json<br>";
+			return false;
+		}
+	}
+			
+	
 }

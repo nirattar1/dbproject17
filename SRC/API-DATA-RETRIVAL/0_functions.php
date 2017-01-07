@@ -26,10 +26,20 @@ if(!in_array(str_replace('/','',$menusDir),scandir($csvDir)))
 
 
 function getAndSaveJSON($foursquare,$requestType,$params,$fileName,$outputDir){
-	echo "write $outputDir.$fileName";
 	// Perform a request to a public resource
-	$response = $foursquare->GetPublic($requestType,$params);
-	file_put_contents($outputDir.$fileName,$response);
+	$response = $foursquare->GetPublic($requestType,$params); // might be null (if null - check fails file - the fail url is there)
+	if(empty($response)){
+		// TODO:
+		echo "TODO: foursquare->GetPublic returns null in getAndSaveJSON<br>";
+	}else{
+		file_put_contents($outputDir.$fileName,$response);
+	}
+	
+	// check if rate_limit_exceeded
+	if($foursquare->rate_limit_exceeded){
+		echo "rate limit exceeded<br>";
+		exit;
+	}	
 }
 
 // TODO: remove this test
@@ -47,13 +57,14 @@ function requestCityFunc($foursquare,$cityName,$boundingBox,$requestType,$output
 	$outputDirArr = array_flip(scanDir($outputDir));
 
 	$bbMat = getBoundingBoxMat($boundingBox,$delta);
-	
+	$c=0;
 	foreach($bbMat as $lat=>$latArr){
 		foreach($latArr as $lon=>$stam){
 			
 			// TODO: check this
 			$ne = $lat.','.$lon;
-			$sw = $lat-$delta.','.$lon-$delta;
+			$sw = ($lat-$delta).','.($lon-$delta);
+			
 			
 			// Prepare parameters
 			$params = array("sw"=>"$sw",
@@ -66,14 +77,20 @@ function requestCityFunc($foursquare,$cityName,$boundingBox,$requestType,$output
 			
 			// request api only if not exists
 			$fileName = createFileNameByParams($nameParams);
-			
-			if(!in_array($fileName,$outputDirArr)){
-				echo "write file: ".$fileName. " in ".$outputDir."<br>";
+			if(!array_key_exists($fileName,$outputDirArr)){
 				getAndSaveJSON($foursquare,$requestType,$params,$fileName,$outputDir);
+				$c++;
 			}
-			exit;
 		}
 	}
+}
+
+function createFileNameByParams($params){
+	$fileName = '';
+	foreach($params as $key=>$val){
+		$fileName = $fileName.str_replace(' ','_',$val).',';
+	}
+	return substr($fileName,0,strlen($fileName)-1).".json";
 }
 
 function getBoundingBoxMat($boundingBox,$delta){
@@ -97,24 +114,40 @@ function getBoundingBoxMat($boundingBox,$delta){
 	return $bbMat;
 }
 
+function getFieldOrNull($arr,$key,$isStr){
+	if(!array_key_exists($key,$arr))
+		return null;
+		
+	// found:
+	$val = $arr[$key];
+	if($isStr)	
+		$val = '"'.fixString($val).'"';
+	
+	return $val;
+}
+
 function venueJson2indexedArr($venueDetails,$titleToIndex){
-	$arrToWrite = array();
+	$arrToWrite = array_fill(0,sizeof($titleToIndex),'');
 	
 	// main
 	$arrToWrite[$titleToIndex['id']] = $venueDetails['id'];
 	$arrToWrite[$titleToIndex['name']] = '"'.$venueDetails['name'].'"';
-	$arrToWrite[$titleToIndex['url']] = (array_key_exists('url',$venueDetails) ? $venueDetails['url'] : '');
+	$arrToWrite[$titleToIndex['url']] = getFieldOrNull($venueDetails,'url',1);
 	$arrToWrite[$titleToIndex['hasMenu']] = (array_key_exists('menu',$venueDetails) ? 1 : 0 );
 	
 	// contanct
-	$arrToWrite[$titleToIndex['phone']] = (array_key_exists('formattedPhone',$venueDetails['contact']) ? $venueDetails['contact']['formattedPhone'] : '');
+	if(array_key_exists('contact',$venueDetails)){
+		$arrToWrite[$titleToIndex['phone']] = getFieldOrNull($venueDetails['contact'],'formattedPhone',1);
+	}
 	// location
-	$arrToWrite[$titleToIndex['address']] = '"'.$venueDetails['location']['address'].'"';
-	$arrToWrite[$titleToIndex['city']] = '"'.$venueDetails['location']['city'].'"';
-	$arrToWrite[$titleToIndex['state']] = '"'.$venueDetails['location']['state'].'"';
-	$arrToWrite[$titleToIndex['country']] = '"'.$venueDetails['location']['country'].'"';
-	$arrToWrite[$titleToIndex['lat']] = '"'.$venueDetails['location']['lat'].'"';
-	$arrToWrite[$titleToIndex['lon']] = '"'.$venueDetails['location']['lng'].'"';
+	if(array_key_exists('location',$venueDetails)){
+		$arrToWrite[$titleToIndex['address']] = getFieldOrNull($venueDetails['location'],'address',1);
+		$arrToWrite[$titleToIndex['city']] = 	getFieldOrNull($venueDetails['location'],'city',1);
+		$arrToWrite[$titleToIndex['state']] = 	getFieldOrNull($venueDetails['location'],'state',1);
+		$arrToWrite[$titleToIndex['country']] = getFieldOrNull($venueDetails['location'],'country',1);
+		$arrToWrite[$titleToIndex['lat']] = 	getFieldOrNull($venueDetails['location'],'lat',1);
+		$arrToWrite[$titleToIndex['lon']] = 	getFieldOrNull($venueDetails['location'],'lng',1);
+	}
 	// categories
 	$categoriesArr = array();// in case we'll see it has more than one category
 	foreach($venueDetails['categories'] as $j=>$categoryIdArr){
@@ -124,10 +157,11 @@ function venueJson2indexedArr($venueDetails,$titleToIndex){
 	}
 	$arrToWrite[$titleToIndex['categories']] = implode('+',$categoriesArr);
 	// stats
-	$arrToWrite[$titleToIndex['checkinsCount']] = $venueDetails['stats']['checkinsCount'];
-	$arrToWrite[$titleToIndex['usersCount']] = $venueDetails['stats']['usersCount'];
-	$arrToWrite[$titleToIndex['tipCount']] = $venueDetails['stats']['tipCount'];
-	$arrToWrite[$titleToIndex['beenHere']] = $venueDetails['beenHere']['lastCheckinExpiredAt'];
+	if(array_key_exists('stats',$venueDetails)){
+		$arrToWrite[$titleToIndex['checkinsCount']] = getFieldOrNull($venueDetails['stats'],'checkinsCount',0);
+		$arrToWrite[$titleToIndex['usersCount']] 	= getFieldOrNull($venueDetails['stats'],'usersCount',0);
+		$arrToWrite[$titleToIndex['tipCount']] 		= getFieldOrNull($venueDetails['stats'],'tipCount',0);
+	}
 	
 	return $arrToWrite;
 }
@@ -135,10 +169,10 @@ function venueJson2indexedArr($venueDetails,$titleToIndex){
 function dishJson2indexedArr($dishDetails,$titleToIndex){
 	$arrToWrite = array_fill(0,sizeof($titleToIndex),'');
 	
-	$arrToWrite[$titleToIndex['dishId']] = $dishDetails['entryId'];
-	$arrToWrite[$titleToIndex['dishName']] = '"'.fixString($dishDetails['name']).'"';
-	$arrToWrite[$titleToIndex['description']] = '"'.fixString(array_key_exists('description',$dishDetails) ? $dishDetails['description'] : "").'"';
-	$arrToWrite[$titleToIndex['price']] = (array_key_exists('price',$dishDetails)? $dishDetails['price'] : null);
+	$arrToWrite[$titleToIndex['dishId']] = 		getFieldOrNull($dishDetails,'entryId',0);
+	$arrToWrite[$titleToIndex['dishName']] = 	getFieldOrNull($dishDetails,'name',1);
+	$arrToWrite[$titleToIndex['description']] = getFieldOrNull($dishDetails,'description',1);
+	$arrToWrite[$titleToIndex['price']] = 		getFieldOrNull($dishDetails,'price',0);
 
 	return $arrToWrite;
 }
@@ -164,6 +198,14 @@ function getCity2idArr($fileName){
 	return $city2id;
 }
 
+function fstRow2IndexArr($line,$delimiter = ','){
+	$arr = array();
+	$parts = explode($delimiter,$line);
+	foreach($parts as $i=>$title){		
+		$arr[str_replace('"','',$title)] = $i;
+	}
+	return $arr;
+}
 
 
 ?>

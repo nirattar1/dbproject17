@@ -1,22 +1,27 @@
 <?php
 
-$serverName = "mysqlsrv.cs.tau.ac.il";
-$userName = "DbMysql07";
-$password = "DbMysql07";
-$dbName = "DbMysql07";
+function createConnection(){
+	$serverName = "mysqlsrv.cs.tau.ac.il";
+	$userName = "DbMysql07";
+	$password = "DbMysql07";
+	$dbName = "DbMysql07";
 
-//create connection
-$conn = new mysqli($serverName,$userName,$password,$dbName);
-//check connection
-if ($conn->connect_error){
-    die("connection failed ".$conn->connect_error);
+	//create connection
+	$conn = new mysqli($serverName,$userName,$password,$dbName);
+	//check connection
+	if ($conn->connect_error){
+		die("connection failed ".$conn->connect_error);
+	}
+	
+	return $conn;
+}
+
+
+function closeConnection($conn){
+	$conn->close();
 }
 
 //fillCategoryTable($conn);
-
-$conn->close();
-
-
 function fillCategoryTable($conn)
 {
     $sql = $conn->prepare("INSERT INTO Category (id,name,suggested_countries) VALUES (?,?,?)");
@@ -69,6 +74,7 @@ function addEntryToCityTable($conn,$VenueArr,$titleToIndex){
 
 function addEntryToRestaurantTable($conn,$VenueArr,$titleToIndex)
 {
+	$cityId = $VenueArr[$titleToIndex['cityId']];
     $id = $VenueArr[$titleToIndex['id']];
     $name = $VenueArr[$titleToIndex['name']];
     $cityId =""; //get from external file
@@ -82,7 +88,7 @@ function addEntryToRestaurantTable($conn,$VenueArr,$titleToIndex)
     $tipCount=$VenueArr[$titleToIndex['tipCount']];
 
     $sql = $conn->prepare("INSERT INTO Restaurant (id,name,city_id,url,phone,address,categories,checkinsCount,usersCount,tipCount) VALUES (?,?,?,?,?,?,?,?,?)");
-    $sql->bind_param("ssissssiii",$id,$name,$cityId,$url,$phone,$address,$categories,$checkinsCount,$usersCount,$tipCount);
+    $sql->bind_param($id,$name,$cityId,$url,$phone,$address,$categories,$checkinsCount,$usersCount,$tipCount);
 
     if ($sql->execute() === TRUE) {
         echo "Added restaurant ".$name." successfully";
