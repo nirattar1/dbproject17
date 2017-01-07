@@ -1,18 +1,22 @@
 <?php
-$servername = "mysqlsrv.cs.tau.ac.il";
-$username = "DbMysql07";
-$password = "DbMysql07";
-$dbname = "DbMysql07";
 
-// Create connection
-$conn = new mysqli($servername, $username, $password, $dbname);
+function connect(){
+	$servername = "mysqlsrv.cs.tau.ac.il";
+	$username = "DbMysql07";
+	$password = "DbMysql07";
+	$dbname = "DbMysql07";
 
-// Check connection
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-} 
-echo "Connected successfully";
+	// Create connection
+	$conn = new mysqli($servername, $username, $password, $dbname);
 
+	// Check connection
+	if ($conn->connect_error) {
+  	  die("Connection failed: " . $conn->connect_error);
+	} 
+	echo "Connected successfully";
+	
+	return $conn;
+}
 
 function createButton($conn) {
 	
@@ -32,7 +36,6 @@ function createButton($conn) {
 	}
 }
 
-$conn->close();
 ?> 
 
 <!DOCTYPE html>
@@ -54,7 +57,7 @@ h2 {
 <form>
 
 <h2>
-
+    <?php $conn = connect(); ?>
     <?php createButton($conn); ?>	
 	
 <input style="width: 300px; 
