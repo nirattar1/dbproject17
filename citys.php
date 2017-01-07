@@ -12,17 +12,24 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 } 
 echo "Connected successfully";
-$sql = "SELECT name FROM city";
-$result = $conn->query($sql);
-$data = mysqli_fetch_array($result);
 
-if ($result->num_rows > 0) {
-     // output data of each row
-     while($row = $result->fetch_assoc()) {
-         echo "<br> name: ". $row["name"]. "<br>";
-     }
-} else {
-     echo "0 results";
+
+function createButton($conn) {
+	
+	$sql = "SELECT name FROM city";
+	$result = $conn->query($sql);
+	$data = mysqli_fetch_array($result);
+
+	if ($result->num_rows > 0) {
+    	 	// output data of each row
+    		 while($row = $result->fetch_assoc())
+		 {
+         		echo "<br> name: ". $row["name"]. "<br>";
+    		 }
+	}
+	else {
+   		  echo "0 results";
+	}
 }
 
 $conn->close();
@@ -48,6 +55,8 @@ h2 {
 
 <h2>
 
+    <?php createButton($conn); ?>	
+	
 <input style="width: 300px; 
 padding: 30px; 
 margin: 10px;
