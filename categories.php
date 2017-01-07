@@ -15,6 +15,8 @@ function connect(){
 	return $conn;
 }
 
+
+
 ?> 
 
 <!DOCTYPE html>
@@ -35,11 +37,11 @@ p {
 
 </head>
 <body>
-<p>Choose city</p>
+<p>Choose Category</p>
 
 
     <?php $conn = connect(); 
-	$sql = "SELECT name FROM City";
+	$sql = "SELECT name FROM Category";
 	$result = $conn->query($sql);
 	
 
@@ -66,7 +68,7 @@ if ($result->num_rows > 0) {
 				10px; border: 1px solid #999; 
 				font-size: 150%;" 
 				type="button" 
-				value= "<?php echo $row["name"]?>"
+				value= "<?php echo str_replace(' Restaurant','',$row["name"])?>"
 				onclick="window.location.href='http://www.hyperlinkcode.com/button-links.php'" />
 	
 
@@ -117,7 +119,7 @@ if ($result->num_rows > 0) {
 				10px; border: 1px solid #999; 
 				font-size: 150%;" 
 				type="button" 
-				value= "more cities"
+				value= "more categories"
 				align="center"
 				onclick="window.location.href='http://www.hyperlinkcode.com/button-links.php'" />
 
