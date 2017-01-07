@@ -156,7 +156,7 @@ function stam($conn){
 				10px; border: 1px solid #999; 
 				font-size: 150%;" 
 				type="button" 
-				value= "more categories"
+				value= "more citys"
 				align="center"
 				onclick="change_text()" />
 
