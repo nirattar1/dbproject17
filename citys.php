@@ -1,3 +1,33 @@
+<?php
+$servername = "mysqlsrv.cs.tau.ac.il";
+$username = "DbMysql07";
+$password = "DbMysql07";
+$dbname = "DbMysql07";
+
+// Create connection
+$conn = new mysqli($servername, $username, $password, $dbname);
+
+// Check connection
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+} 
+echo "Connected successfully";
+$sql = "SELECT name FROM city";
+$result = $conn->query($sql);
+$data = mysqli_fetch_array($result);
+
+if ($result->num_rows > 0) {
+     // output data of each row
+     while($row = $result->fetch_assoc()) {
+         echo "<br> name: ". $row["name"]. "<br>";
+     }
+} else {
+     echo "0 results";
+}
+
+$conn->close();
+?> 
+
 <!DOCTYPE html>
 <html>
 <head>
