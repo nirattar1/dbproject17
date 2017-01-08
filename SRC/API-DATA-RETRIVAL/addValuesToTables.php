@@ -5,6 +5,10 @@ function createConnection(){
 	$userName = "DbMysql07";
 	$password = "DbMysql07";
 	$dbName = "DbMysql07";
+	// $serverName = "localhost";
+	// $userName = "root";
+	// $password = "";
+	// $dbName = "dbmysql07_local";
 
 	//create connection
 	$conn = new mysqli($serverName,$userName,$password,$dbName);
@@ -77,7 +81,6 @@ function addEntryToRestaurantTable($conn,$VenueArr,$titleToIndex)
 	$cityId = $VenueArr[$titleToIndex['cityId']];
     $id = $VenueArr[$titleToIndex['id']];
     $name = $VenueArr[$titleToIndex['name']];
-    $cityId =""; //get from external file
     $url=$VenueArr[$titleToIndex['url']];
     $phone=$VenueArr[$titleToIndex['phone']];
     //has menu????
@@ -87,8 +90,8 @@ function addEntryToRestaurantTable($conn,$VenueArr,$titleToIndex)
     $usersCount=$VenueArr[$titleToIndex['usersCount']];
     $tipCount=$VenueArr[$titleToIndex['tipCount']];
 
-    $sql = $conn->prepare("INSERT INTO Restaurant (id,name,city_id,url,phone,address,categories,checkinsCount,usersCount,tipCount) VALUES (?,?,?,?,?,?,?,?,?)");
-    $sql->bind_param($id,$name,$cityId,$url,$phone,$address,$categories,$checkinsCount,$usersCount,$tipCount);
+    $sql = $conn->prepare("INSERT INTO Restaurant (id,name,city_id,url,phone,address,categories,checkinsCount,usersCount,tipCount) VALUES (?,?,?,?,?,?,?,?,?,?)");
+    $sql->bind_param("ssissssiii",$id,$name,$cityId,$url,$phone,$address,$categories,$checkinsCount,$usersCount,$tipCount);
 
     if ($sql->execute() === TRUE) {
         echo "Added restaurant ".$name." successfully";

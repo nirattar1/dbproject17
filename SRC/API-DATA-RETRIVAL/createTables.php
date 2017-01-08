@@ -3,6 +3,10 @@ $serverName = "mysqlsrv.cs.tau.ac.il";
 $userName = "DbMysql07";
 $password = "DbMysql07";
 $dbName = "DbMysql07";
+// $serverName = "localhost";
+// $userName = "root";
+// $password = "";
+// $dbName = "dbmysql07_local";
 
 //create connection
 $conn = new mysqli($serverName,$userName,$password,$dbName);
@@ -11,17 +15,17 @@ if ($conn->connect_error){
     die("connection failed ".$conn->connect_error);
 }
 
-//createCityTable($conn);
-//createCategoryTable($conn);
-//createRestaurantTable($conn);
-//createDishTable($conn);
+createCityTable($conn);
+createCategoryTable($conn);
+createRestaurantTable($conn);
+createDishTable($conn);
 
 $conn->close();
 
 
 function createCityTable($conn)
 {
-    $sql = "CREATE TABLE City (
+    $sql = "CREATE TABLE IF NOT EXISTS City (
             id INT(6) PRIMARY KEY,
             name VARCHAR(30) NOT NULL,
             country VARCHAR(50) NOT NULL,
@@ -43,7 +47,7 @@ function createCityTable($conn)
 
 function createCategoryTable($conn)
 {
-    $sql = "CREATE TABLE Category (
+    $sql = "CREATE TABLE IF NOT EXISTS Category (
             id VARCHAR(32) PRIMARY KEY,
             name VARCHAR(32) NOT NULL,
             suggested_countries VARCHAR(50),
@@ -60,7 +64,7 @@ function createCategoryTable($conn)
 
 function createRestaurantTable($conn)
 {
-    $sql = "CREATE TABLE Restaurant (
+    $sql = "CREATE TABLE IF NOT EXISTS Restaurant (
             id VARCHAR(32) PRIMARY KEY,
             name VARCHAR(256) NOT NULL,
             city_id INT(6) NOT NULL,
@@ -85,7 +89,7 @@ function createRestaurantTable($conn)
 
 function createDishTable($conn)
 {
-    $sql = "CREATE TABLE Dish (
+    $sql = "CREATE TABLE IF NOT EXISTS Dish (
             id VARCHAR(32) PRIMARY KEY,
             restaurant_id VARCHAR(32) NOT NULL,
             FOREIGN KEY(restaurant_id) REFERENCES Restaurant(id),
