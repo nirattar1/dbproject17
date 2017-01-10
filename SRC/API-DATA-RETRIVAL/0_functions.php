@@ -13,10 +13,13 @@ if(!in_array(str_replace('/','',$csvDir),scandir('.')))
 
 $venuesDir = 'venues/';
 $menusDir = 'menus/';
+$hoursDir = 'hours/';
 if(!in_array(str_replace('/','',$venuesDir),scandir($jsonsDir)))
 	mkdir($jsonsDir.$venuesDir);
 if(!in_array(str_replace('/','',$menusDir),scandir($jsonsDir)))
 	mkdir($jsonsDir.$menusDir);
+if(!in_array(str_replace('/','',$hoursDir),scandir($jsonsDir)))
+	mkdir($jsonsDir.$hoursDir);
 if(!in_array(str_replace('/','',$venuesDir),scandir($csvDir)))
 	mkdir($csvDir.$venuesDir);
 if(!in_array(str_replace('/','',$menusDir),scandir($csvDir)))
@@ -28,13 +31,14 @@ if(!in_array(str_replace('/','',$menusDir),scandir($csvDir)))
 function getAndSaveJSON($foursquare,$requestType,$params,$fileName,$outputDir){
 	// Perform a request to a public resource
 	$response = $foursquare->GetPublic($requestType,$params); // might be null (if null - check fails file - the fail url is there)
+	
 	if(empty($response)){
 		// TODO:
 		echo "TODO: foursquare->GetPublic returns null in getAndSaveJSON<br>";
 	}else{
 		file_put_contents($outputDir.$fileName,$response);
 	}
-	
+
 	// check if rate_limit_exceeded
 	if($foursquare->rate_limit_exceeded){
 		echo "rate limit exceeded<br>";
@@ -53,23 +57,29 @@ function requestCityFuncTest($foursquare,$requestType,$outputDir,$delta){
 	getAndSaveJSON($foursquare,$requestType,$params,$fileName,$outputDir);
 }
 
-function requestCityFunc($foursquare,$cityName,$boundingBox,$requestType,$outputDir,$delta){
+function requestCityFunc($foursquare,$cityName,$boundingBox,$requestType,$categoryId,$outputDir,$splitNum){
 	$outputDirArr = array_flip(scanDir($outputDir));
 
-	$bbMat = getBoundingBoxMat($boundingBox,$delta);
+	list($bbMat,$deltaNS,$deltaEW) = getBoundingBoxMat($boundingBox,$splitNum);
 	$c=0;
 	foreach($bbMat as $lat=>$latArr){
+		$size = sizeof($bbMat)*sizeof($bbMat[$lat]);
+		//echo "number of requests for $cityName = $size<br>";
+		//echo "time: ".($size/1700)." hours<br>";
+		//return 0;
+		//exit;
+		
 		foreach($latArr as $lon=>$stam){
 			
 			// TODO: check this
 			$ne = $lat.','.$lon;
-			$sw = ($lat-$delta).','.($lon-$delta);
+			$sw = ($lat-$deltaNS).','.($lon-$deltaEW);
 			
 			
 			// Prepare parameters
 			$params = array("sw"=>"$sw",
 							"ne"=>"$ne",
-							"categoryId"=>"4d4b7105d754a06374d81259", // food category
+							"categoryId"=>$categoryId, // food category
 							"intent"=>"browse");
 			
 			$nameParams = $params;
@@ -93,7 +103,7 @@ function createFileNameByParams($params){
 	return substr($fileName,0,strlen($fileName)-1).".json";
 }
 
-function getBoundingBoxMat($boundingBox,$delta){
+function getBoundingBoxMat($boundingBox,$splitNum){
 	$bbMat = array();
 	
 	$north = $boundingBox['north_lat'];
@@ -101,17 +111,20 @@ function getBoundingBoxMat($boundingBox,$delta){
 	$east  = $boundingBox['east_lon'];
 	$west  = $boundingBox['west_lon'];
 	
+	$deltaNS = ($north-$south)/$splitNum;
+	$deltaEW = ($east-$west)/$splitNum;
+	
 	// are we guaranteed:
 	// $north>$south
 	// $east>$west)
-	for($lat=$north ;$lat>$south; $lat=$lat-$delta){
+	for($lat=$north ;$lat>$south; $lat=$lat-$deltaNS){
 		$bbMat[(string)$lat] = array();
-		for($lon=$east ;$lon>$west; $lon=$lon-$delta){
+		for($lon=$east ;$lon>$west; $lon=$lon-$deltaEW){
 			$bbMat[(string)$lat][(string)$lon] = 0;
 		}
 	}
 	
-	return $bbMat;
+	return array($bbMat,$deltaNS,$deltaEW);
 }
 
 function getFieldOrNull($arr,$key,$isStr){

@@ -2,9 +2,11 @@
 set_time_limit(0);
 ini_set('memory_limit', '2024M');
 require_once("0_functions.php");
+require_once("addValuesToTables.php");
 
 // input
-$delta = 0.002275; // about 250 meters
+//$delta = 0.002275; // about 250 meters
+//$delta = 0.00455;  // about 500 meters
 //$delta = 0.036117; // about 4 km - for test
 //$delta = 0.090300; // about 10 km - for test
 
@@ -35,21 +37,47 @@ if($client_key=="" or $client_secret=="")
 $foursquare = new FoursquareApi($client_key,$client_secret,$requestsOutputFile,$failsOutputFile);
 
 
+// requesting all venues data
 $city2idArr = getCity2idArr($citiesInputFile);
 foreach($city2idArr as $cityName=>$cityId){
+	$splitNum = 30;
+	$categoryId = "4d4b7105d754a06374d81259";
+	addNewCity($foursquare,$googleApiKey,$cityName,$cityId,$jsonsDir,$venuesDir,$splitNum,$categoryId);
+}
+
+
+function addNewCity($foursquare,$googleApiKey,$cityName,$cityId,$jsonsDir,$venuesDir,$splitNum,$categotyId){
 	$boundingBox = $foursquare->getBoundingBox($cityName,$googleApiKey);
 	if($boundingBox==null){
 		echo "<br>TODO: bad boundingBox for $cityName<br>";
-		exit;
+		return 0;
 	}
-		
-	print_r($boundingBox);
 	
 	// TODO: only one time to put in DB: cityId,cityName,boundingBox-details
+	$titleToIndex = array('cityId'=>0,'cityName'=>1,'north_lat'=>2,'south_lat'=>3, 'east_lon'=>4,'west_lon'=>5);
+	$cityArr = array_fill(0,sizeof($titleToIndex),'');
+	$cityArr[$titleToIndex['cityId']] = $cityId;
+	$cityArr[$titleToIndex['cityName']] = $cityName;
+	$cityArr[$titleToIndex['north_lat']] = $boundingBox['north_lat'];
+	$cityArr[$titleToIndex['south_lat']] = $boundingBox['south_lat'];
+	$cityArr[$titleToIndex['east_lon']]  = $boundingBox['east_lon'];
+	$cityArr[$titleToIndex['west_lon']]  = $boundingBox['west_lon'];
+	
+	// TODO: load $cityArr to DB // use the require_once("addValuesToTables.php");
+	// do the same way as in other loading to DB with $titleToIndex
+	
+	
+	return 0; // just in loading
 	
 	$requestType = "venues/search";
-	requestCityFunc($foursquare,$cityName,$boundingBox,$requestType,$jsonsDir.$venuesDir,$delta);
-}	
+	$cityNameDir = str_replace(' ','_',$cityName).'/';
+	$outputDir = $jsonsDir.$venuesDir.$cityNameDir;
+	if(!in_array(str_replace('/','',$cityNameDir),scanDir($jsonsDir.$venuesDir)))
+		mkdir($outputDir);
+	
+	requestCityFunc($foursquare,$cityName,$boundingBox,$requestType,$categotyId,$outputDir,$splitNum);	
+}
+	
 exit;
 
 

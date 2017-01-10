@@ -9,22 +9,12 @@ $delta = 0.002275; // about 250 meters
 //$delta = 0.036117; // about 4 km - for test
 //$delta = 0.090300; // about 10 km - for test
 
-//$inputDir = 'input/';
 $inputDir = 'input/';
 $citiesInputFile = $inputDir."citiesInput.txt";
-$loadToDB = 1; // otherwise - goes to csv
-
+$loadToDB = 0; // otherwise - goes to csv
+$writeVenuesWithMenuMode = 1;
 
 // parse
-if($loadToDB){
-	$conn = createConnection();
-	
-}else{	
-	$space = "\r\n";			
-	$writeFileName = $csvDir.$venuesDir."07_01_17.csv";
-	$write = fopen($writeFileName,'w');
-	fwrite($write,implode(',',array_keys($titleToIndex)).$space);
-}
 
 $space = "\r\n";
 $titleToIndex = array('cityId'=>0,'id'=>1,'name'=>2,'url'=>3,'hasMenu'=>4,'phone'=>5,
@@ -33,30 +23,52 @@ $titleToIndex = array('cityId'=>0,'id'=>1,'name'=>2,'url'=>3,'hasMenu'=>4,'phone
 
 $city2idArr = getCity2idArr($citiesInputFile);
 
-foreach(scandir($jsonsDir.$venuesDir) as $fileName){
-	if(strpos($fileName,'.json')===false)
+if($loadToDB){
+	$conn = createConnection();
+	
+}else{	
+	$space = "\r\n";			
+	$writeFileName = $csvDir.$venuesDir."10_01_17.csv";
+	$write = fopen($writeFileName,'w');
+	fwrite($write,implode(',',array_keys($titleToIndex)).$space);
+	
+	if($writeVenuesWithMenuMode)
+		$writeVenuesWithMenu = fopen($inputDir."VenuesWithMenus.txt",'w');
+}
+
+foreach(scandir($jsonsDir.$venuesDir) as $cityName){
+	if($cityName==='.' || $cityName==='..')
 		continue;
 	
-	$jsonStr = file_get_contents($jsonsDir.$venuesDir.$fileName);
+	$cityId = $city2idArr[str_replace('_',' ',$cityName)];
 	
-	$jsonArr = json_decode($jsonStr,true);
-	$cityName = str_replace('_',' ',substr($fileName,0,strpos($fileName,',')));
-	$cityId = $city2idArr[$cityName];
-	
-	$arrToWrite = array();
-	foreach($jsonArr['response']['venues'] as $i=>$venueDetails){ // convert venue json to indexed array and to line in csv
-		$VenueArr = venueJson2indexedArr($venueDetails,$titleToIndex);
-		$VenueArr[$titleToIndex['cityId']] = $cityId;
+	foreach(scandir($jsonsDir.$venuesDir.$cityName) as $fileName){
 		
-		if($loadToDB){
-			addEntryToRestaurantTable($conn,$VenueArr,$titleToIndex);
-			//TODO: remove after test
-			closeConnection($conn);
-			exit;
+		if(strpos($fileName,'.json')===false)
+			continue;
+
+		$jsonStr = file_get_contents($jsonsDir.$venuesDir.$cityName.'/'.$fileName);
+
+		$jsonArr = json_decode($jsonStr,true);
+
+		$arrToWrite = array();
+		foreach($jsonArr['response']['venues'] as $i=>$venueDetails){ // convert venue json to indexed array and to line in csv
+			$VenueArr = venueJson2indexedArr($venueDetails,$titleToIndex);
+			$VenueArr[$titleToIndex['cityId']] = $cityId;
 			
-		}else{
-			// write
-			fwrite($write,implode(',',array_values($VenueArr)).$space);
+			if($writeVenuesWithMenuMode && $VenueArr[$titleToIndex['hasMenu']]===1)
+				fwrite($writeVenuesWithMenu,$cityName.','.$VenueArr[$titleToIndex['id']].$space);
+			
+			if($loadToDB){
+				addEntryToRestaurantTable($conn,$VenueArr,$titleToIndex);
+				//TODO: remove after test
+				closeConnection($conn);
+				exit;
+				
+			}else{
+				// write
+				fwrite($write,implode(',',array_values($VenueArr)).$space);
+			}
 		}
 	}	
 }

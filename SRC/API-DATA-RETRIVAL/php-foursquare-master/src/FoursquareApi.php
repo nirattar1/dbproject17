@@ -372,6 +372,7 @@ class FoursquareApi {
 
 	function requstOrFail($url,$isFS){
 		$src = ($isFS ? 'fourSquareAPI' : 'googleMapsAPI');
+		fwrite($this->requestsOutput,$src.','.date("H:i:s").','.$this->LastUrl."\r\n");
 		$response = file_get_contents($url);
 		
 		$cntFails = 0;
@@ -395,19 +396,18 @@ class FoursquareApi {
 	
 	function isValidResponse($response,$isFS){
 		if($isFS)
-			$this->isValidFSresponse($response);
+			return $this->isValidFSresponse($response);
 		else
-			$this->isValidGoogleAPIresponse($response);
-		
+			return $this->isValidGoogleAPIresponse($response);
 	}
 	
 	function isValidFSresponse($response){
 		if($this->isValidJson($response)){
 			// good json
 			$json = json_decode($response);
-			if ( !isset( $json->meta->code ) || 200 !== $json->meta->code ) {
+			if ( !isset($json->meta->code) || $json->meta->code !== 200){
 				// bad response
-				if($json->meta->errorType === "rate_limit_exceeded")
+				if( isset($json->meta->errorType) && $json->meta->errorType === "rate_limit_exceeded")
 					$this->rate_limit_exceeded = true;
 				
 				return false;
@@ -422,14 +422,13 @@ class FoursquareApi {
 	}
 			
 	function isValidGoogleAPIresponse($response){
-		if(!in_array("test.json",scandir('.')))
-			file_put_contents("test.json",$response);
+		file_put_contents("test.json",$response);
 		
 		
 		if($this->isValidJson($response)){
 			// good json
 			$json = json_decode($response,true);
-			if ($json['status'] !== "OK"){
+			if (!isset($json['status']) || $json['status'] !== "OK"){
 				// bad response 
 				echo "not OK<br>";
 				return false;
