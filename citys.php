@@ -18,6 +18,7 @@ p {
 
 
 <?php
+$badget= $_GET["badget"];
 $currentRows=0;
 $cnt=0;
 $conn = connect(); 
@@ -147,7 +148,7 @@ createButtons($conn);
 				type="button" 
 				value= "more cities"
 				align="center"
-				onclick="window.location.href='http://www.cs.tau.ac.il/~amitchen/moreCities.php?page=<?php echo $cnt ?>'" />			
+				onclick="window.location.href='http://www.cs.tau.ac.il/~amitchen/moreCities.php?badget=<?php echo $badget ?>&page=<?php echo $cnt ?>'" />			
 
 
 <?php

@@ -67,7 +67,8 @@ function createButtons($conn){
 
 			//$row = array("name"=>"blabka");
 						
-			$tmpUrl = '"http://www.hyperlinkcode.com/button-links.php"';
+			$tmpUrl = 'http://www.cs.tau.ac.il/~amitchen/badget.php?category=';
+			
 			echo '<input style="width: 300px; 
 							padding: 30px; 
 							margin: 10px;
@@ -85,7 +86,7 @@ function createButtons($conn){
 							type="button" 
 							id= "'.$i.'"
 							value= "'. str_replace(' Restaurant','',$row["name"]).'"
-							onclick="window.location.href='.$tmpUrl.'" />';
+							onclick="window.location.href='.$tmpUrl.$row["name"].'" />';
 							
 							 
 			}
