@@ -39,6 +39,9 @@ $foursquare = new FoursquareApi($client_key,$client_secret,$requestsOutputFile,$
 
 // requesting all venues data
 $city2idArr = getCity2idArr($citiesInputFile);
+
+print_r($city2idArr);
+//exit;
 foreach($city2idArr as $cityName=>$cityId){
 	$splitNum = 30;
 	$categoryId = "4d4b7105d754a06374d81259";
@@ -67,13 +70,19 @@ function addNewCity($foursquare,$googleApiKey,$cityName,$cityId,$jsonsDir,$venue
 	// do the same way as in other loading to DB with $titleToIndex
 	
 	
-	return 0; // just in loading
+	//return 0; // just in loading
 	
 	$requestType = "venues/search";
 	$cityNameDir = str_replace(' ','_',$cityName).'/';
 	$outputDir = $jsonsDir.$venuesDir.$cityNameDir;
-	if(!in_array(str_replace('/','',$cityNameDir),scanDir($jsonsDir.$venuesDir)))
+	
+	if(!in_array(str_replace('/','',$cityNameDir),scanDir($jsonsDir.$venuesDir))){
 		mkdir($outputDir);
+		if($cityNameDir=='San_Francisco')
+			echo "create new directory for $cityNameDir";
+	}
+	if($cityNameDir=='San_Francisco')
+		exit;
 	
 	requestCityFunc($foursquare,$cityName,$boundingBox,$requestType,$categotyId,$outputDir,$splitNum);	
 }
