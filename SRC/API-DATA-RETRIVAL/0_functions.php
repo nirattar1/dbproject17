@@ -197,6 +197,7 @@ function fixString($str){
 	return $str;
 }
 
+//note: city id is determined by line number in input file.
 function getCity2idArr($fileName){
 	$city2id = array();
 	$read = fopen($fileName,'r') or die ("can't open file");

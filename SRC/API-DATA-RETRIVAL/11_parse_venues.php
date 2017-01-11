@@ -28,7 +28,7 @@ if($loadToDB){
 	
 }else{	
 	$space = "\r\n";			
-	$writeFileName = $csvDir.$venuesDir."10_01_17.csv";
+	$writeFileName = $csvDir.$venuesDir."11_01_17.csv";
 	$write = fopen($writeFileName,'w');
 	fwrite($write,implode(',',array_keys($titleToIndex)).$space);
 	

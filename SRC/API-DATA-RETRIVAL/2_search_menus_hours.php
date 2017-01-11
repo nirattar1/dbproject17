@@ -28,10 +28,6 @@ $location = array_key_exists("location",$_GET) ? $_GET['location'] : "Montreal, 
 $venuesWithMenusArr = getVenuesWithMenusArr($inputDir."VenuesWithMenus.txt"); // read the input from 11_parse_venues.php
 
 foreach($venuesWithMenusArr as $cityName=>$venuesArr){
-	//TODO test
-	if($cityName!='New_York' && $cityName!='Los_Angeles')
-		continue;
-	
 	
 	// menus
 	$outputMenusPerCity = $jsonsDir.$menusDir.$cityName.'/';

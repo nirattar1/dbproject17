@@ -1,17 +1,9 @@
 New York
 Los Angeles
-Berlin
-Paris
-Budapest
-Milan
-Prague
-Rome
-London
-Madrid
-Amsterdam
-Copenhagen
+Chicago
+Washington DC
+Seattle
+Philadelphia
+San Francisco
 Miami
-San francisco
-Athens
-Mexico city
-Buenos Aires
+Denver

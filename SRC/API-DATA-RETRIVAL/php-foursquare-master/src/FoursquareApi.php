@@ -11,7 +11,7 @@
 
 // Set the default version
 // @TODO: Warning when the version becomes too out of date
-define("DEFAULT_VERSION", "20140201");
+define("DEFAULT_VERSION", "20170101");
 
 // I have no explanation as to why this is necessary
 define("HTTP_GET","GET");
@@ -217,7 +217,7 @@ class FoursquareApi {
 		$response = $this->Request($geoapi,$params,0);
 		//TODO
 		file_put_contents("bb_".$addr.".json",$response);
-		
+
 		if($response==null)
 			return null;
 		
