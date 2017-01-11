@@ -1,12 +1,12 @@
 <?php
-$serverName = "mysqlsrv.cs.tau.ac.il";
-$userName = "DbMysql07";
-$password = "DbMysql07";
-$dbName = "DbMysql07";
-// $serverName = "localhost";
-// $userName = "root";
-// $password = "";
-// $dbName = "dbmysql07_local";
+// $serverName = "mysqlsrv.cs.tau.ac.il";
+// $userName = "DbMysql07";
+// $password = "DbMysql07";
+// $dbName = "DbMysql07";
+$serverName = "localhost";
+$userName = "root";
+$password = "";
+$dbName = "dbmysql07_local";
 
 //create connection
 $conn = new mysqli($serverName,$userName,$password,$dbName);
@@ -28,10 +28,10 @@ function createCityTable($conn)
     $sql = "CREATE TABLE IF NOT EXISTS City (
             id INT(6) PRIMARY KEY,
             name VARCHAR(30) NOT NULL,
-            country VARCHAR(50) NOT NULL,
-            state VARCHAR(50),
-            lat DECIMAL(50) NOT NULL,
-            lon DECIMAL(50) NOT NULL,
+			north_lat DECIMAL(50) NOT NULL,
+			south_lat DECIMAL(50) NOT NULL,
+			east_lon DECIMAL(50) NOT NULL,
+			west_lon DECIMAL(50) NOT NULL,
             created_at TIMESTAMP
             )";
 

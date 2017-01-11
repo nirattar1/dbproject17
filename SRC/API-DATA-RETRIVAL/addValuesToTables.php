@@ -1,14 +1,14 @@
 <?php
 
 function createConnection(){
-	$serverName = "mysqlsrv.cs.tau.ac.il";
-	$userName = "DbMysql07";
-	$password = "DbMysql07";
-	$dbName = "DbMysql07";
-	// $serverName = "localhost";
-	// $userName = "root";
-	// $password = "";
-	// $dbName = "dbmysql07_local";
+	// $serverName = "mysqlsrv.cs.tau.ac.il";
+	// $userName = "DbMysql07";
+	// $password = "DbMysql07";
+	// $dbName = "DbMysql07";
+	$serverName = "localhost";
+	$userName = "root";
+	$password = "";
+	$dbName = "dbmysql07_local";
 
 	//create connection
 	$conn = new mysqli($serverName,$userName,$password,$dbName);
@@ -56,16 +56,16 @@ function fillCategoryTable($conn)
     $sql->close();
 }
 
-function addEntryToCityTable($conn,$VenueArr,$titleToIndex){
-    $id=""; //get from external array
-    $name=$VenueArr[$titleToIndex['city']];
-    $state=$VenueArr[$titleToIndex['state']];
-    $country=$VenueArr[$titleToIndex['country']];
-    $lat=$VenueArr[$titleToIndex['lat']];
-    $lon=-$VenueArr[$titleToIndex['lon']];
-
-    $sql = $conn->prepare("INSERT INTO City (id,name,country,state,lat,lon) VALUES (?,?,?,?,?,?)");
-    $sql->bind_param("isssdd",$id,$name,$state,$country,$lat,$lon);
+function addEntryToCityTable($conn,$cityArr,$titleToIndex){
+    $id=$cityArr[$titleToIndex['cityId']];
+    $name=$cityArr[$titleToIndex['cityName']];
+	$north_lat = $cityArr[$titleToIndex['north_lat']];
+	$south_lat = $cityArr[$titleToIndex['south_lat']];
+	$east_lon = $cityArr[$titleToIndex['east_lon']];
+	$west_lon = $cityArr[$titleToIndex['west_lon']];
+	
+    $sql = $conn->prepare("INSERT INTO City (id,name,north_lat,south_lat,east_lon,west_lon) VALUES (?,?,?,?,?,?)");
+    $sql->bind_param("isdddd",$id,$name,$north_lat,$south_lat,$east_lon,$west_lon);
 
     if ($sql->execute() === TRUE) {
         echo "Added city ".$name." successfully";
