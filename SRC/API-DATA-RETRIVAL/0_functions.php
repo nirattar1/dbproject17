@@ -127,39 +127,39 @@ function getBoundingBoxMat($boundingBox,$splitNum){
 	return array($bbMat,$deltaNS,$deltaEW);
 }
 
-function getFieldOrNull($arr,$key,$isStr){
+function getFieldOrNull($arr,$key,$isStr,$loadToDB){
 	if(!array_key_exists($key,$arr))
 		return null;
 		
 	// found:
 	$val = $arr[$key];
-	if($isStr)	
+	if($isStr && !$loadToDB)	
 		$val = '"'.fixString($val).'"';
 	
 	return $val;
 }
 
-function venueJson2indexedArr($venueDetails,$titleToIndex){
+function venueJson2indexedArr($venueDetails,$titleToIndex,$loadToDB){
 	$arrToWrite = array_fill(0,sizeof($titleToIndex),'');
 	
 	// main
 	$arrToWrite[$titleToIndex['id']] = $venueDetails['id'];
-	$arrToWrite[$titleToIndex['name']] = '"'.$venueDetails['name'].'"';
-	$arrToWrite[$titleToIndex['url']] = getFieldOrNull($venueDetails,'url',1);
+	$arrToWrite[$titleToIndex['name']] = ($loadToDB ? $venueDetails['name'] : '"'.$venueDetails['name'].'"');
+	$arrToWrite[$titleToIndex['url']] = getFieldOrNull($venueDetails,'url',1,$loadToDB);
 	$arrToWrite[$titleToIndex['hasMenu']] = (array_key_exists('menu',$venueDetails) ? 1 : 0 );
 	
 	// contanct
 	if(array_key_exists('contact',$venueDetails)){
-		$arrToWrite[$titleToIndex['phone']] = getFieldOrNull($venueDetails['contact'],'formattedPhone',1);
+		$arrToWrite[$titleToIndex['phone']] = getFieldOrNull($venueDetails['contact'],'formattedPhone',1,$loadToDB);
 	}
 	// location
 	if(array_key_exists('location',$venueDetails)){
-		$arrToWrite[$titleToIndex['address']] = getFieldOrNull($venueDetails['location'],'address',1);
-		$arrToWrite[$titleToIndex['city']] = 	getFieldOrNull($venueDetails['location'],'city',1);
-		$arrToWrite[$titleToIndex['state']] = 	getFieldOrNull($venueDetails['location'],'state',1);
-		$arrToWrite[$titleToIndex['country']] = getFieldOrNull($venueDetails['location'],'country',1);
-		$arrToWrite[$titleToIndex['lat']] = 	getFieldOrNull($venueDetails['location'],'lat',1);
-		$arrToWrite[$titleToIndex['lon']] = 	getFieldOrNull($venueDetails['location'],'lng',1);
+		$arrToWrite[$titleToIndex['address']] = getFieldOrNull($venueDetails['location'],'address',1,$loadToDB);
+		$arrToWrite[$titleToIndex['city']] = 	getFieldOrNull($venueDetails['location'],'city',1,$loadToDB);
+		$arrToWrite[$titleToIndex['state']] = 	getFieldOrNull($venueDetails['location'],'state',1,$loadToDB);
+		$arrToWrite[$titleToIndex['country']] = getFieldOrNull($venueDetails['location'],'country',1,$loadToDB);
+		$arrToWrite[$titleToIndex['lat']] = 	getFieldOrNull($venueDetails['location'],'lat',1,$loadToDB);
+		$arrToWrite[$titleToIndex['lon']] = 	getFieldOrNull($venueDetails['location'],'lng',1,$loadToDB);
 	}
 	// categories
 	$categoriesArr = array();// in case we'll see it has more than one category
@@ -171,21 +171,21 @@ function venueJson2indexedArr($venueDetails,$titleToIndex){
 	$arrToWrite[$titleToIndex['categories']] = implode('+',$categoriesArr);
 	// stats
 	if(array_key_exists('stats',$venueDetails)){
-		$arrToWrite[$titleToIndex['checkinsCount']] = getFieldOrNull($venueDetails['stats'],'checkinsCount',0);
-		$arrToWrite[$titleToIndex['usersCount']] 	= getFieldOrNull($venueDetails['stats'],'usersCount',0);
-		$arrToWrite[$titleToIndex['tipCount']] 		= getFieldOrNull($venueDetails['stats'],'tipCount',0);
+		$arrToWrite[$titleToIndex['checkinsCount']] = getFieldOrNull($venueDetails['stats'],'checkinsCount',0,$loadToDB);
+		$arrToWrite[$titleToIndex['usersCount']] 	= getFieldOrNull($venueDetails['stats'],'usersCount',0,$loadToDB);
+		$arrToWrite[$titleToIndex['tipCount']] 		= getFieldOrNull($venueDetails['stats'],'tipCount',0,$loadToDB);
 	}
 	
 	return $arrToWrite;
 }
 
-function dishJson2indexedArr($dishDetails,$titleToIndex){
+function dishJson2indexedArr($dishDetails,$titleToIndex,$loadToDB){
 	$arrToWrite = array_fill(0,sizeof($titleToIndex),'');
 	
-	$arrToWrite[$titleToIndex['dishId']] = 		getFieldOrNull($dishDetails,'entryId',0);
-	$arrToWrite[$titleToIndex['dishName']] = 	getFieldOrNull($dishDetails,'name',1);
-	$arrToWrite[$titleToIndex['description']] = getFieldOrNull($dishDetails,'description',1);
-	$arrToWrite[$titleToIndex['price']] = 		getFieldOrNull($dishDetails,'price',0);
+	$arrToWrite[$titleToIndex['dishId']] = 		getFieldOrNull($dishDetails,'entryId',0,$loadToDB);
+	$arrToWrite[$titleToIndex['dishName']] = 	getFieldOrNull($dishDetails,'name',1,$loadToDB);
+	$arrToWrite[$titleToIndex['description']] = getFieldOrNull($dishDetails,'description',1,$loadToDB);
+	$arrToWrite[$titleToIndex['price']] = 		getFieldOrNull($dishDetails,'price',0,$loadToDB);
 
 	return $arrToWrite;
 }

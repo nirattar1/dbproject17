@@ -16,10 +16,12 @@ $citiesInputFile = $inputDir."citiesInput.txt";
 $requestsOutputFile = "requests.txt";
 $failsOutputFile = "failed_requests.txt";
 
-+//two uses to this script:
- +//1. load cities into cities table (done only once). (will be done when loadToDB==1)
- +//2. (primary usage) fetch venues data using the API. (when loadToDB==0, default).
- +// see below addNewCity
+
+//two uses to this script:
+//1. load cities into cities table (done only once). (will be done when loadToDB==1)
+//2. (primary usage) fetch venues data using the API. (when loadToDB==0, default).
+// see below addNewCity
+
 $loadToDB = 0;
 
 // Set your client key and secret
@@ -47,7 +49,7 @@ $foursquare = new FoursquareApi($client_key,$client_secret,$requestsOutputFile,$
 $city2idArr = getCity2idArr($citiesInputFile);
 
 print_r($city2idArr);
-//exit;
+
 foreach($city2idArr as $cityName=>$cityId){
 	$splitNum = 30;
 	$categoryId = "4d4b7105d754a06374d81259";
@@ -57,8 +59,13 @@ foreach($city2idArr as $cityName=>$cityId){
 
 
 function addNewCity($foursquare,$googleApiKey,$cityName,$cityId,
+<<<<<<< HEAD
+		$jsonsDir,$venuesDir,$splitNum,$categotyId, $loadToDB)
+ {
+=======
 		$jsonsDir,$venuesDir,$splitNum,$categotyId, $loadToDB)		
 {
+>>>>>>> 349410989956fbd7dae01e25305a8a46d78acdf8
 	$boundingBox = $foursquare->getBoundingBox($cityName,$googleApiKey);
 	if($boundingBox==null){
 		echo "<br>TODO: bad boundingBox for $cityName<br>";
