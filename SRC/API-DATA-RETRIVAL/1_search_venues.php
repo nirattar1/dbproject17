@@ -16,7 +16,11 @@ $citiesInputFile = $inputDir."citiesInput.txt";
 $requestsOutputFile = "requests.txt";
 $failsOutputFile = "failed_requests.txt";
 
-
+//two uses to this script:
+//1. load cities into cities table (done only once). (will be done when loadToDB==1)
+//2. (primary usage) fetch venues data using the API. (when loadToDB==0, default).
+// see below addNewCity
+$loadToDB = 0;
 
 // Set your client key and secret
 //$client_key = "3ZGILD2SYIGKM4NVBRIG4AWODIU4TUR02BEOCN21NDXIQNP1"; // this was the auoth_key
@@ -38,25 +42,29 @@ $foursquare = new FoursquareApi($client_key,$client_secret,$requestsOutputFile,$
 
 
 // requesting all venues data
+//note: city id is determined by line in input file.
+//city2idArr is a mapping between city name to its id.
 $city2idArr = getCity2idArr($citiesInputFile);
 
 print_r($city2idArr);
-//exit;
+
 foreach($city2idArr as $cityName=>$cityId){
 	$splitNum = 30;
 	$categoryId = "4d4b7105d754a06374d81259";
-	addNewCity($foursquare,$googleApiKey,$cityName,$cityId,$jsonsDir,$venuesDir,$splitNum,$categoryId);
+	addNewCity($foursquare,$googleApiKey,$cityName,$cityId,
+		$jsonsDir,$venuesDir,$splitNum,$categoryId,$loadToDB);
 }
 
 
-function addNewCity($foursquare,$googleApiKey,$cityName,$cityId,$jsonsDir,$venuesDir,$splitNum,$categotyId){
+function addNewCity($foursquare,$googleApiKey,$cityName,$cityId,
+		$jsonsDir,$venuesDir,$splitNum,$categotyId, $loadToDB)
+ {
 	$boundingBox = $foursquare->getBoundingBox($cityName,$googleApiKey);
 	if($boundingBox==null){
 		echo "<br>TODO: bad boundingBox for $cityName<br>";
 		return 0;
 	}
 	
-	// TODO: only one time to put in DB: cityId,cityName,boundingBox-details
 	$titleToIndex = array('cityId'=>0,'cityName'=>1,'north_lat'=>2,'south_lat'=>3, 'east_lon'=>4,'west_lon'=>5);
 	$cityArr = array_fill(0,sizeof($titleToIndex),'');
 	$cityArr[$titleToIndex['cityId']] = $cityId;
@@ -66,11 +74,16 @@ function addNewCity($foursquare,$googleApiKey,$cityName,$cityId,$jsonsDir,$venue
 	$cityArr[$titleToIndex['east_lon']]  = $boundingBox['east_lon'];
 	$cityArr[$titleToIndex['west_lon']]  = $boundingBox['west_lon'];
 	
-	// TODO: load $cityArr to DB // use the require_once("addValuesToTables.php");
-	// do the same way as in other loading to DB with $titleToIndex
+	// put city in DB: cityId,cityName,boundingBox-details	
+	//(only one time - controlled by flag $loadToDB)
+	if ($loadToDB)
+	{
+		$conn = createConnection();
+		addEntryToCityTable($conn, $cityArr, $titleToIndex);
+		return 0; // just in loading
+	}	
 	
-	
-	//return 0; // just in loading
++	//assume city already exists in db. move on to API.	
 	
 	$requestType = "venues/search";
 	$cityNameDir = str_replace(' ','_',$cityName).'/';
