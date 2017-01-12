@@ -16,10 +16,12 @@ $citiesInputFile = $inputDir."citiesInput.txt";
 $requestsOutputFile = "requests.txt";
 $failsOutputFile = "failed_requests.txt";
 
+
 //two uses to this script:
 //1. load cities into cities table (done only once). (will be done when loadToDB==1)
 //2. (primary usage) fetch venues data using the API. (when loadToDB==0, default).
 // see below addNewCity
+
 $loadToDB = 0;
 
 // Set your client key and secret
@@ -57,8 +59,13 @@ foreach($city2idArr as $cityName=>$cityId){
 
 
 function addNewCity($foursquare,$googleApiKey,$cityName,$cityId,
+<<<<<<< HEAD
 		$jsonsDir,$venuesDir,$splitNum,$categotyId, $loadToDB)
  {
+=======
+		$jsonsDir,$venuesDir,$splitNum,$categotyId, $loadToDB)		
+{
+>>>>>>> 349410989956fbd7dae01e25305a8a46d78acdf8
 	$boundingBox = $foursquare->getBoundingBox($cityName,$googleApiKey);
 	if($boundingBox==null){
 		echo "<br>TODO: bad boundingBox for $cityName<br>";
@@ -83,7 +90,7 @@ function addNewCity($foursquare,$googleApiKey,$cityName,$cityId,
 		return 0; // just in loading
 	}	
 	
-+	//assume city already exists in db. move on to API.	
+	//assume city already exists in db. move on to API.
 	
 	$requestType = "venues/search";
 	$cityNameDir = str_replace(' ','_',$cityName).'/';

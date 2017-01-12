@@ -124,34 +124,3 @@ function addEntryToDishTable($conn,$DishArr,$titleToIndex)
 }
 
 ?>
-
-
-
-/*
-
-/* ADD CITY TO TABLE */
-
-
-$sql = $conn->prepare("INSERT INTO City (id,name,country,state,lat,lon) VALUES (?,?,?,?,?,?)");
-$sql->bind_param("isssdd",$id,$name,$state,$country,$lat,$lon);
-
-
-
-
-$id=5;
-$name="Berlin";
-$state="Berlin";
-$country="Germany";
-$lat=52.48202889;
-$lon=13.42482271;
-
-
-if ($sql->execute() === TRUE) {
-echo "Added city successfully";
-} else {
-echo "Error creating table: " . $sql->error;
-}
-*/
-
-
-
