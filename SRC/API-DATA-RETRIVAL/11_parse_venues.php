@@ -11,7 +11,7 @@ $delta = 0.002275; // about 250 meters
 
 $inputDir = 'input/';
 $citiesInputFile = $inputDir."citiesInput.txt";
-$loadToDB = 0; // otherwise - goes to csv
+$loadToDB = 1; // otherwise - goes to csv
 $writeVenuesWithMenuMode = 1;
 
 // parse
@@ -47,7 +47,9 @@ foreach(scandir($jsonsDir.$venuesDir) as $cityName){
 		if(strpos($fileName,'.json')===false)
 			continue;
 
-		$jsonStr = file_get_contents($jsonsDir.$venuesDir.$cityName.'/'.$fileName);
+		$full_filename = $jsonsDir.$venuesDir.$cityName.'/'.$fileName;
+		echo $full_filename;
+		$jsonStr = file_get_contents($full_filename);
 
 		$jsonArr = json_decode($jsonStr,true);
 
@@ -61,9 +63,6 @@ foreach(scandir($jsonsDir.$venuesDir) as $cityName){
 			
 			if($loadToDB){
 				addEntryToRestaurantTable($conn,$VenueArr,$titleToIndex);
-				//TODO: remove after test
-				closeConnection($conn);
-				exit;
 				
 			}else{
 				// write
