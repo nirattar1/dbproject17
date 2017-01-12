@@ -16,7 +16,6 @@ $writeVenuesWithMenuMode = 1;
 
 // parse
 
-$space = "\r\n";
 $titleToIndex = array('cityId'=>0,'id'=>1,'name'=>2,'url'=>3,'hasMenu'=>4,'phone'=>5,
 				'address'=>6,'city'=>7,'state'=>8,'country'=>9,'lat'=>10,'lon'=>11,
 				'categories'=>12,'checkinsCount'=>13,'usersCount'=>14,'tipCount'=>15);
@@ -53,7 +52,7 @@ foreach(scandir($jsonsDir.$venuesDir) as $cityName){
 
 		$arrToWrite = array();
 		foreach($jsonArr['response']['venues'] as $i=>$venueDetails){ // convert venue json to indexed array and to line in csv
-			$VenueArr = venueJson2indexedArr($venueDetails,$titleToIndex);
+			$VenueArr = venueJson2indexedArr($venueDetails,$titleToIndex,$loadToDB);// $loadToDB will control the "" protection
 			$VenueArr[$titleToIndex['cityId']] = $cityId;
 			
 			if($writeVenuesWithMenuMode && $VenueArr[$titleToIndex['hasMenu']]===1)

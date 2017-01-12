@@ -3,13 +3,18 @@ set_time_limit(0);
 ini_set('memory_limit', '2024M');
 require_once("0_functions.php");
 
-
-$space = "\r\n";
+$loadToDB = 0;
 $titleToIndex = array('venueId'=>0,'sectionName'=>1,'dishId'=>2,'dishName'=>3,'description'=>4,'price'=>5);
-				
-$writeFileName = $csvDir.$menusDir."all.csv";
-$write = fopen($writeFileName,'w');
-fwrite($write,implode(',',array_keys($titleToIndex)).$space);
+
+
+if($loadToDB){
+	$conn = createConnection();
+}else{	
+	$space = "\r\n";
+	$writeFileName = $csvDir.$menusDir."all.csv";
+	$write = fopen($writeFileName,'w');
+	fwrite($write,implode(',',array_keys($titleToIndex)).$space);
+}
 
 foreach(scandir($jsonsDir.$menusDir) as $fileName){
 	if(strpos($fileName,'.json')===false)
@@ -36,13 +41,21 @@ foreach(scandir($jsonsDir.$menusDir) as $fileName){
 			// menu section (like "Sandwiches")
 			$sectionName = $itemSection['name']; // we must have this field, some times dish names can't be understood without the section name
 			foreach($itemSection['entries']['items'] as $k=>$dishDetails){
-				$indexedArr = dishJson2indexedArr($dishDetails,$titleToIndex);
+				$indexedArr = dishJson2indexedArr($dishDetails,$titleToIndex,$loadToDB);
 				
 				$indexedArr[$titleToIndex['venueId']] = $venueId;
 				$indexedArr[$titleToIndex['sectionName']] = '"'.$sectionName.'"';
-				
-				// one row for every dish
-				fwrite($write,implode(',',array_values($indexedArr)).$space);
+
+				if($loadToDB){
+					addEntryToRestaurantTable($conn,$indexedArr,$titleToIndex);
+					//TODO: remove after test
+					closeConnection($conn);
+					exit;
+					
+				}else{
+					// one row for every dish
+					fwrite($write,implode(',',array_values($indexedArr)).$space);
+				}
 			}
 			
 		}
