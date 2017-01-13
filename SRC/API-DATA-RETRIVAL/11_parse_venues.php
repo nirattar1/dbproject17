@@ -27,7 +27,7 @@ if($loadToDB){
 	
 }else{	
 	$space = "\r\n";			
-	$writeFileName = $csvDir.$venuesDir."11_01_17.csv";
+	$writeFileName = $csvDir.$venuesDir."12_01_17.csv";
 	$write = fopen($writeFileName,'w');
 	fwrite($write,implode(',',array_keys($titleToIndex)).$space);
 	
@@ -35,6 +35,8 @@ if($loadToDB){
 		$writeVenuesWithMenu = fopen($inputDir."VenuesWithMenus.txt",'w');
 }
 
+
+$cnt2skip = 0; // TODO: delete this
 foreach(scandir($jsonsDir.$venuesDir) as $cityName){
 	if($cityName==='.' || $cityName==='..')
 		continue;
@@ -46,11 +48,13 @@ foreach(scandir($jsonsDir.$venuesDir) as $cityName){
 		if(strpos($fileName,'.json')===false)
 			continue;
 
+		if(($cnt2skip++)%4) // TODO: delete this
+			continue;
+
 		$jsonStr = file_get_contents($jsonsDir.$venuesDir.$cityName.'/'.$fileName);
 
 		$jsonArr = json_decode($jsonStr,true);
 
-		$arrToWrite = array();
 		foreach($jsonArr['response']['venues'] as $i=>$venueDetails){ // convert venue json to indexed array and to line in csv
 			$VenueArr = venueJson2indexedArr($venueDetails,$titleToIndex,$loadToDB);// $loadToDB will control the "" protection
 			$VenueArr[$titleToIndex['cityId']] = $cityId;

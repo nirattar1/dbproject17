@@ -59,13 +59,9 @@ foreach($city2idArr as $cityName=>$cityId){
 
 
 function addNewCity($foursquare,$googleApiKey,$cityName,$cityId,
-<<<<<<< HEAD
-		$jsonsDir,$venuesDir,$splitNum,$categotyId, $loadToDB)
- {
-=======
-		$jsonsDir,$venuesDir,$splitNum,$categotyId, $loadToDB)		
+		$jsonsDir,$venuesDir,$splitNum,$categotyId,$loadToDB)	
 {
->>>>>>> 349410989956fbd7dae01e25305a8a46d78acdf8
+
 	$boundingBox = $foursquare->getBoundingBox($cityName,$googleApiKey);
 	if($boundingBox==null){
 		echo "<br>TODO: bad boundingBox for $cityName<br>";

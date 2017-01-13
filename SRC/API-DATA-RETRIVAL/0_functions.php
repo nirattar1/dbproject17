@@ -1,6 +1,5 @@
 <?php
 require_once("php-foursquare-master/src/FoursquareApi.php");
-ini_set('precision', 30);
 
 // output
 $jsonsDir = 'jsons/';
@@ -46,16 +45,7 @@ function getAndSaveJSON($foursquare,$requestType,$params,$fileName,$outputDir){
 	}	
 }
 
-// TODO: remove this test
-function requestCityFuncTest($foursquare,$requestType,$outputDir,$delta){
-	$params = array("sw"=>"33.7052060000000039963197195902,-118.245588999999995394318830222",
-					"ne"=>"33.7955060000000031550371204503,-118.155289",
-					"categoryId"=>"4d4b7105d754a06374d81259", // food category
-					"intent"=>"browse");
-	
-	$fileName = "test.json";
-	getAndSaveJSON($foursquare,$requestType,$params,$fileName,$outputDir);
-}
+
 
 function requestCityFunc($foursquare,$cityName,$boundingBox,$requestType,$categoryId,$outputDir,$splitNum){
 	$outputDirArr = array_flip(scanDir($outputDir));
@@ -72,8 +62,8 @@ function requestCityFunc($foursquare,$cityName,$boundingBox,$requestType,$catego
 		foreach($latArr as $lon=>$stam){
 			
 			// TODO: check this
-			$ne = $lat.','.$lon;
-			$sw = ($lat-$deltaNS).','.($lon-$deltaEW);
+			$ne = formatCoodrdinates($lat).','.formatCoodrdinates($lon);
+			$sw = formatCoodrdinates($lat-$deltaNS).','.formatCoodrdinates($lon-$deltaEW);
 			
 			
 			// Prepare parameters
@@ -117,15 +107,21 @@ function getBoundingBoxMat($boundingBox,$splitNum){
 	// are we guaranteed:
 	// $north>$south
 	// $east>$west)
-	for($lat=$north ;$lat>$south; $lat=$lat-$deltaNS){
+	for($lat=formatCoodrdinates($north) ;$lat>$south; $lat=formatCoodrdinates($lat-$deltaNS)){
 		$bbMat[(string)$lat] = array();
-		for($lon=$east ;$lon>$west; $lon=$lon-$deltaEW){
+		for($lon=formatCoodrdinates($east) ;$lon>$west; $lon=formatCoodrdinates($lon-$deltaEW)){
 			$bbMat[(string)$lat][(string)$lon] = 0;
 		}
 	}
 	
 	return array($bbMat,$deltaNS,$deltaEW);
 }
+
+function formatCoodrdinates($coord){
+	list($head,$tail) = explode('.',$coord);
+	return $head.'.'.substr($tail,0,4);
+}
+
 
 function getFieldOrNull($arr,$key,$isStr,$loadToDB){
 	if(!array_key_exists($key,$arr))
@@ -221,5 +217,25 @@ function fstRow2IndexArr($line,$delimiter = ','){
 	return $arr;
 }
 
+function formatTime($timeStr){
+	$isNextDay = false;
+	if(strpos($timeStr,'+')){
+		$isNextDay = true;
+		$timeStr = substr($timeStr,1);
+	}
+	list($hh,$mm) = str_split($timeStr,2);
+	return array($hh.':'.$mm,$isNextDay);
+}
 
+function splitRangeIfNeeded($startFrame,$endFrame,$isNextDay,$day){
+	$maybeSplitedRanges = array();
+	if(!$isNextDay){
+		$maybeSplitedRanges[] = array('start'=>$startFrame,'end'=>$endFrame,'day'=>$day);
+	}else{
+		$maybeSplitedRanges[] = array('start'=>$startFrame,'end'=>'00:00','day'=>$day);
+		$maybeSplitedRanges[] = array('start'=>'00:00','end'=>$endFrame,'day'=>($day+1)%7);
+	}
+	return $maybeSplitedRanges;
+}	
+	
 ?>
