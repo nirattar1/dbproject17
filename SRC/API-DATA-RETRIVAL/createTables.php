@@ -28,10 +28,10 @@ function createCityTable($conn)
     $sql = "CREATE TABLE IF NOT EXISTS City (
             id INT(6) PRIMARY KEY,
             name VARCHAR(30) NOT NULL,
-			north_lat DECIMAL(50) NOT NULL,
-			south_lat DECIMAL(50) NOT NULL,
-			east_lon DECIMAL(50) NOT NULL,
-			west_lon DECIMAL(50) NOT NULL,
+			north_lat DECIMAL(50,7) NOT NULL,
+			south_lat DECIMAL(50,7) NOT NULL,
+			east_lon DECIMAL(50,7) NOT NULL,
+			west_lon DECIMAL(50,7) NOT NULL,
             created_at TIMESTAMP
             )";
 
