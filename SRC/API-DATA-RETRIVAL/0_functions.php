@@ -219,9 +219,9 @@ function fstRow2IndexArr($line,$delimiter = ','){
 
 function formatTime($timeStr){
 	$isNextDay = false;
-	if(strpos($timeStr,'+')){
+	if(strpos($timeStr,'+')!==false){
 		$isNextDay = true;
-		$timeStr = substr($timeStr,1);
+		$timeStr = str_replace('+','',$timeStr);
 	}
 	list($hh,$mm) = str_split($timeStr,2);
 	return array($hh.':'.$mm,$isNextDay);
