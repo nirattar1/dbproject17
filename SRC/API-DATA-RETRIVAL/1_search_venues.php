@@ -22,7 +22,7 @@ $failsOutputFile = "failed_requests.txt";
 //2. (primary usage) fetch venues data using the API. (when loadToDB==0, default).
 // see below addNewCity
 
-$loadToDB = 0;
+$loadToDB = 1;
 
 // Set your client key and secret
 //$client_key = "3ZGILD2SYIGKM4NVBRIG4AWODIU4TUR02BEOCN21NDXIQNP1"; // this was the auoth_key
@@ -59,13 +59,8 @@ foreach($city2idArr as $cityName=>$cityId){
 
 
 function addNewCity($foursquare,$googleApiKey,$cityName,$cityId,
-<<<<<<< HEAD
-		$jsonsDir,$venuesDir,$splitNum,$categotyId, $loadToDB)
- {
-=======
 		$jsonsDir,$venuesDir,$splitNum,$categotyId, $loadToDB)		
 {
->>>>>>> 349410989956fbd7dae01e25305a8a46d78acdf8
 	$boundingBox = $foursquare->getBoundingBox($cityName,$googleApiKey);
 	if($boundingBox==null){
 		echo "<br>TODO: bad boundingBox for $cityName<br>";
