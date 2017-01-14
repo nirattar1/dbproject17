@@ -43,8 +43,6 @@ function createCityTable($conn)
 }
 
 
-
-
 function createCategoryTable($conn)
 {
     $sql = "CREATE TABLE IF NOT EXISTS Category (
@@ -102,6 +100,24 @@ function createDishTable($conn)
 
     if ($conn->query($sql) === TRUE) {
         echo "Dish Table created successfully\n";
+    } else {
+        echo "Error creating table: " . $conn->error;
+    }
+}
+
+function createOpenHoursTable($conn)
+{
+    $sql = "CREATE TABLE IF NOT EXISTS OpenHours (
+            restaurant_id VARCHAR(32) PRIMARY KEY,
+            FOREIGN KEY(restaurant_id) REFERENCES Restaurant(id),
+            day int(1),
+            open_hour TIME,
+            close_hour TIME,
+            created_at TIMESTAMP
+            )";
+
+    if ($conn->query($sql) === TRUE) {
+        echo "OpenHours Table created successfully\n";
     } else {
         echo "Error creating table: " . $conn->error;
     }

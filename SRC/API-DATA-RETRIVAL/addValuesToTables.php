@@ -123,4 +123,16 @@ function addEntryToDishTable($conn,$DishArr,$titleToIndex)
     $sql->close();
 }
 
+//returns true if venue already in tabke and false otherwise
+function venueAlreadyInTable($conn,$venueId)
+{
+    $result = $conn->query("SELECT * FROM Restaurant where id = $venueId LIMIT 1");
+
+    if ($result->num_rows > 0) {
+        return TRUE;
+    } else {
+        return FALSE;
+    }
+}
+
 ?>
