@@ -420,29 +420,23 @@ class FoursquareApi {
 			return false;
 		}
 	}
-			
+
+	
 	function isValidGoogleAPIresponse($response){
-		file_put_contents("test.json",$response);
-		
 		
 		if($this->isValidJson($response)){
 			// good json
 			$json = json_decode($response,true);
 			if (!isset($json['status']) || $json['status'] !== "OK"){
 				// bad response 
-				echo "not OK<br>";
 				return false;
 			}else{
 				// good response
-				echo "good google<br>";
 				return true;
 			}
 		}else{
 			// bad json
-			echo "bad json<br>";
 			return false;
 		}
 	}
-			
-	
 }

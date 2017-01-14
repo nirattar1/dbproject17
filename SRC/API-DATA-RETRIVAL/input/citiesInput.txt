@@ -1,2 +1,15 @@
+New York
+Los Angeles
+Chicago
+Washington DC
+Seattle
+Philadelphia
+San Francisco
+Miami
+Denver
 Houston
 Las Vegas
+Boston
+Detroit
+Phoenix
+San Diego

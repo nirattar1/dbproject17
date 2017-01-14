@@ -51,22 +51,20 @@ $city2idArr = getCity2idArr($citiesInputFile);
 print_r($city2idArr);
 
 foreach($city2idArr as $cityName=>$cityId){
-	$splitNum = 30;
+	$splitNum = 20;
 	$categoryId = "4d4b7105d754a06374d81259";
+	$requestData = 0;
+	
+	if(in_array($cityName,array('Boston','Detroit','Phoenix','San Diego')))
+		$requestData = 1;
 	addNewCity($foursquare,$googleApiKey,$cityName,$cityId,
-		$jsonsDir,$venuesDir,$splitNum,$categoryId,$loadToDB);
+		$jsonsDir,$venuesDir,$splitNum,$categoryId,$loadToDB,$requestData);
 }
 
 
 function addNewCity($foursquare,$googleApiKey,$cityName,$cityId,
-<<<<<<< HEAD
-		$jsonsDir,$venuesDir,$splitNum,$categotyId,$loadToDB)	
-{
-
-=======
-		$jsonsDir,$venuesDir,$splitNum,$categotyId, $loadToDB)		
-{
->>>>>>> 53b00e46c4ac129f2310cb5a99ad23897a39c507
+		$jsonsDir,$venuesDir,$splitNum,$categotyId,$loadToDB,$requestData){
+				
 	$boundingBox = $foursquare->getBoundingBox($cityName,$googleApiKey);
 	if($boundingBox==null){
 		echo "<br>TODO: bad boundingBox for $cityName<br>";
@@ -88,10 +86,12 @@ function addNewCity($foursquare,$googleApiKey,$cityName,$cityId,
 	{
 		$conn = createConnection();
 		addEntryToCityTable($conn, $cityArr, $titleToIndex);
-		return 0; // just in loading
-	}	
+	}
+	if(!$requestData)
+		return 0; // when already have the data
 	
-	//assume city already exists in db. move on to API.
+	//assume city already exists in db
+	//now do the api requsts
 	
 	$requestType = "venues/search";
 	$cityNameDir = str_replace(' ','_',$cityName).'/';
@@ -102,8 +102,6 @@ function addNewCity($foursquare,$googleApiKey,$cityName,$cityId,
 		if($cityNameDir=='San_Francisco')
 			echo "create new directory for $cityNameDir";
 	}
-	if($cityNameDir=='San_Francisco')
-		exit;
 	
 	requestCityFunc($foursquare,$cityName,$boundingBox,$requestType,$categotyId,$outputDir,$splitNum);	
 }

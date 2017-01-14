@@ -24,10 +24,12 @@ $city2idArr = getCity2idArr($citiesInputFile);
 
 if($loadToDB){
 	$conn = createConnection();
-	
+	//TODO
+	//$conn->query("DELETE FROM Restaurant");
+	//exit;
 }else{	
 	$space = "\r\n";			
-	$writeFileName = $csvDir.$venuesDir."12_01_17.csv";
+	$writeFileName = $csvDir.$venuesDir."14_01_17.csv";
 	$write = fopen($writeFileName,'w');
 	fwrite($write,implode(',',array_keys($titleToIndex)).$space);
 	
@@ -42,17 +44,22 @@ foreach(scandir($jsonsDir.$venuesDir) as $cityName){
 		continue;
 	
 	$cityId = $city2idArr[str_replace('_',' ',$cityName)];
+	// checking that the city exists in th DB. if not - continue to next city
+	if($loadToDB && !cityAlreadyInTable($conn,$cityId))
+		continue;
 	
 	foreach(scandir($jsonsDir.$venuesDir.$cityName) as $fileName){
 		
 		if(strpos($fileName,'.json')===false)
 			continue;
-
-		if(($cnt2skip++)%4) // TODO: delete this
+		
+		//TODO: delete this
+		$sparseConst = (in_array($cityName,array('Boston','Detroit','Phoenix','San_Diego'))? 2 :4);
+		if(($cnt2skip++)%$sparseConst) // TODO: delete this // insersts every 4th (or every 2nd in the newer cities)
 			continue;
 
 		$full_filename = $jsonsDir.$venuesDir.$cityName.'/'.$fileName;
-		echo $full_filename;
+		//echo $full_filename;
 		$jsonStr = file_get_contents($full_filename);
 
 		$jsonArr = json_decode($jsonStr,true);
@@ -61,15 +68,14 @@ foreach(scandir($jsonsDir.$venuesDir) as $cityName){
 			$VenueArr = venueJson2indexedArr($venueDetails,$titleToIndex,$loadToDB);// $loadToDB will control the "" protection
 			$VenueArr[$titleToIndex['cityId']] = $cityId;
 			
-			if($writeVenuesWithMenuMode && $VenueArr[$titleToIndex['hasMenu']]===1)
-				fwrite($writeVenuesWithMenu,$cityName.','.$VenueArr[$titleToIndex['id']].$space);
 			
 			if($loadToDB){
 				addEntryToRestaurantTable($conn,$VenueArr,$titleToIndex);
-				
 			}else{
 				// write
 				fwrite($write,implode(',',array_values($VenueArr)).$space);
+				if($writeVenuesWithMenuMode && $VenueArr[$titleToIndex['hasMenu']]===1)
+					fwrite($writeVenuesWithMenu,$cityName.','.$VenueArr[$titleToIndex['id']].$space);
 			}
 		}
 	}	

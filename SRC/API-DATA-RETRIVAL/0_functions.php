@@ -129,9 +129,11 @@ function getFieldOrNull($arr,$key,$isStr,$loadToDB){
 		
 	// found:
 	$val = $arr[$key];
-	if($isStr && !$loadToDB)	
-		$val = '"'.fixString($val).'"';
-	
+	if($isStr){
+		$val = fixString($val);
+		if(!$loadToDB)
+			$val = '"'.$val.'"';
+	}
 	return $val;
 }
 
@@ -187,9 +189,8 @@ function dishJson2indexedArr($dishDetails,$titleToIndex,$loadToDB){
 }
 
 function fixString($str){
-	$str = str_replace(array('	  ','"'),'',$str);
-	// TODO: not sure about it
-	//$str = str_replace(',','',$str);
+	$str = str_replace(array('	  ','"','*','^'),'',$str);
+	$str = preg_replace('/[^A-Za-z0-9\- ]/', '', $str);
 	return $str;
 }
 

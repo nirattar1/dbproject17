@@ -1,17 +1,21 @@
 <?php
 
 function createConnection(){
-	// $serverName = "mysqlsrv.cs.tau.ac.il";
-	// $userName = "DbMysql07";
-	// $password = "DbMysql07";
-	// $dbName = "DbMysql07";
-	$serverName = "localhost";
+	$serverName = "mysqlsrv.cs.tau.ac.il";
+	$userName = "DbMysql07";
+	$password = "DbMysql07";
+	$dbName = "DbMysql07";
+	
+/* 	$serverName = "localhost";
 	$userName = "root";
 	$password = "";
-	$dbName = "dbmysql07_local";
+	$dbName = "dbmysql07_local"; */
 
 	//create connection
 	$conn = new mysqli($serverName,$userName,$password,$dbName);
+	// Change character set to utf8
+	mysqli_set_charset($conn,"utf8");
+	
 	//check connection
 	if ($conn->connect_error){
 		die("connection failed ".$conn->connect_error);
@@ -92,7 +96,7 @@ function addEntryToRestaurantTable($conn,$VenueArr,$titleToIndex)
 
     $sql = $conn->prepare("INSERT INTO Restaurant (id,name,city_id,url,phone,address,categories,checkinsCount,usersCount,tipCount) VALUES (?,?,?,?,?,?,?,?,?,?)");
     $sql->bind_param("ssissssiii",$id,$name,$cityId,$url,$phone,$address,$categories,$checkinsCount,$usersCount,$tipCount);
-
+	
     if ($sql->execute() === TRUE) {
         echo "Added restaurant ".$name." successfully";
     } else {
@@ -123,10 +127,10 @@ function addEntryToDishTable($conn,$DishArr,$titleToIndex)
     $sql->close();
 }
 
-//returns true if venue already in tabke and false otherwise
-function venueAlreadyInTable($conn,$venueId)
+//returns true if city already in table and false otherwise
+function cityAlreadyInTable($conn,$cityId)
 {
-    $result = $conn->query("SELECT * FROM Restaurant where id = $venueId LIMIT 1");
+    $result = $conn->query("SELECT * FROM City where id = $cityId LIMIT 1");
 
     if ($result->num_rows > 0) {
         return TRUE;
@@ -134,5 +138,19 @@ function venueAlreadyInTable($conn,$venueId)
         return FALSE;
     }
 }
+
+//returns true if venue already in table and false otherwise
+function venueAlreadyInTable($conn,$venueId)
+{
+	$result = $conn->query("SELECT * FROM Restaurant where id = '".$venueId."' LIMIT 1");
+
+    if ($result->num_rows > 0) {
+        return TRUE;
+    } else {
+        return FALSE;
+    }
+}
+
+
 
 ?>
