@@ -32,22 +32,23 @@ function closeConnection($conn){
 //fillCategoryTable($conn);
 function fillCategoryTable($conn)
 {
-    $sql = $conn->prepare("INSERT INTO Category (id,name,suggested_countries) VALUES (?,?,?)");
-    $sql->bind_param("sss", $id, $name, $suggested);
+    $sql = $conn->prepare("INSERT INTO Category (id,name) VALUES (?,?,?)");
+    $sql->bind_param("sss", $id, $name);
 
     $file = new SplFileObject("food_categories.txt");
 
     // Loop until we reach the end of the file.
     while (!$file->eof()) {
         // handle each category.
-        $name = $file->fgets();
-        $id = $file->fgets();
-        $suggested = $file->fgets();
+        $name = trim($file->fgets());
+        $id = trim($file->fgets());
+		//TODO: delete
+/*         $suggested = $file->fgets();
         if (substr($suggested, 0, 9) === "Suggested") {
             $suggested = trim($suggested, "Suggested Countries: ");
             $file->fgets();
         }
-
+ */
         if ($sql->execute() === TRUE) {
             echo "Added category " . $name . " successfully\n";
         } else {

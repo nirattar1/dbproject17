@@ -1,27 +1,22 @@
 <?php
-// $serverName = "mysqlsrv.cs.tau.ac.il";
-// $userName = "DbMysql07";
-// $password = "DbMysql07";
-// $dbName = "DbMysql07";
-$serverName = "localhost";
-$userName = "root";
-$password = "";
-$dbName = "dbmysql07_local";
+set_time_limit(0);
+ini_set('memory_limit', '2024M');
+require_once("addValuesToTables.php");
 
-//create connection
-$conn = new mysqli($serverName,$userName,$password,$dbName);
-//check connection
-if ($conn->connect_error){
-    die("connection failed ".$conn->connect_error);
-}
+$conn = createConnection();
+
+
+createCategoryTable($conn);
+closeConnection($conn);
+exit;
 
 createCityTable($conn);
 createCategoryTable($conn);
 createRestaurantTable($conn);
 createDishTable($conn);
 
-$conn->close();
-
+closeConnection($conn);
+exit;
 
 function createCityTable($conn)
 {
@@ -45,10 +40,9 @@ function createCityTable($conn)
 
 function createCategoryTable($conn)
 {
-    $sql = "CREATE TABLE IF NOT EXISTS Category (
+     $sql = "CREATE TABLE IF NOT EXISTS Category (
             id VARCHAR(32) PRIMARY KEY,
             name VARCHAR(32) NOT NULL,
-            suggested_countries VARCHAR(50),
             created_at TIMESTAMP
             )";
 
