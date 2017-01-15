@@ -215,8 +215,6 @@ class FoursquareApi {
 		$geoapi = "https://maps.googleapis.com/maps/api/geocode/json";
 		$params = array("address"=>$addr,"key"=>$key);
 		$response = $this->Request($geoapi,$params,0);
-		//TODO
-		file_put_contents("bb_".$addr.".json",$response);
 
 		if($response==null)
 			return null;

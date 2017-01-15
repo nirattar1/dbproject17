@@ -48,7 +48,6 @@ $foursquare = new FoursquareApi($client_key,$client_secret,$requestsOutputFile,$
 //city2idArr is a mapping between city name to its id.
 $city2idArr = getCity2idArr($citiesInputFile);
 
-print_r($city2idArr);
 
 foreach($city2idArr as $cityName=>$cityId){
 	$splitNum = 20;
@@ -67,7 +66,11 @@ function addNewCity($foursquare,$googleApiKey,$cityName,$cityId,
 				
 	$boundingBox = $foursquare->getBoundingBox($cityName,$googleApiKey);
 	if($boundingBox==null){
-		echo "<br>TODO: bad boundingBox for $cityName<br>";
+		// TODO: something went wrong message
+		return 0;
+	}
+	if(!inUSA($boundingBox)){
+		// TODO: seems that this city is not in usa. try different city
 		return 0;
 	}
 	
@@ -109,38 +112,19 @@ function addNewCity($foursquare,$googleApiKey,$cityName,$cityId,
 exit;
 
 
-function doWeNeedThis(){
-	$venues = json_decode($response);
+// -- add new city part --
 
-	foreach($venues->response->venues as $venue){
-		if(isset($venue->categories['0']))
-		{
-			echo '<image class="icon" src="'.$venue->categories['0']->icon->prefix.'88.png"/>';
-		}
-		else
-			echo '<image class="icon" src="https://foursquare.com/img/categories/building/default_88.png"/>';
-		echo '<a href="https://foursquare.com/v/'.$venue->id.'" target="_blank"/><b>';
-		echo $venue->name;
-		echo "</b></a><br/>";
-		
-		
-			
-		if(isset($venue->categories['0']))
-		{
-			if(property_exists($venue->categories['0'],"name"))
-			{
-				echo ' <i> '.$venue->categories['0']->name.'</i><br/>';
-			}
-		}
-		
-		if(property_exists($venue->hereNow,"count"))
-		{
-				echo ''.$venue->hereNow->count ." people currently here <br/> ";
-		}
-
-		echo '<b><i>History</i></b> :'.$venue->stats->usersCount." visitors , ".$venue->stats->checkinsCount." visits ";
-	}
+function inUSA($boundingBox){
+	// check that the boundingBox is inside of USA's boundingBox
+	$a = $boundingBox['north_lat'] < 49.38;
+	$b = $boundingBox['south_lat'] > 25.82;
+	$c = $boundingBox['east_lon'] < -66.94;
+	$d = $boundingBox['west_lon'] > -124.39;
+	
+	return ($a && $b && $c && $d);
 }
+
+
 
 
 ?>
