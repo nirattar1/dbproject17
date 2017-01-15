@@ -5,10 +5,12 @@ require_once("addValuesToTables.php");
 
 $conn = createConnection();
 
-
+//fix category, this is tmp
 createCategoryTable($conn);
+fillCategoryTable($conn);
 closeConnection($conn);
 exit;
+//tmp ends here
 
 createCityTable($conn);
 createCategoryTable($conn);
