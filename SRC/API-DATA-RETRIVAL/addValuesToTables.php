@@ -30,31 +30,17 @@ function closeConnection($conn){
 }
 
 //fillCategoryTable($conn);
-function fillCategoryTable($conn)
+function addEntryToCategoryTable($conn,$id,$name)
 {
     $sql = $conn->prepare("INSERT INTO Category (id,name) VALUES (?,?)");
     $sql->bind_param("ss", $id, $name);
-
-    $file = new SplFileObject("input/food_categories.txt");
-
-    // Loop until we reach the end of the file.
-    while (!$file->eof()) {
-        // handle each category.
-        $name = trim($file->fgets());
-        $id = trim($file->fgets());
-		//TODO: delete
-/*         $suggested = $file->fgets();
-        if (substr($suggested, 0, 9) === "Suggested") {
-            $suggested = trim($suggested, "Suggested Countries: ");
-            $file->fgets();
-        }
- */
-        if ($sql->execute() === TRUE) {
-            echo "Added category " . $name . " successfully\n";
-        } else {
-            echo "Error creating category " . $name . ": " . $sql->error;
-        }
-    }
+	
+	if ($sql->execute() === TRUE) {
+		echo "Added category " . $name . " successfully\n";
+	} else {
+		echo "Error creating category " . $name . ": " . $sql->error;
+	}
+    
 
     // Unset the file to call __destruct(), closing the file handle.
     $file = null;
@@ -126,6 +112,19 @@ function addEntryToDishTable($conn,$DishArr,$titleToIndex)
     }
 
     $sql->close();
+}
+
+function addEntryToCategoryMainTable($conn,$sonId,$mainId){
+    $sql = $conn->prepare("INSERT INTO CategoryMain (category_id,main_id) VALUES (?,?)");
+	$sql->bind_param("ss",$sonId,$mainId);
+
+    if ($sql->execute() === TRUE) {
+        echo "Added sonId ".$sonId." successfully";
+    } else {
+        echo "ERROR while adding dish ".$sonId. $sql->error;
+    }
+
+    $sql->close();	
 }
 
 //returns true if city already in table and false otherwise

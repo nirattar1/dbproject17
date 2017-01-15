@@ -5,17 +5,11 @@ require_once("addValuesToTables.php");
 
 $conn = createConnection();
 
-//fix category, this is tmp
-createCategoryTable($conn);
-fillCategoryTable($conn);
-closeConnection($conn);
-exit;
-//tmp ends here
-
 createCityTable($conn);
 createCategoryTable($conn);
 createRestaurantTable($conn);
 createDishTable($conn);
+createCategoryMainTable($conn);
 
 closeConnection($conn);
 exit;
@@ -42,7 +36,15 @@ function createCityTable($conn)
 
 function createCategoryTable($conn)
 {
-     $sql = "CREATE TABLE IF NOT EXISTS Category (
+/* 	$sql = "DROP TABLE Category";
+
+    if ($conn->query($sql) === TRUE) {
+        echo "Category Table created successfully\n";
+    } else {
+        echo "Error creating table: " . $conn->error;
+    } */
+    
+	$sql = "CREATE TABLE IF NOT EXISTS Category (
             id VARCHAR(32) PRIMARY KEY,
             name VARCHAR(32) NOT NULL,
             created_at TIMESTAMP
@@ -114,6 +116,21 @@ function createOpenHoursTable($conn)
 
     if ($conn->query($sql) === TRUE) {
         echo "OpenHours Table created successfully\n";
+    } else {
+        echo "Error creating table: " . $conn->error;
+    }
+}
+
+function createCategoryMainTable($conn)
+{
+    $sql = "CREATE TABLE IF NOT EXISTS CategoryMain (
+            category_id VARCHAR(32) PRIMARY KEY,
+            main_id VARCHAR(32),
+            created_at TIMESTAMP
+            )";
+
+    if ($conn->query($sql) === TRUE) {
+        echo "CategoryMain Table created successfully\n";
     } else {
         echo "Error creating table: " . $conn->error;
     }
