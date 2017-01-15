@@ -32,7 +32,7 @@ function closeConnection($conn){
 //fillCategoryTable($conn);
 function fillCategoryTable($conn)
 {
-    $sql = $conn->prepare("INSERT INTO Category (id,name) VALUES (?,?,?)");
+    $sql = $conn->prepare("INSERT INTO Category (id,name) VALUES (?,?)");
     $sql->bind_param("sss", $id, $name);
 
     $file = new SplFileObject("food_categories.txt");
