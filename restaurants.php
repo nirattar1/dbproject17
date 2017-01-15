@@ -14,10 +14,15 @@ p {
 </style>	
 	
 <body>
-<p>Choose Category</p>
+<p>Your Best Match:</p>
 
 
 <?php
+$cnt=$_GET["page"];
+$badget= $_GET["badget"];
+$category= $_GET["category"];
+$city = $_GET["city"];
+
 $currentRows=0;
 $cnt=0;
 $conn = connect(); 
@@ -64,7 +69,7 @@ function createButtons($conn){
 			
 			
 			$tmpUrl = 'http://www.cs.tau.ac.il/~amitchen/badget.php?category=';
-			$url = "'".str_replace(array('"',' ','Restaurant') ,array('','_','') ,$tmpUrl.trim($row["name"]) )."'";			
+			$url = "'".str_replace(array('"',' ','_Restaurant') ,array('','_','') ,$tmpUrl.trim($row["name"]) )."'";			
 			
 			echo '<input style="width: 300px; 
 							padding: 30px; 
@@ -85,6 +90,7 @@ function createButtons($conn){
 							value= "'. str_replace(' Restaurant','',trim($row["name"])).'"
 							onclick="window.location.href='.$url.'" />';
 							
+			echo '</br>';
 							 
 			}
 	}

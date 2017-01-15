@@ -18,7 +18,7 @@ p {
 
 </head>
 <body>
-<p>choose your favorite hours.. </p>
+<p>choose your favorite dish.. </p>
 
 <?php 
 $category= $_GET["category"];

@@ -21,6 +21,7 @@ p {
 $currentRows=0;
 $cnt=$_GET["page"];
 $badget= $_GET["badget"];
+$category= $_GET["category"];
 $conn = connect(); 
 
 function connect(){
@@ -66,9 +67,9 @@ function createButtons($conn){
 		 
 	 
 
-			//$row = array("name"=>"blabka");
+			$tmpUrl = 'http://www.cs.tau.ac.il/~amitchen/restaurants.php?category='.$category.'&badget='.$badet.'&city=';
+			$url = "'".str_replace(array('"',' ',' Restaurant') ,array('','_','') ,$tmpUrl.trim($row["name"]) )."'";	
 						
-			$tmpUrl = '"http://www.hyperlinkcode.com/button-links.php"';
 			echo '<input style="width: 300px; 
 							padding: 30px; 
 							margin: 10px;
@@ -85,8 +86,8 @@ function createButtons($conn){
 							font-size: 150%;" 
 							type="button" 
 							id= "'.$i.'"
-							value= "'. str_replace(' Restaurant','',$row["name"]).'"
-							onclick="window.location.href='.$tmpUrl.'" />';
+							value= "'. str_replace(' Restaurant','',trim($row["name"])).'"
+							onclick="window.location.href='.$url.'" />';
 							
 							 
 			}
@@ -148,17 +149,37 @@ createButtons($conn);
 				type="button" 
 				value= "more cities"
 				align="center"
-				onclick="window.location.href='http://www.cs.tau.ac.il/~amitchen/moreCities.php?badget=<?php echo $badget ?>&page=<?php echo $cnt ?>'" />					
+				onclick="window.location.href='http://www.cs.tau.ac.il/~amitchen/moreCities.php?badget=<?php echo $badget ?>&page=<?php echo $cnt ?>'" />	
+				
+									
 
 
 <?php
 
 }
-
-
 ?> 
 
-
+				<input style="text-align: center
+				width: 170px; 
+				padding: 30px; 
+				margin: auto;
+				cursor: pointer; 
+				position: center;
+				box-shadow: 6px 6px 5px; #999; 
+				-webkit-box-shadow: 6px 6px 5px #999; 
+				-moz-box-shadow: 6px 6px 5px #999; 
+				font-weight: bold; 
+				background: #8fbc8f; 
+				color: #000; 
+				border-radius: 
+				10px; border: 1px solid #999; 
+				font-size: 150%;" 
+				type="button" 
+				value= "the city is not in the list.."
+				align="center"
+				onclick="window.location.href='http://www.cs.tau.ac.il/~amitchen/newCity.php?badget=<?php echo $badget ?>&page=<?php echo $cnt ?>'" />	
+				
+				
 
 <?php $conn->close(); ?>
 </body>

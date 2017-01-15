@@ -19,6 +19,7 @@ p {
 
 <?php
 $badget= $_GET["badget"];
+$category= $_GET["category"];
 $currentRows=0;
 $cnt=0;
 $conn = connect(); 
@@ -47,6 +48,8 @@ function connect(){
 function createButtons($conn){	
 	global $cnt;
 	global $currentRows;
+	global $category;
+	global $badget;
 	$items=$cnt*12;
 	$sql = "SELECT name FROM City LIMIT 12 OFFSET $items";
 
@@ -66,9 +69,11 @@ function createButtons($conn){
 		 
 	 
 
-			//$row = array("name"=>"blabka");
+			$tmpUrl = 'http://www.cs.tau.ac.il/~amitchen/restaurants.php?category='.$category.'&badget='.$badget.'&city=';
+			$url = "'".str_replace(array('"',' ',' Restaurant') ,array('','_','') ,$tmpUrl.trim($row["name"]) )."'";			
+			
 						
-			$tmpUrl = '"http://www.hyperlinkcode.com/button-links.php"';
+			
 			echo '<input style="width: 300px; 
 							padding: 30px; 
 							margin: 10px;
@@ -85,8 +90,9 @@ function createButtons($conn){
 							font-size: 150%;" 
 							type="button" 
 							id= "'.$i.'"
-							value= "'. str_replace(' Restaurant','',$row["name"]).'"
-							onclick="window.location.href='.$tmpUrl.'" />';
+							value= "'. str_replace(' Restaurant','',trim($row["name"])).'"
+							onclick="window.location.href='.$url.'" />';
+							
 							
 							 
 			}

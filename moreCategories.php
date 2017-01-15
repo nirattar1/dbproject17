@@ -68,6 +68,8 @@ function createButtons($conn){
 			//$row = array("name"=>"blabka");
 						
 			$tmpUrl = 'http://www.cs.tau.ac.il/~amitchen/badget.php?category=';
+			$url = "'".str_replace(array('"',' ') ,array('','_') ,$tmpUrl.trim($row["name"]) )."'";
+			//$url = $tmpUrl.$row["name"];
 			
 			echo '<input style="width: 300px; 
 							padding: 30px; 
@@ -85,14 +87,14 @@ function createButtons($conn){
 							font-size: 150%;" 
 							type="button" 
 							id= "'.$i.'"
-							value= "'. str_replace(' Restaurant','',$row["name"]).'"
-							onclick="window.location.href='.$tmpUrl.$row["name"].'" />';
-							
+							value= "'. str_replace(' Restaurant','',trim($row["name"])).'"
+							onclick="window.location.href='.$url.'" />';
 							 
 			}
 	}
 	
 }
+
 
 createButtons($conn);
 ?>

@@ -40,17 +40,21 @@ function connect(){
 
 
 						
-					
+			
+			
+	
 function createButtons($conn){	
 	global $cnt;
 	global $currentRows;
 	$items=$cnt*12;
 	$sql = "SELECT name FROM Category LIMIT 12 OFFSET $items";
+
 	$result = $conn->query($sql);
 	$numRows= $result->num_rows;
 	
 	$currentRows= $cnt*12+$numRows;
 	$cnt++;
+
 	if ($numRows > 0) {
     	 	// output data of each row
     	 	
@@ -60,12 +64,10 @@ function createButtons($conn){
 			$row = $result->fetch_assoc();
 		 
 	 
+
 			//$row = array("name"=>"blabka");
-			
-			
-			$tmpUrl = 'http://www.cs.tau.ac.il/~amitchen/badget.php?category=';
-			$url = "'".str_replace(array('"',' ','Restaurant') ,array('','_','') ,$tmpUrl.trim($row["name"]) )."'";			
-			
+						
+			$tmpUrl = '"http://www.hyperlinkcode.com/button-links.php"';
 			echo '<input style="width: 300px; 
 							padding: 30px; 
 							margin: 10px;
@@ -82,15 +84,15 @@ function createButtons($conn){
 							font-size: 150%;" 
 							type="button" 
 							id= "'.$i.'"
-							value= "'. str_replace(' Restaurant','',trim($row["name"])).'"
-							onclick="window.location.href='.$url.'" />';
+							value= "'. str_replace(' Restaurant','',$row["name"]).'"
+							onclick="window.location.href='.$tmpUrl.'" />';
 							
 							 
 			}
 	}
 	
 }
-		
+
 createButtons($conn);
 ?>
 
@@ -122,8 +124,9 @@ createButtons($conn);
 	$row = $result2->fetch_assoc();
 	$totalRows=$row['total'];
 
+	echo $totalRows;
 	
-	if ($currentRows<$totalRows) {
+	if ($currentRows<354) {
 		
 ?>	
 	
@@ -145,7 +148,7 @@ createButtons($conn);
 				type="button" 
 				value= "more categories"
 				align="center"
-				onclick="window.location.href='http://www.cs.tau.ac.il/~amitchen/moreCategories.php?page=<?php echo $cnt ?>'" />			
+				onclick="window.location.href='http://www.cs.tau.ac.il/~amitchen/moreCategories.php?cnt=<?php echo $cnt ?>'" />			
 
 
 <?php
