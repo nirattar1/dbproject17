@@ -33,9 +33,9 @@ function closeConnection($conn){
 function fillCategoryTable($conn)
 {
     $sql = $conn->prepare("INSERT INTO Category (id,name) VALUES (?,?)");
-    $sql->bind_param("sss", $id, $name);
+    $sql->bind_param("ss", $id, $name);
 
-    $file = new SplFileObject("food_categories.txt");
+    $file = new SplFileObject("input/food_categories.txt");
 
     // Loop until we reach the end of the file.
     while (!$file->eof()) {
