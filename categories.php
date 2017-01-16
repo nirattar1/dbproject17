@@ -21,6 +21,7 @@ p {
 $currentRows=0;
 $cnt=0;
 $conn = connect(); 
+$story= $_GET["story"];
 
 function connect(){
 	$servername = "mysqlsrv.cs.tau.ac.il";
@@ -44,6 +45,7 @@ function connect(){
 function createButtons($conn){	
 	global $cnt;
 	global $currentRows;
+	global $story;
 	$items=$cnt*12;
 	$sql = "SELECT name FROM Category LIMIT 12 OFFSET $items";
 	$result = $conn->query($sql);
@@ -63,7 +65,7 @@ function createButtons($conn){
 			//$row = array("name"=>"blabka");
 			
 			
-			$tmpUrl = 'http://www.cs.tau.ac.il/~amitchen/badget.php?category=';
+			$tmpUrl = 'http://www.cs.tau.ac.il/~kobihazan/badget.php?story='.$story.'&category=';
 			$url = "'".str_replace(array('"',' ','Restaurant') ,array('','_','') ,$tmpUrl.trim($row["name"]) )."'";			
 			
 			echo '<input style="width: 300px; 
@@ -145,7 +147,7 @@ createButtons($conn);
 				type="button" 
 				value= "more categories"
 				align="center"
-				onclick="window.location.href='http://www.cs.tau.ac.il/~amitchen/moreCategories.php?page=<?php echo $cnt ?>'" />			
+				onclick="window.location.href='http://www.cs.tau.ac.il/~kobihazan/moreCategories.php?story=<?php echo $story ?>&page=<?php echo $cnt ?>'" />			
 
 
 <?php
