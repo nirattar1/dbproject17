@@ -65,7 +65,7 @@ function createButtons($conn){
 			//$row = array("name"=>"blabka");
 			
 			
-			$tmpUrl = 'http://www.cs.tau.ac.il/~kobihazan/badget.php?story='.$story.'&category=';
+			$tmpUrl = 'badget.php?story='.$story.'&category=';
 			$url = "'".str_replace(array('"',' ','Restaurant') ,array('','_','') ,$tmpUrl.trim($row["name"]) )."'";			
 			
 			echo '<input style="width: 300px; 
@@ -147,7 +147,7 @@ createButtons($conn);
 				type="button" 
 				value= "more categories"
 				align="center"
-				onclick="window.location.href='http://www.cs.tau.ac.il/~kobihazan/moreCategories.php?story=<?php echo $story ?>&page=<?php echo $cnt ?>'" />			
+				onclick="window.location.href='moreCategories.php?story=<?php echo $story ?>&page=<?php echo $cnt ?>'" />			
 
 
 <?php

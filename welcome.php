@@ -28,28 +28,28 @@ $story;
 function submitStory(value) 
 {
   if (value==1){
-    var link_params = "http://www.cs.tau.ac.il/~kobihazan/citys.php?story=1";
+    var link_params = "citys.php?story=1";
     window.location.href = link_params;
     
   }
   if (value==2){
-    var link_params = "http://www.cs.tau.ac.il/~kobihazan/popularty.php?story=2";
+    var link_params = "popularty.php?story=2";
     window.location.href = link_params;
   }
    if (value==3){
-     var link_params = "http://www.cs.tau.ac.il/~kobihazan/categories.php?story=3";
+     var link_params = "categories.php?story=3";
       window.location.href = link_params;
   }
    if (value==4){
-   var link_params = "http://www.cs.tau.ac.il/~kobihazan/citys.php?story=4";
+   var link_params = "citys.php?story=4";
     window.location.href = link_params;
   }
    if (value==5){
-   var link_params = "http://www.cs.tau.ac.il/~kobihazan/citys.php?story=5";
+   var link_params = "citys.php?story=5";
     window.location.href = link_params;
   }
    if (value==6){
-   var link_params = "http://www.cs.tau.ac.il/~kobihazan/???.php?story=6";
+   var link_params = "???.php?story=6";
     window.location.href = link_params;
   }
 

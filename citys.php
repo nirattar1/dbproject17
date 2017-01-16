@@ -69,19 +69,19 @@ function createButtons($conn){
 				$row = $result->fetch_assoc();
 		 
 				if ($story==1){
-					$tmpUrl = 'http://www.cs.tau.ac.il/~kobihazan/hours.php?story='.$story.'&category='.$category.'&badget='.$badget.'&city=';
+					$tmpUrl = 'hours.php?story='.$story.'&category='.$category.'&badget='.$badget.'&city=';
 					$url = "'".str_replace(array('"',' ',' Restaurant') ,array('','_','') ,$tmpUrl.trim($row["name"]) )."'";	
 				}
 				 if ($story==3){
-					$tmpUrl = 'http://www.cs.tau.ac.il/~kobihazan/restaurants.php?story='.$story.'&category='.$category.'&badget='.$badget.'&city=';
+					$tmpUrl = 'restaurants.php?story='.$story.'&category='.$category.'&badget='.$badget.'&city=';
 					$url = "'".str_replace(array('"',' ',' Restaurant') ,array('','_','') ,$tmpUrl.trim($row["name"]) )."'";
 				}
 				 if ($story==4){
-					$tmpUrl = 'http://www.cs.tau.ac.il/~kobihazan/dish.php?story='.$story.'&category='.$category.'&badget='.$badget.'&city=';
+					$tmpUrl = 'dish.php?story='.$story.'&category='.$category.'&badget='.$badget.'&city=';
 					$url = "'".str_replace(array('"',' ',' Restaurant') ,array('','_','') ,$tmpUrl.trim($row["name"]) )."'";
 				}
 				if ($story==5){
-					$tmpUrl = 'http://www.cs.tau.ac.il/~kobihazan/expensive.php?story='.$story.'&category='.$category.'&badget='.$badget.'&city=';
+					$tmpUrl = 'expensive.php?story='.$story.'&category='.$category.'&badget='.$badget.'&city=';
 					$url = "'".str_replace(array('"',' ',' Restaurant') ,array('','_','') ,$tmpUrl.trim($row["name"]) )."'";
 				}		
 			
@@ -163,7 +163,7 @@ createButtons($conn);
 				type="button" 
 				value= "more cities"
 				align="center"
-				onclick="window.location.href='http://www.cs.tau.ac.il/~kobihazan/moreCities.php?story=<?php echo $story ?>&badget=<?php echo $badget ?>&page=<?php echo $cnt ?>'" />			
+				onclick="window.location.href='moreCities.php?story=<?php echo $story ?>&badget=<?php echo $badget ?>&page=<?php echo $cnt ?>'" />			
 
 
 <?php

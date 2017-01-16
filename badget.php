@@ -45,7 +45,7 @@ $story= $_GET["story"];
 				type="button" 
 				value= "Junk (10$ to 30$)"
 				align="center"
-				onclick="window.location.href='http://www.cs.tau.ac.il/~kobihazan/citys.php?story=<?php echo $story ?>&category=<?php echo $category ?>&badget=<?php echo "junk" ?>'" />	
+				onclick="window.location.href='citys.php?story=<?php echo $story ?>&category=<?php echo $category ?>&badget=<?php echo "junk" ?>'" />	
 				
 				<input style="text-align: center 
 				width: 170px; 
@@ -65,7 +65,7 @@ $story= $_GET["story"];
 				type="button" 
 				value= "regular (30$ to 50$)"
 				align="center"
-				onclick="window.location.href='http://www.cs.tau.ac.il/~kobihazan/citys.php?story=<?php echo $story ?>&category=<?php echo $category ?>&badget=<?php echo "regular" ?>'" />	
+				onclick="window.location.href='citys.php?story=<?php echo $story ?>&category=<?php echo $category ?>&badget=<?php echo "regular" ?>'" />	
 				
 				<input style="text-align: center 
 				width: 170px; 
@@ -85,7 +85,7 @@ $story= $_GET["story"];
 				type="button" 
 				value= "fancy(50$ and higher)"
 				align="center"
-				onclick="window.location.href='http://www.cs.tau.ac.il/~kobihazan/citys.php?story=<?php echo $story ?>&category=<?php echo $category ?>&badget=<?php echo "fancy" ?>'" />	
+				onclick="window.location.href='citys.php?story=<?php echo $story ?>&category=<?php echo $category ?>&badget=<?php echo "fancy" ?>'" />	
 </br>
 </br>
 
@@ -107,7 +107,7 @@ $story= $_GET["story"];
 				type="button" 
 				value= "back"
 				align="center"
-				onclick="window.location.href='http://www.cs.tau.ac.il/~kobihazan/???'" />
+				onclick="window.location.href='???.php'" />
 				
 
 

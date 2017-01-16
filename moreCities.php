@@ -69,7 +69,7 @@ function createButtons($conn){
 		 
 	 
 
-			$tmpUrl = 'http://www.cs.tau.ac.il/~kobihazan/restaurants.php?story='.$story.'&category='.$category.'&badget='.$badet.'&city=';
+			$tmpUrl = 'restaurants.php?story='.$story.'&category='.$category.'&badget='.$badet.'&city=';
 			$url = "'".str_replace(array('"',' ',' Restaurant') ,array('','_','') ,$tmpUrl.trim($row["name"]) )."'";	
 						
 			echo '<input style="width: 300px; 
@@ -151,7 +151,7 @@ createButtons($conn);
 				type="button" 
 				value= "more cities"
 				align="center"
-				onclick="window.location.href='http://www.cs.tau.ac.il/~kobihazan/moreCities.php?story=<?php echo $story ?>&badget=<?php echo $badget ?>&page=<?php echo $cnt ?>'" />	
+				onclick="window.location.href='moreCities.php?story=<?php echo $story ?>&badget=<?php echo $badget ?>&page=<?php echo $cnt ?>'" />	
 				
 									
 
@@ -179,7 +179,7 @@ createButtons($conn);
 				type="button" 
 				value= "the city is not in the list.."
 				align="center"
-				onclick="window.location.href='http://www.cs.tau.ac.il/~kobihazan/newCity.php?story=<?php echo $story ?>&badget=<?php echo $badget ?>&page=<?php echo $cnt ?>'" />	
+				onclick="window.location.href='newCity.php?story=<?php echo $story ?>&badget=<?php echo $badget ?>&page=<?php echo $cnt ?>'" />	
 				
 				
 

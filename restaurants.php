@@ -64,7 +64,7 @@ $result = $conn->query($sql);
 	<tr>
 			<td> <?php echo $i+1; ?> </td>
 			<?php  $row = $result->fetch_assoc(); ?>
-			<td><a href="http://www.cs.tau.ac.il/~kobihazan/rest.php?rest=<?php echo $row["name"]; ?>"> <?php echo $row["name"]; ?> </a></td>
+			<td><a href="rest.php?rest=<?php echo $row["name"]; ?>"> <?php echo $row["name"]; ?> </a></td>
 			<td> <?php echo $row["checkinsCount"]; ?> </td>
 	</tr>
 		<?php 

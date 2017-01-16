@@ -95,7 +95,7 @@ $city= $_GET["city"];
 function submitHoursData() 
 {
 	//prepare link containing hours from controls
-	var link_params = "http://www.cs.tau.ac.il/~kobihazan/restaurants.php";
+	var link_params = "restaurants.php";
 	var e1 = document.getElementById("from_hour");
 	var strFromHour = e1.options[e1.selectedIndex].value;
 	var e2 = document.getElementById("to_hour");
