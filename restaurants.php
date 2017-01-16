@@ -50,7 +50,7 @@ function connect(){
 	return $conn;
 }
 $conn = connect(); 
-$sql = "select Restaurant.name, Restaurant.checkinsCount from Restaurant order by Restaurant.checkinsCount desc limit 15";
+$sql = "select Restaurant.name, Restaurant.checkinsCount , Restaurant.id from Restaurant order by Restaurant.checkinsCount desc limit 15";
 $result = $conn->query($sql);
 ?>
 
@@ -64,7 +64,7 @@ $result = $conn->query($sql);
 	<tr>
 			<td> <?php echo $i+1; ?> </td>
 			<?php  $row = $result->fetch_assoc(); ?>
-			<td><a href="rest.php?rest=<?php echo $row["name"]; ?>"> <?php echo $row["name"]; ?> </a></td>
+			<td><a href="rest.php?rest=<?php echo $row["name"]; ?>&id=<?php echo $row["id"]; ?>&city=<?php echo $city; ?>"> <?php echo $row["name"]; ?> </a></td>
 			<td> <?php echo $row["checkinsCount"]; ?> </td>
 	</tr>
 		<?php 
