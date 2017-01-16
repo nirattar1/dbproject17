@@ -22,7 +22,7 @@ $failsOutputFile = "failed_requests.txt";
 //2. (primary usage) fetch venues data using the API. (when loadToDB==0, default).
 // see below addNewCity
 
-$loadToDB = 1;
+$loadToDB = 0;
 
 // Set your client key and secret
 //$client_key = "3ZGILD2SYIGKM4NVBRIG4AWODIU4TUR02BEOCN21NDXIQNP1"; // this was the auoth_key
@@ -50,12 +50,12 @@ $city2idArr = getCity2idArr($citiesInputFile);
 
 
 foreach($city2idArr as $cityName=>$cityId){
-	$splitNum = 20;
+	$splitNum = 10;
 	$categoryId = "4d4b7105d754a06374d81259";
-	$requestData = 0;
+	$requestData = 1;
+	$venuesDir = 'venues_new/';
 	
-	if(in_array($cityName,array('Boston','Detroit','Phoenix','San Diego')))
-		$requestData = 1;
+	
 	addNewCity($foursquare,$googleApiKey,$cityName,$cityId,
 		$jsonsDir,$venuesDir,$splitNum,$categoryId,$loadToDB,$requestData);
 }

@@ -30,23 +30,27 @@ $venuesWithMenusArr = getVenuesWithMenusArr($inputDir."VenuesWithMenus.txt"); //
 foreach($venuesWithMenusArr as $cityName=>$venuesArr){
 	
 	// menus
-	$outputMenusPerCity = $jsonsDir.$menusDir.$cityName.'/';
-	if(!in_array($cityName,scandir($jsonsDir.$menusDir)))
+	$outputMenusPerCity = $jsonsDir.'menus_new/'.$cityName.'/';
+	$outputMenusPerCityOld = $jsonsDir.$menusDir.$cityName.'/';
+	//if(!in_array($cityName,scandir($jsonsDir.$menusDir)))
+	if(!in_array($cityName,scandir($jsonsDir.'menus_new/')))
 		mkdir($outputMenusPerCity);
 	
 	// hours
-	$outputHoursPerCity = $jsonsDir.$hoursDir.$cityName.'/';
-	if(!in_array($cityName,scandir($jsonsDir.$hoursDir)))
+	$outputHoursPerCity = $jsonsDir.'hours_new/'.$cityName.'/';
+	$outputHoursPerCityOld = $jsonsDir.$hoursDir.$cityName.'/';
+	//if(!in_array($cityName,scandir($jsonsDir.$hoursDir)))
+	if(!in_array($cityName,scandir($jsonsDir.'hours_new/')))
 		mkdir($outputHoursPerCity);
 	
 	foreach($venuesArr as $venueId){
 		// menus
-		$outputMenusPerCityArr = array_flip(scandir($outputMenusPerCity));
-		requestForVenue($foursquare,$venueId,"menu",$outputMenusPerCity,$outputMenusPerCityArr);
+		$outputMenusPerCityArr = array_flip(scandir($outputMenusPerCityOld));
+		requestForVenue($foursquare,$venueId,"menu",$outputMenusPerCity,$outputMenusPerCityArr,$outputMenusPerCityOld);
 		
 		// hours
-		$outputHoursPerCityArr = array_flip(scandir($outputHoursPerCity));
-		requestForVenue($foursquare,$venueId,"hours",$outputHoursPerCity,$outputHoursPerCityArr);
+		$outputHoursPerCityArr = array_flip(scandir($outputHoursPerCityOld));
+		requestForVenue($foursquare,$venueId,"hours",$outputHoursPerCity,$outputHoursPerCityArr,$outputHoursPerCityOld);
 	}
 }
 exit;
@@ -70,7 +74,7 @@ function getVenuesWithMenusArr($readFileName){
 	return $venuesWithMenusArr;
 }
 
-function requestForVenue($foursquare,$venueId,$type,$outputDirPerCity,$outputPerCityArr){
+function requestForVenue($foursquare,$venueId,$type,$outputDirPerCity,$outputPerCityArr,$outputDirPerCityOld){ //TODO: delete the last param, it's for fixig
 	//foreach($vanuesArrPerCity as $id=>$s){
 		
 	$requestType = "venues/$venueId/".$type;
@@ -80,50 +84,13 @@ function requestForVenue($foursquare,$venueId,$type,$outputDirPerCity,$outputPer
 	// request api only if not exists
 	$fileName = createFileNameByParams($nameParams);
 	
-	if(!array_key_exists($fileName,$outputPerCityArr))
+	if(!array_key_exists($fileName,$outputPerCityArr)){
 		getAndSaveJSON($foursquare,$requestType,$params,$fileName,$outputDirPerCity);
-}
-
-
-
-// to delete?
-foreach(scandir($jsonsDir.$venuesDir) as $cityName){
-	if($cityName==='.' || $cityName==='..')
-		continue;
-	
-	$vanuesArrPerCity = array();
-	foreach(scandir($jsonsDir.$venuesDir.$cityName) as $fileName){
-		
-		if(strpos($fileName,'.json')===false)
-			continue;
-	
-		$jsonStr = file_get_contents($jsonsDir.$venuesDir.$cityName.'/'.$fileName);
-		$jsonArr = json_decode($jsonStr,true);
-		// TODO: make sure that the json i valid
-		
-		//print_r($jsonArr['response']['venues']);
-		
-		echo "fileName=$fileName<br>".sizeof($jsonArr['response']['venues'])."<br>";
-		
-		foreach($jsonArr['response']['venues'] as $i=>$venueDetails){
-			//TODO: if has menu
-			$id = $venueDetails['id'];
-			$vanuesArrPerCity[$id] = 0;
-		}
+	}else{
+		copy($outputDirPerCityOld.$fileName,$outputDirPerCity.$fileName);
+		//echo "copied $fileName from $outputDirPerCityOld to $outputDirPerCity<br>";
 	}
-	
-	// menus
-	$outputMenusPerCity = $jsonsDir.$menusDir.$cityName;
-	$outputMenusPerCityArr = array_flip(scandir($outputMenusPerCity));
-	requestForCityVenues($vanuesArrPerCity,"menu",$outputMenusPerCity,$outputMenusPerCityArr);
-	
-	// hours
-	$outputHoursPerCity = $jsonsDir.$hoursDir.$cityName;
-	$outputHoursPerCityArr = array_flip(scandir($outputMenusPerCity));
-	requestForCityVenues($vanuesArrPerCity,"hours",$outputHoursPerCity,$outputHoursPerCityArr);
 }
-
-
 
 
 ?>
