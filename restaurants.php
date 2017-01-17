@@ -70,6 +70,7 @@ function connect(){
 }
 $conn = connect(); 
 if($story==3) {
+	
 $sql1 = "select name, restaurant_avg
 from (
 select restaurant_table.name as name, avg(restaurant_table.section_avg) as restaurant_avg
@@ -86,7 +87,7 @@ group by section_table.section_name
 ) as restaurant_table
 group by restaurant_table.name desc
 ) as avg_by_budget
-where 0< restaurant_avg and restaurant_avg <10
+where $from < restaurant_avg and restaurant_avg < $to
 limit 15";
 }
 
@@ -118,6 +119,7 @@ else if($story==1){
 
 
 $result = $conn->query($sql1);
+echo $result->num_rows;
 
 if ( $result->num_rows > 0 ){ 
 	

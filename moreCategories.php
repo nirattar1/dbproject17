@@ -57,7 +57,7 @@ function createButtons($conn){
 			from CategoryMain
 			group by CategoryMain.main_id
 			) as x, Category, City, Restaurant
-			where Category.id=x.y and Restaurant.categories=Category.id and City.name='$city'
+			where Category.id=x.y and Restaurant.categories=Category.id and City.name='$city' and Restaurant.city_id=City.id
 			group by Category.name
 			limit 12
 			offset $items";
