@@ -5,59 +5,45 @@ require_once("php-foursquare-master/src/FoursquareApi.php");
 require_once("0_functions.php");
 
 $inputDir = 'input/';
-$requestsOutputFile = "2_requests.txt";
-$failsOutputFile = "2_failed_requests.txt";
 
+$foursquare = createNewFoursqaure('2');
 
-// Set your client key and secret
-//$client_key = "3ZGILD2SYIGKM4NVBRIG4AWODIU4TUR02BEOCN21NDXIQNP1";
-$client_key = "PNQBKVKJSRGNN4NXJGMU2J2X1OXWLGM2W5ARZDYDAPUXEJWN";
-$client_secret = "CXUSCYJ14XAMKCNYQFLQ2LB45HCAORYHQKDENQQTGGEGJMTB";
-// Load the Foursquare API library
-
-if($client_key=="" or $client_secret=="")
-{
-	echo 'Load client key and client secret from <a href="https://developer.foursquare.com/">foursquare</a>';
-	exit;
+function searchHoursAndMenusPerCity($cityName){
+	
 }
 
-$foursquare = new FoursquareApi($client_key,$client_secret,$requestsOutputFile,$failsOutputFile);
-$location = array_key_exists("location",$_GET) ? $_GET['location'] : "Montreal, QC";
 
-
-$venuesWithMenusArr = getVenuesWithMenusArr($inputDir."VenuesWithMenus.txt"); // read the input from 11_parse_venues.php
-$logs = fopen('2_logs_tmp.txt','w');
-foreach($venuesWithMenusArr as $cityName=>$venuesArr){
-	if(in_array($cityName,array('Boston','Chicago','Denver','Detroit','Houston')))
-		continue;
-	
-	// menus
-	$outputMenusPerCity = $jsonsDir.'menus_new/'.$cityName.'/';
-	$outputMenusPerCityOld = $jsonsDir.$menusDir.$cityName.'/';
-	$outputMenusPerCityArr = array_flip(scandir($outputMenusPerCityOld));
-	//if(!in_array($cityName,scandir($jsonsDir.$menusDir)))
-	if(!in_array($cityName,scandir($jsonsDir.'menus_new/')))
-		mkdir($outputMenusPerCity);
-	
-	// hours
-	$outputHoursPerCity = $jsonsDir.'hours_new/'.$cityName.'/';
-	$outputHoursPerCityOld = $jsonsDir.$hoursDir.$cityName.'/';
-	$outputHoursPerCityArr = array_flip(scandir($outputHoursPerCityOld));
-	//if(!in_array($cityName,scandir($jsonsDir.$hoursDir)))
-	if(!in_array($cityName,scandir($jsonsDir.'hours_new/')))
-		mkdir($outputHoursPerCity);
-	
-	foreach($venuesArr as $venueId){
-		fwrite($logs,$cityName.','.$venueId."\r\n");
-		// menus
-		requestForVenue($foursquare,$venueId,"menu",$outputMenusPerCity,$outputMenusPerCityArr,$outputMenusPerCityOld);
-		
-		// hours
-		requestForVenue($foursquare,$venueId,"hours",$outputHoursPerCity,$outputHoursPerCityArr,$outputHoursPerCityOld);
-	}
+function searchHoursPerCity($conn,$cityName){
+	$cityId = getCityIdByName($conn,str_replace('_',' ',$cityName));
+	$venuesArr = getVenuesWithMenusArrFromDB($conn,$cityId);
+	searchMenusOrHoursByVenueArr($venuesArr,$foursquare,$jsonsDir,'menus/',$cityName);
 }
+
+function searchMenusPerCity($conn,$cityName){
+	// we'll do requests only for venues that hes_menu==1
+	$cityId = getCityIdByName($conn,str_replace('_',' ',$cityName));
+	$venuesArr = getVenuesWithMenusArrFromDB($conn,$cityId);
+	searchMenusOrHoursByVenueArr($venuesArr,$foursquare,$jsonsDir,'menus/',$cityName);
+}
+
+
+//$venuesWithMenusArr = getVenuesWithMenusArr($inputDir."VenuesWithMenus.txt"); // read the input from 11_parse_venues.php
+//foreach($venuesWithMenusArr as $cityName=>$venuesArr){
+//	searchMenusHoursPerCity($foursquare,$jsonsDir,$menusDir,$hoursDir,$cityName);
+//}
 exit;
 
+
+function searchMenusOrHoursByVenueArr($venuesArr,$foursquare,$jsonsDir,$menusHoursDir,$cityName){
+	$outputPerCity = $jsonsDir.$menusHoursDir.$cityName.'/';
+	$outputPerCityArr = array_flip(scandir($outputPerCity));
+	if(!in_array($cityName,scandir($jsonsDir.$menusHoursDir)))
+		mkdir($outputPerCity);
+	
+	foreach($venuesArr as $venueId){
+		requestForVenue($foursquare,$venueId,"menu",$outputPerCity,$outputPerCityArr);
+	}
+}
 
 
 function getVenuesWithMenusArr($readFileName){
@@ -77,7 +63,7 @@ function getVenuesWithMenusArr($readFileName){
 	return $venuesWithMenusArr;
 }
 
-function requestForVenue($foursquare,$venueId,$type,$outputDirPerCity,$outputPerCityArr,$outputDirPerCityOld){ //TODO: delete the last param, it's for fixig
+function requestForVenue($foursquare,$venueId,$type,$outputDirPerCity,$outputPerCityArr){
 	//foreach($vanuesArrPerCity as $id=>$s){
 		
 	$requestType = "venues/$venueId/".$type;

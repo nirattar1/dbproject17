@@ -17,7 +17,7 @@ $writeVenuesWithMenuMode = 1;
 
 $titleToIndex = array('cityId'=>0,'id'=>1,'name'=>2,'url'=>3,'hasMenu'=>4,'phone'=>5,
 				'address'=>6,'city'=>7,'state'=>8,'country'=>9,'lat'=>10,'lon'=>11,
-				'categories'=>12,'checkinsCount'=>13,'usersCount'=>14,'tipCount'=>15);
+				'category'=>12,'checkinsCount'=>13,'usersCount'=>14,'tipCount'=>15);
 
 $city2idArr = getCity2idArr($citiesInputFile);
 
@@ -42,10 +42,20 @@ foreach(scandir($jsonsDir.$venuesDir) as $cityName){
 	if($cityName==='.' || $cityName==='..')
 		continue;
 	
-	$cityId = $city2idArr[str_replace('_',' ',$cityName)];
+	
+	if($loadToDB){
+		$cityId = getCityIdByName($conn,str_replace('_',' ',$cityName));
+		if($cityId===FALSE){
+			echo "cityName $cityName wasn't found<br>";
+			continue;
+	}else{
+		$cityId = $city2idArr[str_replace('_',' ',$cityName)];
+	}
+	
+	//TODO: delete this
 	// checking that the city exists in th DB. if not - continue to next city
-	if($loadToDB && !cityAlreadyInTable($conn,$cityId))
-		continue;
+	//if($loadToDB && !cityAlreadyInTable($conn,$cityId))
+	//	continue;
 	
 	foreach(scandir($jsonsDir.$venuesDir.$cityName) as $fileName){
 		

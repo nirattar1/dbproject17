@@ -93,23 +93,23 @@ function runDishQuery ($conn, $cityId, $strDishSearchTerm,
 {
 
 	$sql = "SELECT 
-			Dish.id AS dish_id, Dish.name AS dish_name, Dish.price AS dish_price,
-			Restaurant.id AS rest_id, Restaurant.name AS rest_name, 
-			Dish.section_name AS dish_section, Dish.description AS dish_description, 
-			City.id AS city_id, City.name AS city_name
+		Dish.id AS dish_id, Dish.name AS dish_name, Dish.price AS dish_price,
+		Restaurant.id AS rest_id, Restaurant.name AS rest_name, 
+		Dish.section_name AS dish_section, Dish.description AS dish_description, 
+		City.id AS city_id, City.name AS city_name
 
-			FROM City 
-				INNER JOIN Restaurant 
-				ON (City.id=Restaurant.city_id)
-				INNER JOIN Dish 
-				ON(Dish.restaurant_id=Restaurant.id)
-				
-			WHERE Restaurant.city_id=$cityId
-			AND Dish.price IS NOT NULL
-			AND Dish.name LIKE '%$strDishSearchTerm%'
-			ORDER BY price ASC
-			LIMIT $items_per_page OFFSET $offset_items;";
-	
+		FROM City 
+			INNER JOIN Restaurant 
+			ON (City.id=Restaurant.city_id)
+			INNER JOIN Dish 
+			ON(Dish.restaurant_id=Restaurant.id)
+			
+		WHERE Restaurant.city_id=$cityId
+		AND Dish.price IS NOT NULL
+		AND MATCH (Dish.name) AGAINST('$strDishSearchTerm' IN BOOLEAN MODE)
+		ORDER BY price ASC
+		LIMIT $items_per_page OFFSET $offset_items;";
+		
 	//echo $sql ;
 	
 	//run query and return result

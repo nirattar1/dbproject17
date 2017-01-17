@@ -26,6 +26,15 @@ if(!in_array(str_replace('/','',$menusDir),scandir($csvDir)))
 	mkdir($csvDir.$menusDir);
 
 
+function createNewFoursqaure($i){
+	// Set your client key and secret
+	$client_key = "PNQBKVKJSRGNN4NXJGMU2J2X1OXWLGM2W5ARZDYDAPUXEJWN";
+	$client_secret = "CXUSCYJ14XAMKCNYQFLQ2LB45HCAORYHQKDENQQTGGEGJMTB";
+	$requestsOutputFile = $i."_requests.txt";
+	$failsOutputFile = $i."_failed_requests.txt";
+	
+	return new FoursquareApi($client_key,$client_secret,$requestsOutputFile,$failsOutputFile);
+}
 
 
 function getAndSaveJSON($foursquare,$requestType,$params,$fileName,$outputDir){
@@ -160,14 +169,9 @@ function venueJson2indexedArr($venueDetails,$titleToIndex,$loadToDB){
 		$arrToWrite[$titleToIndex['lat']] = 	getFieldOrNull($venueDetails['location'],'lat',1,$loadToDB);
 		$arrToWrite[$titleToIndex['lon']] = 	getFieldOrNull($venueDetails['location'],'lng',1,$loadToDB);
 	}
-	// categories
-	$categoriesArr = array();// in case we'll see it has more than one category
-	foreach($venueDetails['categories'] as $j=>$categoryIdArr){
-		$categoryId = $categoryIdArr['id'];
-		//$categoryName = $categoryIdArr['name'];
-		$categoriesArr[] = $categoryId;
-	}
-	$arrToWrite[$titleToIndex['categories']] = implode('+',$categoriesArr);
+	// category
+	$arrToWrite[$titleToIndex['category']] = $venueDetails['categories'][0];// we always have exactly one (checked)
+
 	// stats
 	if(array_key_exists('stats',$venueDetails)){
 		$arrToWrite[$titleToIndex['checkinsCount']] = getFieldOrNull($venueDetails['stats'],'checkinsCount',0,$loadToDB);
