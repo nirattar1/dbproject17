@@ -5,16 +5,8 @@ require_once("0_functions.php");
 require_once("addValuesToTables.php");
 
 // input
-//$delta = 0.002275; // about 250 meters
-//$delta = 0.00455;  // about 500 meters
-//$delta = 0.036117; // about 4 km - for test
-//$delta = 0.090300; // about 10 km - for test
-
-//$inputDir = 'input/';
 $inputDir = 'input/';
 $citiesInputFile = $inputDir."citiesInput.txt";
-$requestsOutputFile = "requests.txt";
-$failsOutputFile = "failed_requests.txt";
 
 
 //two uses to this script:
@@ -24,29 +16,19 @@ $failsOutputFile = "failed_requests.txt";
 
 $loadToDB = 0;
 
-// Set your client key and secret
-//$client_key = "3ZGILD2SYIGKM4NVBRIG4AWODIU4TUR02BEOCN21NDXIQNP1"; // this was the auoth_key
-$client_key = "PNQBKVKJSRGNN4NXJGMU2J2X1OXWLGM2W5ARZDYDAPUXEJWN";
-$client_secret = "CXUSCYJ14XAMKCNYQFLQ2LB45HCAORYHQKDENQQTGGEGJMTB";
-$googleApiKey = "AIzaSyDutGO-yGZstF2N3IjGOUv8kWYWi9aGGGk";
 
 // request
 
-// Load the Foursquare API library
-if($client_key=="" or $client_secret=="")
-{
-	echo 'Load client key and client secret from <a href="https://developer.foursquare.com/">foursquare</a>';
-	exit;
-}
-
-
-$foursquare = new FoursquareApi($client_key,$client_secret,$requestsOutputFile,$failsOutputFile);
-
+//$foursquare = new FoursquareApi($client_key,$client_secret,$requestsOutputFile,$failsOutputFile);
+$foursquare = createNewFoursqaure('1');
 
 // requesting all venues data
 //note: city id is determined by line in input file.
 //city2idArr is a mapping between city name to its id.
 $city2idArr = getCity2idArr($citiesInputFile);
+
+if ($loadToDB)
+	$conn = createConnection();
 
 
 foreach($city2idArr as $cityName=>$cityId){
@@ -56,14 +38,23 @@ foreach($city2idArr as $cityName=>$cityId){
 	$venuesDir = 'venues_new/';
 	
 	
-	addNewCity($foursquare,$googleApiKey,$cityName,$cityId,
-		$jsonsDir,$venuesDir,$splitNum,$categoryId,$loadToDB,$requestData);
+	addNewCity($foursquare,$cityName,//$cityId,
+		$jsonsDir,$venuesDir,$splitNum,$categoryId,$loadToDB,$requestData,$conn);
 }
 
+if ($loadToDB)
+	closeConnection($conn);
 
-function addNewCity($foursquare,$googleApiKey,$cityName,$cityId,
-		$jsonsDir,$venuesDir,$splitNum,$categotyId,$loadToDB,$requestData){
-				
+exit;
+
+// -- add new city functions --
+
+
+function addNewCity($foursquare,$cityName,//$cityId,
+		$jsonsDir,$venuesDir,$splitNum,$categotyId,$loadToDB,$requestData,$conn){
+		
+	// google API part
+	$googleApiKey = "AIzaSyDutGO-yGZstF2N3IjGOUv8kWYWi9aGGGk";
 	$boundingBox = $foursquare->getBoundingBox($cityName,$googleApiKey);
 	if($boundingBox==null){
 		// TODO: something went wrong message
@@ -76,7 +67,7 @@ function addNewCity($foursquare,$googleApiKey,$cityName,$cityId,
 	
 	$titleToIndex = array('cityId'=>0,'cityName'=>1,'north_lat'=>2,'south_lat'=>3, 'east_lon'=>4,'west_lon'=>5);
 	$cityArr = array_fill(0,sizeof($titleToIndex),'');
-	$cityArr[$titleToIndex['cityId']] = $cityId;
+	//$cityArr[$titleToIndex['cityId']] = $cityId;
 	$cityArr[$titleToIndex['cityName']] = $cityName;
 	$cityArr[$titleToIndex['north_lat']] = $boundingBox['north_lat'];
 	$cityArr[$titleToIndex['south_lat']] = $boundingBox['south_lat'];
@@ -85,9 +76,7 @@ function addNewCity($foursquare,$googleApiKey,$cityName,$cityId,
 	
 	// put city in DB: cityId,cityName,boundingBox-details	
 	//(only one time - controlled by flag $loadToDB)
-	if ($loadToDB)
-	{
-		$conn = createConnection();
+	if ($loadToDB){
 		addEntryToCityTable($conn, $cityArr, $titleToIndex);
 	}
 	if(!$requestData)
@@ -108,11 +97,7 @@ function addNewCity($foursquare,$googleApiKey,$cityName,$cityId,
 	
 	requestCityFunc($foursquare,$cityName,$boundingBox,$requestType,$categotyId,$outputDir,$splitNum);	
 }
-	
-exit;
 
-
-// -- add new city part --
 
 function inUSA($boundingBox){
 	// check that the boundingBox is inside of USA's boundingBox
