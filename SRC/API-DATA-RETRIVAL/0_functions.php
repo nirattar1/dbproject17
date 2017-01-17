@@ -13,6 +13,7 @@ if(!in_array(str_replace('/','',$csvDir),scandir('.')))
 $venuesDir = 'venues/';
 $menusDir = 'menus/';
 $hoursDir = 'hours/';
+$updatesDir = 'updates/';
 if(!in_array(str_replace('/','',$venuesDir),scandir($jsonsDir)))
 	mkdir($jsonsDir.$venuesDir);
 if(!in_array(str_replace('/','',$menusDir),scandir($jsonsDir)))

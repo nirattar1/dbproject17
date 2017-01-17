@@ -50,6 +50,8 @@
 <body>
 
 <?php
+require_once("API-DATA-RETRIVAL/0_functions.php");
+
 $rest= $_GET["rest"];
 $id= $_GET["id"];
 $city= $_GET["city"];
@@ -59,11 +61,6 @@ function connect()
     $username = "DbMysql07";
     $password = "DbMysql07";
     $dbname = "DbMysql07";
-
-    // $servername = "localhost";
-    // $username = "root";
-    // $password = "";
-    // $dbname = "dbmysql07_local";
 
     // Create connection
     $conn = new mysqli($servername, $username, $password, $dbname);
@@ -80,7 +77,9 @@ $conn = connect();
 $sql = "select * from Restaurant where id=\"$id\" limit 1";
 $result = $conn->query($sql);
 if($result->num_rows>0)
-    $row = $result->fetch_assoc()
+    $row = $result->fetch_assoc();
+
+
 ?>
 
 <div class="container">
@@ -89,26 +88,25 @@ if($result->num_rows>0)
     </header>
 
     <nav>
-        <ul>
-            <table>
-                <tr>
-                    <li><a href="#" style="background: #8fbc8f;" >update check-ins count</a></li>
-                    <li><br><?php echo $row["checkinsCount"];?></li>
-                </tr>
-            </table>
-
-        </ul>
+                    <button id="Get current CheckIns count" value=<?php echo $row["checkinsCount"];?> onclick="checkinFunction()">Get current CheckIns count</button>
+                    <p id="demo"></p>
+                    <script>
+                        function checkinFunction() {
+                            var x = document.getElementById("Get current CheckIns count").value;
+                            document.getElementById("demo").innerHTML = x;
+                        }
+                    </script>
     </nav>
 
     <nav>
-        <ul>
-            <table>
-                <tr>
-                    <li><a href="#" style="background: #8fbc8f;">update here now count</a></li>
-                    <li><br><?php echo $row["usersCount"];?></li>
-                </tr>
-            </table>
-        </ul>
+                    <button id="Get current users count" value=<?php echo $row["usersCount"];?> onclick="usersFunction()">Get the current users count</button>
+                    <p id="demo2"></p>
+                    <script>
+                        function usersFunction() {
+                            var x = document.getElementById("Get current users count").value;
+                            document.getElementById("demo2").innerHTML = x;
+                        }
+                    </script>
     </nav>
 
     <article>
