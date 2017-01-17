@@ -18,8 +18,6 @@ p {
 
 <?php
 $story= $_GET["story"];
-$badget= $_GET["badget"];
-$category= $_GET["category"];
 $currentRows=0;
 $cnt=0;
 $conn = connect(); 
@@ -46,8 +44,6 @@ function createButtons($conn){
 	
 	global $cnt;
 	global $currentRows;
-	global $category;
-	global $badget;
 	global $story;
 	$items=$cnt*12;
 	$sql = "SELECT name FROM City LIMIT 12 OFFSET $items";
@@ -69,20 +65,16 @@ function createButtons($conn){
 				$row = $result->fetch_assoc();
 		 
 				if ($story==1){
-					$tmpUrl = 'hours.php?story='.$story.'&category='.$category.'&badget='.$badget.'&city=';
-					$url = "'".str_replace(array('"',' ',' Restaurant') ,array('','_','') ,$tmpUrl.trim($row["name"]) )."'";	
+					$url = "'".'hours.php?story='.$story.'&city='.$row["name"]."'";
 				}
 				 if ($story==3){
-					$tmpUrl = 'restaurants.php?story='.$story.'&category='.$category.'&badget='.$badget.'&city=';
-					$url = "'".str_replace(array('"',' ',' Restaurant') ,array('','_','') ,$tmpUrl.trim($row["name"]) )."'";
+					 $url = "'".'categories.php?story='.$story.'&city='.$row["name"]."'";
 				}
 				 if ($story==4){
-					$tmpUrl = 'dish.php?story='.$story.'&category='.$category.'&badget='.$badget.'&city=';
-					$url = "'".str_replace(array('"',' ',' Restaurant') ,array('','_','') ,$tmpUrl.trim($row["name"]) )."'";
+					$url = "'".'dish.php?story='.$story.'&city='.$row["name"]."'";
 				}
 				if ($story==5){
-					$tmpUrl = 'expensive.php?story='.$story.'&category='.$category.'&badget='.$badget.'&city=';
-					$url = "'".str_replace(array('"',' ',' Restaurant') ,array('','_','') ,$tmpUrl.trim($row["name"]) )."'";
+					$url = "'".'expensive.php?story='.$story.'&city='.$row["name"]."'";
 				}		
 			
 			echo '<input style="width: 300px; 
@@ -102,7 +94,8 @@ function createButtons($conn){
 							type="button" 
 							id= "'.$i.'"
 							value= "'. str_replace(' Restaurant','',trim($row["name"])).'"
-							onclick="window.location.href='.$url.'" />';				
+							onclick="window.location.href='.$url.'" />';
+			
 							 
 			}
 	}
@@ -163,7 +156,7 @@ createButtons($conn);
 				type="button" 
 				value= "more cities"
 				align="center"
-				onclick="window.location.href='moreCities.php?story=<?php echo $story ?>&badget=<?php echo $badget ?>&page=<?php echo $cnt ?>'" />			
+				onclick="window.location.href='moreCities.php?story=<?php echo $story ?>&page=<?php echo $cnt ?>'" />			
 
 
 <?php

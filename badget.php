@@ -21,8 +21,9 @@ p {
 <p>What is your budget?</p>
 
 <?php 
-$category= $_GET["category"];
 $story= $_GET["story"];
+$city= $_GET["city"];
+$category= $_GET["category"];
 ?>
 
 </br>
@@ -43,9 +44,9 @@ $story= $_GET["story"];
 				10px; border: 1px solid #999; 
 				font-size: 150%;" 
 				type="button" 
-				value= "Junk (10$ to 30$)"
+				value= "up to 10$"
 				align="center"
-				onclick="window.location.href='citys.php?story=<?php echo $story ?>&category=<?php echo $category ?>&badget=<?php echo "junk" ?>'" />	
+				onclick="window.location.href='restaurants.php?story=<?php echo $story ?>&city=<?php echo $city ?>&category=<?php echo $category ?>&badget=<?php echo "1" ?>'" />	
 				
 				<input style="text-align: center 
 				width: 170px; 
@@ -63,9 +64,9 @@ $story= $_GET["story"];
 				10px; border: 1px solid #999; 
 				font-size: 150%;" 
 				type="button" 
-				value= "regular (30$ to 50$)"
+				value= "10$ to 50$"
 				align="center"
-				onclick="window.location.href='citys.php?story=<?php echo $story ?>&category=<?php echo $category ?>&badget=<?php echo "regular" ?>'" />	
+				onclick="window.location.href='restaurants.php?story=<?php echo $story ?>&city=<?php echo $city ?>&category=<?php echo $category ?>&badget=<?php echo "2" ?>'" />	
 				
 				<input style="text-align: center 
 				width: 170px; 
@@ -83,9 +84,9 @@ $story= $_GET["story"];
 				10px; border: 1px solid #999; 
 				font-size: 150%;" 
 				type="button" 
-				value= "fancy(50$ and higher)"
+				value= "more then 50$"
 				align="center"
-				onclick="window.location.href='citys.php?story=<?php echo $story ?>&category=<?php echo $category ?>&badget=<?php echo "fancy" ?>'" />	
+				onclick="window.location.href='restaurants.php?story=<?php echo $story ?>&city=<?php echo $city ?>&category=<?php echo $category ?>&badget=<?php echo "3" ?>'" />	
 </br>
 </br>
 

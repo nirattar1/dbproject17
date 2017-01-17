@@ -50,7 +50,6 @@
 <body>
 
 <?php
-require_once("API-DATA-RETRIVAL/0_functions.php");
 
 $rest= $_GET["rest"];
 $id= $_GET["id"];
