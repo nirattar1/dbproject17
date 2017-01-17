@@ -14,6 +14,7 @@ p {
 </style>	
 
 <?php 
+$story= $_GET["story"];
 $city_name= $_POST['txt_city'];
 $pattern =  '/[A-Za-z]+/';
 if(isset($_POST['btn_go']))
