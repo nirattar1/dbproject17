@@ -58,6 +58,7 @@ $result = $conn->query($sql);
 	<tr>
 		<td>Popolarity Number </td>
 		<td>Restaurant Name</td>
+		<td>Checkins Count</td>
 	</tr>
 	
 	<?php for($i=0; $i< $result->num_rows ; $i++){?>
