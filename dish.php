@@ -9,24 +9,34 @@ p {
     font-family: "Comic Sans MS", cursive, sans-serif;
 	text-align: center;
 	font-size: 250%;
-	
+}
+h1 {
+    font-family: "Comic Sans MS", cursive, sans-serif;
+	text-align: center;
+    display: inline-block;
+	font-size: 100%;
+	position: center;
 }
 input {
 	text-align: center 
-				width: 170px; 
-				padding: 30px; 
-				margin: auto;
-				cursor: pointer; 
-				position: center;
-				box-shadow: 6px 6px 5px; #999; 
-				-webkit-box-shadow: 6px 6px 5px #999; 
-				-moz-box-shadow: 6px 6px 5px #999; 
-				font-weight: bold; 
-				background: #8fbc8f; 
-				color: #000; 
-				border-radius: 
-				10px; border: 1px solid #999; 
-				font-size: 150%;
+	width: 170px; 
+	padding: 10px; 
+	cursor: pointer; 
+    display: inline-block;
+	position: center;
+	box-shadow: 6px 6px 5px; #999; 
+	-webkit-box-shadow: 6px 6px 5px #999; 
+	-moz-box-shadow: 6px 6px 5px #999; 
+	font-weight: bold; 
+	background: #8fbc8f; 
+	color: #000; 
+	border-radius: 10px; border: 1px solid #999; 
+	font-family: "Comic Sans MS", cursive, sans-serif;
+	font-size: 100%;	
+}
+.container{
+    margin-left:30%; 
+    margin-right:15%;
 }
 table {
 	border-spacing: 0.5rem;
@@ -50,7 +60,7 @@ tr:nth-child(6n+5) { background: hsl(200, 99%, 50%); }
 
 </head>
 <body>
-<p>choose your favorite dish.. </p>
+<p>choose your favorite dish...</p>
 
 <?php 
 function connect()
@@ -130,7 +140,9 @@ function getCityIdByName ($conn, $cityName)
 //read input parameters.
 if (!empty($_GET["city"]))
 {
+	//get input from querystring, normalize it.
 	$city_name = $_GET["city"];
+	$city_name = str_replace('_',' ',$city_name);
 }
 else
 {
@@ -170,9 +182,14 @@ $numRows= $result->num_rows;
 <form action="dish.php" method="GET">
 
 <input type="hidden" name="city" value="<?php echo $city_name?>">
-<input type="text" name="dish_name_search" id="dish_name_search">
-<input type="submit" text="search">
+
+<div class="container">
+	<h1>Filter name:</h1>
+	<input type="text" name="dish_name_search" id="dish_name_search">
+	<input type="submit" text="search">
+</div>
 </form>
+
 
 </br>
 </br>
@@ -188,12 +205,18 @@ $numRows= $result->num_rows;
 <?php 
 
 	//create table based on rows.
-	while ($row = $result->fetch_assoc()) 
-	{
+	while ($row = $result->fetch_assoc()) //iterate on all restaurants returned
+	{		
+		//prepare link to restaurant
+		$rest_name = $row['rest_name'];
+		$rest_id = $row['rest_id'];
+		$link_rest_page = "rest.php?rest=$rest_name&id=$rest_id&city=$city_name";
+		
+		//output row
 		echo "<tr>";
 		echo "	<td>" . $row['dish_name'] . "</td>";
 		echo "	<td>" . $row['dish_price'] . "</td>";	
-		echo "	<td>" . $row['rest_name'] . "</td>";
+		echo "	<td>	<a href=\"" . $link_rest_page . "\">" . $rest_name . "</a>		</td>";
 		echo "	<td>" . $row['dish_section'] . "</td>";	
 		echo "	<td>" . $row['dish_description'] . "</td>";	
 		echo "</tr>";		
