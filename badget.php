@@ -107,7 +107,7 @@ $story= $_GET["story"];
 				type="button" 
 				value= "back"
 				align="center"
-				onclick="window.location.href='???.php'" />
+				onclick="history.go(-1);" />
 				
 
 
