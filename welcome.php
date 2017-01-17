@@ -37,7 +37,7 @@ function submitStory(value)
     window.location.href = link_params;
   }
    if (value==3){
-     var link_params = "categories.php?story=3";
+     var link_params = "citys.php?story=3";
       window.location.href = link_params;
   }
    if (value==4){

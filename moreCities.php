@@ -18,11 +18,9 @@ p {
 
 
 <?php
+$story= $_GET["story"];
 $currentRows=0;
 $cnt=$_GET["page"];
-$story= $_GET["story"];
-$badget= $_GET["badget"];
-$category= $_GET["category"];
 $conn = connect(); 
 
 function connect(){
@@ -67,10 +65,18 @@ function createButtons($conn){
 		 { 
 			$row = $result->fetch_assoc();
 		 
-	 
-
-			$tmpUrl = 'restaurants.php?story='.$story.'&category='.$category.'&badget='.$badet.'&city=';
-			$url = "'".str_replace(array('"',' ',' Restaurant') ,array('','_','') ,$tmpUrl.trim($row["name"]) )."'";	
+				if ($story==1){
+					$url = "'".'hours.php?story='.$story.'&city='.$row["name"]."'";
+				}
+				 if ($story==3){
+					 $url = "'".'categories.php?story='.$story.'&city='.$row["name"]."'";
+				}
+				 if ($story==4){
+					$url = "'".'dish.php?story='.$story.'&city='.$row["name"]."'";
+				}
+				if ($story==5){
+					$url = "'".'expensive.php?story='.$story.'&city='.$row["name"]."'";
+				}			
 						
 			echo '<input style="width: 300px; 
 							padding: 30px; 
@@ -151,7 +157,7 @@ createButtons($conn);
 				type="button" 
 				value= "more cities"
 				align="center"
-				onclick="window.location.href='moreCities.php?story=<?php echo $story ?>&badget=<?php echo $badget ?>&page=<?php echo $cnt ?>'" />	
+				onclick="window.location.href='moreCities.php?moreCities.php?story=<?php echo $story ?>&page=<?php echo $cnt ?>'" />	
 				
 									
 

@@ -18,10 +18,11 @@ p {
 
 
 <?php
+$story= $_GET["story"];
+$city= $_GET["city"];
 $currentRows=0;
 $cnt=0;
 $conn = connect(); 
-$story= $_GET["story"];
 
 function connect(){
 	$servername = "mysqlsrv.cs.tau.ac.il";
@@ -40,17 +41,25 @@ function connect(){
 }
 
 
-						
-					
+										
 function createButtons($conn){	
 	global $cnt;
 	global $currentRows;
 	global $story;
+	global $city;
 	$items=$cnt*12;
-	$sql = "SELECT name FROM Category LIMIT 12 OFFSET $items";
+	$sql = "select Category.name
+			from (
+			select CategoryMain.main_id as y
+			from CategoryMain
+			group by CategoryMain.main_id
+			) as x, Category, City, Restaurant
+			where Category.id=x.y and Restaurant.categories=Category.id and City.name='$city'
+			group by Category.name
+			limit 12
+			offset $items";
 	$result = $conn->query($sql);
 	$numRows= $result->num_rows;
-	
 	$currentRows= $cnt*12+$numRows;
 	$cnt++;
 	if ($numRows > 0) {
@@ -60,13 +69,7 @@ function createButtons($conn){
 			//while($row = $result->fetch_assoc())
 		 { 
 			$row = $result->fetch_assoc();
-		 
-	 
-			//$row = array("name"=>"blabka");
-			
-			
-			$tmpUrl = 'badget.php?story='.$story.'&category=';
-			$url = "'".str_replace(array('"',' ','Restaurant') ,array('','_','') ,$tmpUrl.trim($row["name"]) )."'";			
+			$url = "'".'badget.php?story='.$story.'&city='.$city.'&category='.$row["name"]."'";		
 			
 			echo '<input style="width: 300px; 
 							padding: 30px; 
@@ -147,7 +150,7 @@ createButtons($conn);
 				type="button" 
 				value= "more categories"
 				align="center"
-				onclick="window.location.href='moreCategories.php?story=<?php echo $story ?>&page=<?php echo $cnt ?>'" />			
+				onclick="window.location.href='moreCategories.php?story=<?php echo $story ?>&city=<?php echo $city?>&page=<?php echo $cnt ?>'" />			
 
 
 <?php
