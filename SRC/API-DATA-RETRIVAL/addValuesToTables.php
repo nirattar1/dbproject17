@@ -49,9 +49,9 @@ function addEntryToCategoryTable($conn,$id,$name)
 
 // return new cityId
 function addEntryToCityTable($conn,$cityArr,$titleToIndex){
-	$sql = $conn->query("select * City");
+	$sql = $conn->query("select * from City");
 	
-    $id = $result->num_rows;
+    $id = $sql->num_rows;
     //$id=$cityArr[$titleToIndex['cityId']];
     $name		= $cityArr[$titleToIndex['cityName']];
 	$north_lat 	= $cityArr[$titleToIndex['north_lat']];
@@ -83,13 +83,14 @@ function addEntryToRestaurantTable($conn,$venueArr,$titleToIndex)
     $hasMenu		= $venueArr[$titleToIndex['hasMenu']];
     $phone			= $venueArr[$titleToIndex['phone']];
     $address		= $venueArr[$titleToIndex['address']];
-    $category		= $venueArr[$titleToIndex['categories']];
+    $category		= $venueArr[$titleToIndex['category']];
     $checkinsCount	= $venueArr[$titleToIndex['checkinsCount']];
     $usersCount		= $venueArr[$titleToIndex['usersCount']];
     $tipCount		= $venueArr[$titleToIndex['tipCount']];
-
-    $sql = $conn->prepare("INSERT INTO Restaurant (id,name,city_id,url,has_menu,phone,address,category,checkinsCount,usersCount,tipCount) VALUES (?,?,?,?,?,?,?,?,?,?,?)");
-    $sql->bind_param("ssisisssiii",$id,$name,$cityId,$url,$hasMenu,$phone,$address,$category,$checkinsCount,$usersCount,$tipCount);
+	
+	
+    $sql = $conn->prepare("INSERT INTO Restaurant (id,name,city_id,url,has_menu,phone,address,category_id,checkinsCount,usersCount,tipCount) VALUES (?,?,?,?,?,?,?,?,?,?,?)");
+	$sql->bind_param("ssisisssiii",$id,$name,$cityId,$url,$hasMenu,$phone,$address,$category,$checkinsCount,$usersCount,$tipCount);
 	
     if ($sql->execute() === TRUE) {
         echo "Added restaurant ".$name." successfully";
@@ -168,8 +169,10 @@ function cityAlreadyInTable($conn,$cityId)
 
 function getCityIdByName($conn,$cityName){
 	$result = $conn->query("SELECT id FROM City where name='$cityName'");
+	
 	if ($result->num_rows == 1) {
-        return $result;
+		$row = $result->fetch_assoc();
+        return $row['id'];
     } else {
         return FALSE;
     }

@@ -14,7 +14,7 @@ $citiesInputFile = $inputDir."citiesInput.txt";
 //2. (primary usage) fetch venues data using the API. (when loadToDB==0, default).
 // see below addNewCity
 
-$loadToDB = 0;
+$loadToDB = 1;
 
 
 // request
@@ -32,11 +32,9 @@ if ($loadToDB)
 
 
 foreach($city2idArr as $cityName=>$cityId){
-	$splitNum = 5;
-	$categoryId = "4d4b7105d754a06374d81259"; // main food categoryId
-	$requestData = 1;
-	$venuesDir = 'venues_new/';
-	
+	$splitNum = 10;
+	$categoryId = "4d4b7105d754a06374d81259";
+	$requestData = 0;
 	
 	addNewCity($foursquare,$cityName,//$cityId,
 		$jsonsDir,$venuesDir,$splitNum,$categoryId,$loadToDB,$requestData,$conn);
@@ -49,7 +47,7 @@ exit;
 
 // -- add new city functions --
 
-// cityName - no underscore
+
 function addNewCity($foursquare,$cityName,//$cityId,
 		$jsonsDir,$venuesDir,$splitNum,$categotyId,$loadToDB,$requestData,$conn){
 		
@@ -62,6 +60,7 @@ function addNewCity($foursquare,$cityName,//$cityId,
 	}
 	if(!inUSA($boundingBox)){
 		// TODO: seems that this city is not in usa. try different city
+		echo "this city is not in USA<br>";
 		return 0;
 	}
 	
@@ -77,7 +76,7 @@ function addNewCity($foursquare,$cityName,//$cityId,
 	// put city in DB: cityId,cityName,boundingBox-details	
 	//(only one time - controlled by flag $loadToDB)
 	if ($loadToDB){
-		$cityId = addEntryToCityTable($conn, $cityArr, $titleToIndex);
+		addEntryToCityTable($conn, $cityArr, $titleToIndex);
 	}
 	if(!$requestData)
 		return 0; // when already have the data
@@ -89,12 +88,13 @@ function addNewCity($foursquare,$cityName,//$cityId,
 	$cityNameDir = str_replace(' ','_',$cityName).'/';
 	$outputDir = $jsonsDir.$venuesDir.$cityNameDir;
 	
-	if(!in_array(str_replace('/','',$cityNameDir),scanDir($jsonsDir.$venuesDir)))
+	if(!in_array(str_replace('/','',$cityNameDir),scanDir($jsonsDir.$venuesDir))){
 		mkdir($outputDir);
+		if($cityNameDir=='San_Francisco')
+			echo "create new directory for $cityNameDir";
+	}
 	
 	requestCityFunc($foursquare,$cityName,$boundingBox,$requestType,$categotyId,$outputDir,$splitNum);	
-	
-	return $cityId;
 }
 
 

@@ -92,7 +92,7 @@ function createDishTable($conn)
             id VARCHAR(32) PRIMARY KEY,
             restaurant_id VARCHAR(32) NOT NULL,
             FOREIGN KEY(restaurant_id) REFERENCES Restaurant(id),
-            section_name VARCHAR(10),
+            section_name VARCHAR(256),
             name VARCHAR(256),
             description VARCHAR(256),
             price DECIMAL(8, 2),
