@@ -69,7 +69,8 @@ function createRestaurantTable($conn)
 			has_menu INT(1),
             phone VARCHAR(32),
             address VARCHAR(50),
-            category VARCHAR(256),
+            category_id VARCHAR(32) NOT NULL,
+            FOREIGN KEY(category_id) REFERENCES Category(id),
             checkinsCount INT(24),
             usersCount INT(24),
             tipCount INT(24),
@@ -93,7 +94,7 @@ function createDishTable($conn)
             section_name VARCHAR(10),
             name VARCHAR(256),
             description VARCHAR(256),
-            price VARCHAR(256),
+            price DECIMAL(10,10),
             created_at TIMESTAMP
             )";
 
