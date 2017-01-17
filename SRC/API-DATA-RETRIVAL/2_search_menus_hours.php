@@ -26,12 +26,15 @@ $location = array_key_exists("location",$_GET) ? $_GET['location'] : "Montreal, 
 
 
 $venuesWithMenusArr = getVenuesWithMenusArr($inputDir."VenuesWithMenus.txt"); // read the input from 11_parse_venues.php
-
+$logs = fopen('2_logs_tmp.txt','w');
 foreach($venuesWithMenusArr as $cityName=>$venuesArr){
+	if(in_array($cityName,array('Boston','Chicago','Denver','Detroit','Houston')))
+		continue;
 	
 	// menus
 	$outputMenusPerCity = $jsonsDir.'menus_new/'.$cityName.'/';
 	$outputMenusPerCityOld = $jsonsDir.$menusDir.$cityName.'/';
+	$outputMenusPerCityArr = array_flip(scandir($outputMenusPerCityOld));
 	//if(!in_array($cityName,scandir($jsonsDir.$menusDir)))
 	if(!in_array($cityName,scandir($jsonsDir.'menus_new/')))
 		mkdir($outputMenusPerCity);
@@ -39,17 +42,17 @@ foreach($venuesWithMenusArr as $cityName=>$venuesArr){
 	// hours
 	$outputHoursPerCity = $jsonsDir.'hours_new/'.$cityName.'/';
 	$outputHoursPerCityOld = $jsonsDir.$hoursDir.$cityName.'/';
+	$outputHoursPerCityArr = array_flip(scandir($outputHoursPerCityOld));
 	//if(!in_array($cityName,scandir($jsonsDir.$hoursDir)))
 	if(!in_array($cityName,scandir($jsonsDir.'hours_new/')))
 		mkdir($outputHoursPerCity);
 	
 	foreach($venuesArr as $venueId){
+		fwrite($logs,$cityName.','.$venueId."\r\n");
 		// menus
-		$outputMenusPerCityArr = array_flip(scandir($outputMenusPerCityOld));
 		requestForVenue($foursquare,$venueId,"menu",$outputMenusPerCity,$outputMenusPerCityArr,$outputMenusPerCityOld);
 		
 		// hours
-		$outputHoursPerCityArr = array_flip(scandir($outputHoursPerCityOld));
 		requestForVenue($foursquare,$venueId,"hours",$outputHoursPerCity,$outputHoursPerCityArr,$outputHoursPerCityOld);
 	}
 }

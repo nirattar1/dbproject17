@@ -221,8 +221,12 @@ function fstRow2IndexArr($line,$delimiter = ','){
 function formatTime($timeStr){
 	$isNextDay = false;
 	if(strpos($timeStr,'+')!==false){
-		$isNextDay = true;
-		$timeStr = str_replace('+','',$timeStr);
+		if($timeStr==='+0000'){ //still the same day
+			$timeStr = '2359';
+		}else{
+			$isNextDay = true;
+			$timeStr = str_replace('+','',$timeStr);
+		}
 	}
 	list($hh,$mm) = str_split($timeStr,2);
 	return array($hh.':'.$mm,$isNextDay);
@@ -233,8 +237,9 @@ function splitRangeIfNeeded($startFrame,$endFrame,$isNextDay,$day){
 	if(!$isNextDay){
 		$maybeSplitedRanges[] = array('start'=>$startFrame,'end'=>$endFrame,'day'=>$day);
 	}else{
-		$maybeSplitedRanges[] = array('start'=>$startFrame,'end'=>'00:00','day'=>$day);
-		$maybeSplitedRanges[] = array('start'=>'00:00','end'=>$endFrame,'day'=>($day+1)%7);
+		$nextDay = ( ($day+1)%7 ===0 ? 7 : ($day+1)%7);
+		$maybeSplitedRanges[] = array('start'=>$startFrame,'end'=>'23:59','day'=>$day);
+		$maybeSplitedRanges[] = array('start'=>'00:00','end'=>$endFrame,'day'=>$nextDay);
 	}
 	return $maybeSplitedRanges;
 }	
