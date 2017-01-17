@@ -77,7 +77,7 @@ function addNewCity($foursquare,$cityName,//$cityId,
 	// put city in DB: cityId,cityName,boundingBox-details	
 	//(only one time - controlled by flag $loadToDB)
 	if ($loadToDB){
-		addEntryToCityTable($conn, $cityArr, $titleToIndex);
+		$cityId = addEntryToCityTable($conn, $cityArr, $titleToIndex);
 	}
 	if(!$requestData)
 		return 0; // when already have the data
@@ -89,13 +89,12 @@ function addNewCity($foursquare,$cityName,//$cityId,
 	$cityNameDir = str_replace(' ','_',$cityName).'/';
 	$outputDir = $jsonsDir.$venuesDir.$cityNameDir;
 	
-	if(!in_array(str_replace('/','',$cityNameDir),scanDir($jsonsDir.$venuesDir))){
+	if(!in_array(str_replace('/','',$cityNameDir),scanDir($jsonsDir.$venuesDir)))
 		mkdir($outputDir);
-		if($cityNameDir=='San_Francisco')
-			echo "create new directory for $cityNameDir";
-	}
 	
 	requestCityFunc($foursquare,$cityName,$boundingBox,$requestType,$categotyId,$outputDir,$splitNum);	
+	
+	return $cityId;
 }
 
 

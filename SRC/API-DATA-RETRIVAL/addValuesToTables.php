@@ -47,6 +47,7 @@ function addEntryToCategoryTable($conn,$id,$name)
     $sql->close();
 }
 
+// return new cityId
 function addEntryToCityTable($conn,$cityArr,$titleToIndex){
 	$sql = $conn->query("select * City");
 	
@@ -68,11 +69,10 @@ function addEntryToCityTable($conn,$cityArr,$titleToIndex){
     }
 
     $sql->close();
+	
+	return $id;
 }
 
-//$titleToIndex = array('cityId'=>0,'id'=>1,'name'=>2,'url'=>3,'hasMenu'=>4,'phone'=>5,
-//				'address'=>6,'city'=>7,'state'=>8,'country'=>9,'lat'=>10,'lon'=>11,
-//				'category'=>12,'checkinsCount'=>13,'usersCount'=>14,'tipCount'=>15);
 
 function addEntryToRestaurantTable($conn,$venueArr,$titleToIndex)
 {

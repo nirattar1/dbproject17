@@ -153,7 +153,7 @@ function venueJson2indexedArr($venueDetails,$titleToIndex,$loadToDB){
 	// main
 	$arrToWrite[$titleToIndex['id']] = $venueDetails['id'];
 	$arrToWrite[$titleToIndex['name']] = ($loadToDB ? $venueDetails['name'] : '"'.$venueDetails['name'].'"');
-	$arrToWrite[$titleToIndex['url']] = getFieldOrNull($venueDetails,'url',1,$loadToDB);
+	$arrToWrite[$titleToIndex['url']] = getFieldOrNull($venueDetails,'url',0,$loadToDB);
 	$arrToWrite[$titleToIndex['hasMenu']] = (array_key_exists('menu',$venueDetails) ? 1 : 0 );
 	
 	// contanct
@@ -166,11 +166,9 @@ function venueJson2indexedArr($venueDetails,$titleToIndex,$loadToDB){
 		$arrToWrite[$titleToIndex['city']] = 	getFieldOrNull($venueDetails['location'],'city',1,$loadToDB);
 		$arrToWrite[$titleToIndex['state']] = 	getFieldOrNull($venueDetails['location'],'state',1,$loadToDB);
 		$arrToWrite[$titleToIndex['country']] = getFieldOrNull($venueDetails['location'],'country',1,$loadToDB);
-		$arrToWrite[$titleToIndex['lat']] = 	getFieldOrNull($venueDetails['location'],'lat',1,$loadToDB);
-		$arrToWrite[$titleToIndex['lon']] = 	getFieldOrNull($venueDetails['location'],'lng',1,$loadToDB);
 	}
 	// category
-	$arrToWrite[$titleToIndex['category']] = $venueDetails['categories'][0];// we always have exactly one (checked)
+	$arrToWrite[$titleToIndex['category']] = $venueDetails['categories'][0]['id'];// we always have exactly one (checked)
 
 	// stats
 	if(array_key_exists('stats',$venueDetails)){

@@ -30,14 +30,14 @@ $cityNameDir = str_replace('_',' ',$cityName);
 fwrite($writeLogs,date("H:i:s")." - start\r\n");
 
 // search_venues
-addNewCity($foursquare,$cityName, // cityName - no underscore
+$cityId = addNewCity($foursquare,$cityName, // cityName - no underscore
 		$jsonsDir,$venuesDir,$splitNum,$categotyId,$loadToDB,$requestData);
 fwrite($writeLogs,date("H:i:s")." - after addNewCity\r\n");
 
 
 // now the new venue jsons are in jsons/venues/city_name
 // load venues to DB
-loadVenuesPerCity($jsonsDir,$venuesDir,$cityNameDir,$loadToDB,$conn);
+loadVenuesPerCity($jsonsDir,$venuesDir,$cityNameDir,$cityId,$loadToDB,$conn);
 fwrite($writeLogs,date("H:i:s")." - after loadVenuesPerCity\r\n");
 
 // search_menus_hours
