@@ -210,4 +210,9 @@ function getVenuesArrFromDB($conn,$cityId){
 	return $arr;
 }
 
+function indexDish($conn){
+	$conn->query("CREATE FULLTEXT INDEX 'idx_Dish_name'  ON 'DbMysql07'.'Dish' (name) COMMENT ''");
+	//TODO: check
+}
+
 ?>

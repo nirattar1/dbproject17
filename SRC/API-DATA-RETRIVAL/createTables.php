@@ -95,9 +95,10 @@ function createDishTable($conn)
             section_name VARCHAR(10),
             name VARCHAR(256),
             description VARCHAR(256),
-            price DECIMAL(10,10),
+            price DECIMAL(8, 2),
             created_at TIMESTAMP
-            )";
+            )
+			ENGINE=MyISAM;";
 
     if ($conn->query($sql) === TRUE) {
         echo "Dish Table created successfully\n";
