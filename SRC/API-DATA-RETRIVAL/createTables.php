@@ -10,6 +10,7 @@ createCategoryTable($conn);
 createRestaurantTable($conn);
 createDishTable($conn);
 createCategoryMainTable($conn);
+createOpenHoursTable($conn);
 
 closeConnection($conn);
 exit;
@@ -107,7 +108,7 @@ function createDishTable($conn)
 function createOpenHoursTable($conn)
 {
     $sql = "CREATE TABLE IF NOT EXISTS OpenHours (
-            restaurant_id VARCHAR(32) PRIMARY KEY,
+            restaurant_id VARCHAR(32),
             FOREIGN KEY(restaurant_id) REFERENCES Restaurant(id),
             day int(1),
             open_hour TIME,

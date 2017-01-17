@@ -233,7 +233,7 @@ function formatTime($timeStr){
 		}
 	}
 	list($hh,$mm) = str_split($timeStr,2);
-	return array($hh.':'.$mm,$isNextDay);
+	return array($hh.':'.$mm.':00',$isNextDay);
 }
 
 function splitRangeIfNeeded($startFrame,$endFrame,$isNextDay,$day){
@@ -242,8 +242,8 @@ function splitRangeIfNeeded($startFrame,$endFrame,$isNextDay,$day){
 		$maybeSplitedRanges[] = array('start'=>$startFrame,'end'=>$endFrame,'day'=>$day);
 	}else{
 		$nextDay = ( ($day+1)%7 ===0 ? 7 : ($day+1)%7);
-		$maybeSplitedRanges[] = array('start'=>$startFrame,'end'=>'23:59','day'=>$day);
-		$maybeSplitedRanges[] = array('start'=>'00:00','end'=>$endFrame,'day'=>$nextDay);
+		$maybeSplitedRanges[] = array('start'=>$startFrame,'end'=>'23:59:59','day'=>$day);
+		$maybeSplitedRanges[] = array('start'=>'00:00:00','end'=>$endFrame,'day'=>$nextDay);
 	}
 	return $maybeSplitedRanges;
 }	

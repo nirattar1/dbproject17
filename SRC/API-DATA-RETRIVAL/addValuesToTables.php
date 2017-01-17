@@ -52,11 +52,11 @@ function addEntryToCityTable($conn,$cityArr,$titleToIndex){
 	
     $id = $result->num_rows;
     //$id=$cityArr[$titleToIndex['cityId']];
-    $name=$cityArr[$titleToIndex['cityName']];
-	$north_lat = $cityArr[$titleToIndex['north_lat']];
-	$south_lat = $cityArr[$titleToIndex['south_lat']];
-	$east_lon = $cityArr[$titleToIndex['east_lon']];
-	$west_lon = $cityArr[$titleToIndex['west_lon']];
+    $name		= $cityArr[$titleToIndex['cityName']];
+	$north_lat 	= $cityArr[$titleToIndex['north_lat']];
+	$south_lat 	= $cityArr[$titleToIndex['south_lat']];
+	$east_lon 	= $cityArr[$titleToIndex['east_lon']];
+	$west_lon 	= $cityArr[$titleToIndex['west_lon']];
 	
     $sql = $conn->prepare("INSERT INTO City (id,name,north_lat,south_lat,east_lon,west_lon) VALUES (?,?,?,?,?,?)");
     $sql->bind_param("isdddd",$id,$name,$north_lat,$south_lat,$east_lon,$west_lon);
@@ -74,19 +74,19 @@ function addEntryToCityTable($conn,$cityArr,$titleToIndex){
 //				'address'=>6,'city'=>7,'state'=>8,'country'=>9,'lat'=>10,'lon'=>11,
 //				'category'=>12,'checkinsCount'=>13,'usersCount'=>14,'tipCount'=>15);
 
-function addEntryToRestaurantTable($conn,$VenueArr,$titleToIndex)
+function addEntryToRestaurantTable($conn,$venueArr,$titleToIndex)
 {
-	$cityId = $VenueArr[$titleToIndex['cityId']];
-    $id = $VenueArr[$titleToIndex['id']];
-    $name = $VenueArr[$titleToIndex['name']];
-    $url=$VenueArr[$titleToIndex['url']];
-    $hasMenu=$VenueArr[$titleToIndex['hasMenu']];
-    $phone=$VenueArr[$titleToIndex['phone']];
-    $address=$VenueArr[$titleToIndex['address']];
-    $category=$VenueArr[$titleToIndex['categories']];
-    $checkinsCount=$VenueArr[$titleToIndex['checkinsCount']];
-    $usersCount=$VenueArr[$titleToIndex['usersCount']];
-    $tipCount=$VenueArr[$titleToIndex['tipCount']];
+	$cityId 		= $venueArr[$titleToIndex['cityId']];
+    $id 			= $venueArr[$titleToIndex['id']];
+    $name 			= $venueArr[$titleToIndex['name']];
+    $url			= $venueArr[$titleToIndex['url']];
+    $hasMenu		= $venueArr[$titleToIndex['hasMenu']];
+    $phone			= $venueArr[$titleToIndex['phone']];
+    $address		= $venueArr[$titleToIndex['address']];
+    $category		= $venueArr[$titleToIndex['categories']];
+    $checkinsCount	= $venueArr[$titleToIndex['checkinsCount']];
+    $usersCount		= $venueArr[$titleToIndex['usersCount']];
+    $tipCount		= $venueArr[$titleToIndex['tipCount']];
 
     $sql = $conn->prepare("INSERT INTO Restaurant (id,name,city_id,url,has_menu,phone,address,category,checkinsCount,usersCount,tipCount) VALUES (?,?,?,?,?,?,?,?,?,?,?)");
     $sql->bind_param("ssisisssiii",$id,$name,$cityId,$url,$hasMenu,$phone,$address,$category,$checkinsCount,$usersCount,$tipCount);
@@ -102,12 +102,12 @@ function addEntryToRestaurantTable($conn,$VenueArr,$titleToIndex)
 
 function addEntryToDishTable($conn,$DishArr,$titleToIndex)
 {
-    $id = $DishArr[$titleToIndex['dishId']];
-    $restaurantId = $DishArr[$titleToIndex['venueId']];
-    $section =$DishArr[$titleToIndex['sectionName']];
-    $name=$DishArr[$titleToIndex['dishName']];
-    $description=$DishArr[$titleToIndex['description']];
-    $price=$DishArr[$titleToIndex['price']];
+    $id 			= $DishArr[$titleToIndex['dishId']];
+    $restaurantId 	= $DishArr[$titleToIndex['venueId']];
+    $section 		= $DishArr[$titleToIndex['sectionName']];
+    $name			= $DishArr[$titleToIndex['dishName']];
+    $description	= $DishArr[$titleToIndex['description']];
+    $price			= $DishArr[$titleToIndex['price']];
 
     $sql = $conn->prepare("INSERT INTO Dish (id,restaurant_id,section_name,name,description,price) VALUES (?,?,?,?,?,?)");
     $sql->bind_param("ssssss",$id,$restaurantId,$section,$name,$description,$price);
@@ -133,6 +133,26 @@ function addEntryToCategoryMainTable($conn,$sonId,$mainId){
 
     $sql->close();	
 }
+
+
+function addEntryToHoursTable($conn,$indexedArr,$titleToIndex){
+	$venueId= $indexedArr[$titleToIndex['venueId']];
+	$day	= $indexedArr[$titleToIndex['day']];
+	$start	= str_replace(':','',$indexedArr[$titleToIndex['start']]);
+	$end 	= str_replace(':','',$indexedArr[$titleToIndex['end']]);
+	
+    $sql = $conn->prepare("INSERT INTO OpenHours (restaurant_id,day,open_hour,close_hour) VALUES (?,?,?,?)");
+	$sql->bind_param("siii",$venueId,$day,$start,$end);
+
+    if ($sql->execute() === TRUE) {
+        echo "Added range ".$venueId.' - '.$day." successfully";
+    } else {
+        echo "ERROR while adding range ".$venueId.' - '.$day. $sql->error;
+    }
+
+    $sql->close();	
+}
+
 
 //returns true if city already in table and false otherwise
 function cityAlreadyInTable($conn,$cityId)
@@ -170,10 +190,24 @@ function venueAlreadyInTable($conn,$venueId)
 
 
 function getVenuesWithMenusArrFromDB($conn,$cityId){
-	$result = $conn->query("SELECT * FROM Restaurant where id =$cityId and ");
+	$result = $conn->query("SELECT id FROM Restaurant where id=$cityId and has_menu=1"); // this will work onlt after making new DB
+	$arr = array();
+	while ($row = $result->fetch_assoc()) {
+		$arr[] = $row['id'];
+	}
 	
-	
+	return $arr;
 }
 
+
+function getVenuesArrFromDB($conn,$cityId){
+	$result = $conn->query("SELECT id FROM Restaurant where city_id=$cityId");
+	$arr = array();
+	while ($row = $result->fetch_assoc()) {
+		$arr[] = $row['id'];
+	}
+	
+	return $arr;
+}
 
 ?>

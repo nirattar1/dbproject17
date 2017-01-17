@@ -9,24 +9,21 @@ $venuesDir = 'venues_new/';
 
 // input
 $inputDir = 'input/';
-$citiesInputFile = $inputDir."citiesInput.txt";
 $loadToDB = 0; // otherwise - goes to csv
 $writeVenuesWithMenuMode = 1;
 
 // parse
-
 $titleToIndex = array('cityId'=>0,'id'=>1,'name'=>2,'url'=>3,'hasMenu'=>4,'phone'=>5,
 				'address'=>6,'city'=>7,'state'=>8,'country'=>9,'lat'=>10,'lon'=>11,
 				'category'=>12,'checkinsCount'=>13,'usersCount'=>14,'tipCount'=>15);
 
-$city2idArr = getCity2idArr($citiesInputFile);
 
 if($loadToDB){
 	$conn = createConnection();
-	//TODO
-	//$conn->query("DELETE FROM Restaurant");
-	//exit;
 }else{	
+	$citiesInputFile = $inputDir."citiesInput.txt";
+	$city2idArr = getCity2idArr($citiesInputFile);
+	
 	$space = "\r\n";			
 	$writeFileName = $csvDir."venues_new_16_01_17.csv";
 	$write = fopen($writeFileName,'w');
@@ -37,57 +34,20 @@ if($loadToDB){
 }
 
 
-//$cnt2skip = 0; // TODO: delete this after done fixing
-foreach(scandir($jsonsDir.$venuesDir) as $cityName){
+foreach(scandir($jsonsDir.$venuesDir) as $cityNameDir){
 	if($cityName==='.' || $cityName==='..')
 		continue;
 	
-	
 	if($loadToDB){
-		$cityId = getCityIdByName($conn,str_replace('_',' ',$cityName));
+		$cityId = getCityIdByName($conn,str_replace('_',' ',$cityNameDir));
 		if($cityId===FALSE){
 			echo "cityName $cityName wasn't found<br>";
 			continue;
 	}else{
-		$cityId = $city2idArr[str_replace('_',' ',$cityName)];
+		$cityId = $city2idArr[str_replace('_',' ',$cityNameDir)];
 	}
 	
-	//TODO: delete this
-	// checking that the city exists in th DB. if not - continue to next city
-	//if($loadToDB && !cityAlreadyInTable($conn,$cityId))
-	//	continue;
-	
-	foreach(scandir($jsonsDir.$venuesDir.$cityName) as $fileName){
-		
-		if(strpos($fileName,'.json')===false)
-			continue;
-		/* 
-		//TODO: delete this
-		$sparseConst = (in_array($cityName,array('Boston','Detroit','Phoenix','San_Diego'))? 2 :4);
-		if(($cnt2skip++)%$sparseConst) // TODO: delete this // insersts every 4th (or every 2nd in the newer cities)
-			continue;
- */
-		$full_filename = $jsonsDir.$venuesDir.$cityName.'/'.$fileName;
-		//echo $full_filename;
-		$jsonStr = file_get_contents($full_filename);
-
-		$jsonArr = json_decode($jsonStr,true);
-
-		foreach($jsonArr['response']['venues'] as $i=>$venueDetails){ // convert venue json to indexed array and to line in csv
-			$VenueArr = venueJson2indexedArr($venueDetails,$titleToIndex,$loadToDB);// $loadToDB will control the "" protection
-			$VenueArr[$titleToIndex['cityId']] = $cityId;
-			
-			
-			if($loadToDB){
-				addEntryToRestaurantTable($conn,$VenueArr,$titleToIndex);
-			}else{
-				// write
-				fwrite($write,implode(',',array_values($VenueArr)).$space);
-				if($writeVenuesWithMenuMode && $VenueArr[$titleToIndex['hasMenu']]===1)
-					fwrite($writeVenuesWithMenu,$cityName.','.$VenueArr[$titleToIndex['id']].$space);
-			}
-		}
-	}	
+	loadVenuesPerCity($jsonsDir,$venuesDir,$cityNameDir,$loadToDB,$write,$writeVenuesWithMenuMode);
 }
 
 if($loadToDB){
@@ -98,5 +58,36 @@ if($loadToDB){
 
 exit;
 
+
+function loadVenuesPerCity($jsonsDir,$venuesDir,$cityNameDir,$loadToDB,$conn,$write=null,$writeVenuesWithMenuMode=false){
+	$titleToIndex = array('cityId'=>0,'id'=>1,'name'=>2,'url'=>3,'hasMenu'=>4,'phone'=>5,
+				'address'=>6,'city'=>7,'state'=>8,'country'=>9,'lat'=>10,'lon'=>11,
+				'category'=>12,'checkinsCount'=>13,'usersCount'=>14,'tipCount'=>15);
+
+	foreach(scandir($jsonsDir.$venuesDir.$cityNameDir) as $fileName){
+		
+		if(strpos($fileName,'.json')===false)
+			continue;
+
+		$full_filename = $jsonsDir.$venuesDir.$cityNameDir.'/'.$fileName;
+		$jsonStr = file_get_contents($full_filename);
+		$jsonArr = json_decode($jsonStr,true);
+
+		foreach($jsonArr['response']['venues'] as $i=>$venueDetails){ // convert venue json to indexed array and to line in csv
+			$venueArr = venueJson2indexedArr($venueDetails,$titleToIndex,$loadToDB);// $loadToDB will control the "" protection
+			$venueArr[$titleToIndex['cityId']] = $cityId;
+			
+			
+			if($loadToDB){
+				addEntryToRestaurantTable($conn,$venueArr,$titleToIndex);
+			}else{
+				// write
+				fwrite($write,implode(',',array_values($venueArr)).$space);
+				if($writeVenuesWithMenuMode && $venueArr[$titleToIndex['hasMenu']]===1)
+					fwrite($writeVenuesWithMenu,$cityNameDir.','.$venueArr[$titleToIndex['id']].$space);
+			}
+		}
+	}
+}
 
 ?>

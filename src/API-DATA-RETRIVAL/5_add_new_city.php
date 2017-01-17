@@ -6,17 +6,16 @@ require_once("addValuesToTables.php");
 
 // input
 $inputDir = 'input/';
-//$citiesInputFile = $inputDir."citiesInput.txt";
 
 
+function addNewCity($cityName);
+$writeLogs = fopen('5_logs.txt','w');
 
 
-
-// getting ready... params:
+// params:
 $cityName = str_replace(',','',$cityName); //making sure there are no commas (the rest illegal chars is handled in the html page
 $splitNum = 5; // = 25-30 requests for venues
-// TODO: should I get it?
-// $categotyId = ??
+$categoryId = "4d4b7105d754a06374d81259"; // main food categoryId
 $loadToDB = 1;
 $requestData = 1;
 
@@ -24,18 +23,34 @@ $requestData = 1;
 $foursquare = createNewFoursqaure('5');
 // connet to DB
 $conn = createConnection();
+$cityNameDir = str_replace('_',' ',$cityName);
+
+
+// -- start --
+fwrite($writeLogs,date("H:i:s")." - start\r\n");
 
 // search_venues
-addNewCity($foursquare,$cityName,//$cityId,
+addNewCity($foursquare,$cityName, // cityName - no underscore
 		$jsonsDir,$venuesDir,$splitNum,$categotyId,$loadToDB,$requestData);
+fwrite($writeLogs,date("H:i:s")." - after addNewCity\r\n");
 
-// new the new venue jsons are in jsons/venues/city_name
+
+// now the new venue jsons are in jsons/venues/city_name
 // load venues to DB
-
+loadVenuesPerCity($jsonsDir,$venuesDir,$cityNameDir,$loadToDB,$conn);
+fwrite($writeLogs,date("H:i:s")." - after loadVenuesPerCity\r\n");
 
 // search_menus_hours
-searchHoursAndMenusPerCity($conn,$cityName)
+searchHoursAndMenusPerCity($conn,$cityNameDir);
+fwrite($writeLogs,date("H:i:s")." - after searchHoursAndMenusPerCity\r\n");
 
+// load menus to DB
+loadMenusPerCity($jsonsDir,$menusDir,$cityNameDir,$loadToDB,$conn);
+fwrite($writeLogs,date("H:i:s")." - after loadMenusPerCity\r\n");
+
+// load hours to DB
+loadHoursPerCity($jsonsDir,$hoursDir,$cityNameDir,$loadToDB,$conn)
+fwrite($writeLogs,date("H:i:s")." - after loadHoursPerCity\r\n");
 
 // close connection to DB
 closeConnection($conn);

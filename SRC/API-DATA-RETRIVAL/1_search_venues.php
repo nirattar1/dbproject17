@@ -32,8 +32,8 @@ if ($loadToDB)
 
 
 foreach($city2idArr as $cityName=>$cityId){
-	$splitNum = 10;
-	$categoryId = "4d4b7105d754a06374d81259";
+	$splitNum = 5;
+	$categoryId = "4d4b7105d754a06374d81259"; // main food categoryId
 	$requestData = 1;
 	$venuesDir = 'venues_new/';
 	
@@ -49,7 +49,7 @@ exit;
 
 // -- add new city functions --
 
-
+// cityName - no underscore
 function addNewCity($foursquare,$cityName,//$cityId,
 		$jsonsDir,$venuesDir,$splitNum,$categotyId,$loadToDB,$requestData,$conn){
 		

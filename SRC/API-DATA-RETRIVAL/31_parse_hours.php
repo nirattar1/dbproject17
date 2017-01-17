@@ -5,7 +5,7 @@ require_once("0_functions.php");
 require_once("addValuesToTables.php");
 
 
-$loadToDB = 0;
+$loadToDB = 1;
 $titleToIndex = array('venueId'=>0,'day'=>1,'start'=>2,'end'=>3);
 
 
@@ -18,24 +18,33 @@ if($loadToDB){
 	fwrite($write,implode(',',array_keys($titleToIndex)).$space);
 }
 
-foreach(scandir($jsonsDir.$hoursDir) as $cityName){
-	if($cityName==='.' || $cityName==='..')
+foreach(scandir($jsonsDir.$hoursDir) as $cityNameDir){
+	if($cityNameDir==='.' || $cityNameDir==='..')
 		continue;
 	
-	foreach(scandir($jsonsDir.$hoursDir.$cityName) as $fileName){
+	loadHoursPerCity($jsonsDir,$hoursDir,$cityNameDir,$loadToDB,$conn);
+}
+closeConnection($conn);
+
+exit;
+
+function loadHoursPerCity($jsonsDir,$hoursDir,$cityNameDir,$loadToDB,$conn,$write=null){
+	$titleToIndex = array('venueId'=>0,'day'=>1,'start'=>2,'end'=>3);
+
+	foreach(scandir($jsonsDir.$hoursDir.$cityNameDir) as $fileName){
 		if(strpos($fileName,'.json')===false)
 			continue;
 		
 		
-		$jsonStr = file_get_contents($jsonsDir.$hoursDir.$cityName.'/'.$fileName);
+		$jsonStr = file_get_contents($jsonsDir.$hoursDir.$cityNameDir.'/'.$fileName);
 		$jsonArr = json_decode($jsonStr,true);
 		// TODO: make sure that the json is valid
 		
 		$venueId = substr($fileName,0,strpos($fileName,'.'));
 		
-		// TODO: Inbal
-		//checking that the venue exists in th DB
-		//($conn,$venue)
+		// checking that the venue exists in th DB. if not - continue to next menu
+		if($loadToDB && !venueAlreadyInTable($conn,$venueId))
+			continue;
 		
 		// skip empty menu
 		if(!isset($jsonArr['response']['hours']['timeframes']))
@@ -62,10 +71,6 @@ foreach(scandir($jsonsDir.$hoursDir) as $cityName){
 		
 						if($loadToDB){
 							addEntryToHoursTable($conn,$indexedArr,$titleToIndex);
-							//TODO: remove after test
-							closeConnection($conn);
-							exit;
-							
 						}else{
 							// one row for every range
 							fwrite($write,implode(',',array_values($indexedArr)).$space);
@@ -74,11 +79,7 @@ foreach(scandir($jsonsDir.$hoursDir) as $cityName){
 				}
 			}	
 		}
-	}	
+	}
 }
-
-exit;
-
-
 
 ?>

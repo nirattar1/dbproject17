@@ -20,16 +20,24 @@ if($loadToDB){
 	fwrite($write,implode(',',array_keys($titleToIndex)).$space);
 }
 
-foreach(scandir($jsonsDir.$menusDir) as $cityName){
-	if($cityName==='.' || $cityName==='..')
+foreach(scandir($jsonsDir.$menusDir) as $cityNameDir){
+	if($cityNameDir==='.' || $cityNameDir==='..')
 		continue;
 	
-	foreach(scandir($jsonsDir.$menusDir.$cityName) as $fileName){
+	
+	loadMenusPerCity($jsonsDir,$menusDir,$cityNameDir,$loadToDB,$conn);
+	
+}
+
+function loadMenusPerCity($jsonsDir,$menusDir,$cityNameDir,$loadToDB,$conn,$write=null){
+	$titleToIndex = array('venueId'=>0,'sectionName'=>1,'dishId'=>2,'dishName'=>3,'description'=>4,'price'=>5);
+
+	foreach(scandir($jsonsDir.$menusDir.$cityNameDir) as $fileName){
 		if(strpos($fileName,'.json')===false)
 			continue;
 		
 		
-		$jsonStr = file_get_contents($jsonsDir.$menusDir.$cityName.'/'.$fileName);
+		$jsonStr = file_get_contents($jsonsDir.$menusDir.$cityNameDir.'/'.$fileName);
 		$jsonArr = json_decode($jsonStr,true);
 		
 		$venueId = substr($fileName,0,strpos($fileName,'.'));
@@ -46,7 +54,8 @@ foreach(scandir($jsonsDir.$menusDir) as $cityName){
 		foreach($jsonArr['response']['menu']['menus']['items'] as $i=>$oneMenu){ // convert json to indexed array and to line in csv / entry in DB	
 			foreach($oneMenu['entries']['items'] as $j=>$itemSection){ // section in the menu: salads, sandwiches, desserts
 				// menu section (like "Sandwiches")
-				$sectionName = $itemSection['name']; // we must have this field, some times dish names can't be understood without the section name
+				$sectionName = fixString($itemSection['name']); // we must have this field, some times dish names can't be understood without the section name
+				
 				foreach($itemSection['entries']['items'] as $k=>$dishDetails){
 					$indexedArr = dishJson2indexedArr($dishDetails,$titleToIndex,$loadToDB);
 					
@@ -64,6 +73,8 @@ foreach(scandir($jsonsDir.$menusDir) as $cityName){
 			}	
 		}	
 	}
+
+
 }
 
 exit;
