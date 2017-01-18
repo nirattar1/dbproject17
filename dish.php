@@ -193,6 +193,11 @@ $numRows= $result->num_rows;
 
 </br>
 </br>
+<?php 
+if ( $result->num_rows > 0 ){ 
+	
+	
+?>	
 
 <table>
 <tr>
@@ -223,6 +228,8 @@ $numRows= $result->num_rows;
 	}
 ?>
 </table>
+
+<?php } ?>
 
 </body>
 </html>
