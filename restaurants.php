@@ -122,7 +122,6 @@ else if($story==1){
 
 
 $result = $conn->query($sql1);
-echo $result->num_rows;
 
 if ( $result->num_rows > 0 ){ 
 	
