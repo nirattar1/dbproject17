@@ -63,7 +63,7 @@ from
 			(
 			select distinct City.name as city_name, c.name as cat_name,count(c.name) as cnt
 			from Restaurant r, Category c, City
-			where r.categories = c.id and City.id= r.city_id
+			where r.category_id = c.id and City.id= r.city_id
 			group by  City.name,c.name
 			) as city_categories
 
@@ -71,14 +71,14 @@ from
  	(
 			select distinct City.name as city_name, c.name as cat_name,count(c.name) as cnt
 			from Restaurant r, Category c, City
-			where r.categories = c.id and City.id= r.city_id
+			where r.category_id = c.id and City.id= r.city_id
 			group by  City.name,c.name
 			) as y
 where x.city_name= y.city_name and x.m= y.cnt
  
 
 ) as best_cat 
-WHERE r.city_id=c.id and r.categories= cat.id and best_cat.city_name= c.name
+WHERE r.city_id=c.id and r.category_id= cat.id and best_cat.city_name= c.name
 GROUP BY c.name";
 $result = $conn->query($sql);
 ?>

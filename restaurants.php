@@ -81,7 +81,7 @@ from (
 select Restaurant.name, Restaurant.id , Dish.section_name , Dish.name as name1  , Dish.price
 from Restaurant , City , Category , Dish
 where  City.name='$city' and Category.name='$category' and City.id=Restaurant.city_id and 
-Restaurant.categories=Category.id and Dish.restaurant_id=Restaurant.id
+Restaurant.category_id=Category.id and Dish.restaurant_id=Restaurant.id
 ) as section_table
 group by section_table.section_name
 ) as restaurant_table
@@ -108,11 +108,14 @@ else if($story==1){
 	if($day!="-1") {
 		$str=$str." and o.day=".$day;
 	}
+
 	$sql1 = "select r.name, r.checkinsCount , r.id
 					FROM Restaurant r
 					WHERE EXISTS 
   					(SELECT * FROM City c, OpenHours o 
-   					  where c.id=r.city_id and r.id=o.restaurant_id $str)
+   					  where c.name='$city'
+					  and c.id=r.city_id 
+					  and r.id=o.restaurant_id $str)
    					  order by r.checkinsCount
    					  desc limit 15";
 	}
