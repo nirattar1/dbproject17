@@ -124,12 +124,25 @@ else if($story==1){
 $result = $conn->query($sql1);
 
 if ( $result->num_rows > 0 ){ 
+if($story==3){	?>	
+<table>
+	<tr>
+		<td>Popolarity Number </td>
+		<td>Restaurant Name</td>
+		<td>Restaurant average menu</td>
+	</tr>
 	
-	
-?>	
-
-
-
+	<?php for($i=0; $i< $result->num_rows ; $i++){?>
+	<tr>
+			<td> <?php echo $i+1; ?> </td>
+			<?php  $row = $result->fetch_assoc(); ?>
+			<td><a href="rest.php?rest=<?php echo $row["name"]; ?>&id=<?php echo $row["id"]; ?>&city=<?php echo $city; ?>"> <?php echo $row["name"]; ?> </a></td>
+			<td> <?php echo $row["restaurant_avg"]; ?> </td>
+	</tr>
+<?php } ?>	
+</table>
+<?php } ?>
+<?php if($story==1){	?>
 <table>
 	<tr>
 		<td>Popolarity Number </td>
@@ -142,13 +155,13 @@ if ( $result->num_rows > 0 ){
 			<td> <?php echo $i+1; ?> </td>
 			<?php  $row = $result->fetch_assoc(); ?>
 			<td><a href="rest.php?rest=<?php echo $row["name"]; ?>&id=<?php echo $row["id"]; ?>&city=<?php echo $city; ?>"> <?php echo $row["name"]; ?> </a></td>
-			<td> <?php echo $row["restaurant_avg"]; ?> </td>
+			<td> <?php echo $row["checkinsCount"]; ?> </td>
 	</tr>
-		<?php 
-	} ?>	
-
+<?php } ?>	
 </table>
-<?php $conn->close(); ?>
 <?php } ?>
+<?php } ?>
+<?php $conn->close(); ?>
+
 </body>
 </html>
