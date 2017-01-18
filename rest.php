@@ -111,7 +111,7 @@ if($result->num_rows>0)
     <article>
         <h1><?php echo $rest;?></h1>
         <p>Address: <?php echo $row["address"]. ", ". $city;?> </p>
-        <p>URL: <?php echo $row["url"];?> </p>
+        <p>URL: <a href="<?php echo $row["url"];?>"> <?php echo $row["url"] ; ?> </a></p>
         <p>Phone: <?php echo $row["phone"];?> </p>
         <p>Open Hours: </p>
     </article>
