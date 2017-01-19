@@ -91,7 +91,7 @@ $result = $conn->query($sql);
             <?php $row = $result->fetch_assoc(); ?>
             <td> <?php echo $row["name"]; ?> </td>
             <td>
-                <a href="rest.php?rest=<?php echo $row["rest"]; ?>&id=<?php echo $row["r_id"]; ?>&city=<?php echo $city; ?>"> <?php echo $row["rest"]; ?></a>
+                <a href="rest.php?id=<?php echo $row["r_id"]; ?>"> <?php echo $row["rest"]; ?></a>
             </td>
             <td> <?php echo $row["price"]; ?> </td>
         </tr>
@@ -123,7 +123,7 @@ $row2 = $result2->fetch_assoc();
 ?>
 
 <h1> * The most expensive restaurant in <?php echo(str_replace('_', ' ', $city)) ?> is <a
-        href="rest.php?rest=<?php echo $row2["r_name"]; ?>&id=<?php echo $row2["r_id"]; ?>&city=<?php echo $city; ?>"><?php echo $row2["r_name"] ?> </a>*
+        href="rest.php?id=<?php echo $row2["r_id"]; ?>"><?php echo $row2["r_name"] ?> </a>*
 </h1>
 
 <h1>the most expensive dishes in <?php echo $row2["r_name"] ?> are: </h1>

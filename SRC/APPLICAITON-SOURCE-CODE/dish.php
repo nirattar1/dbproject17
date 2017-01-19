@@ -198,7 +198,7 @@ if ($result->num_rows > 0) {
             //prepare link to restaurant
             $rest_name = $row['rest_name'];
             $rest_id = $row['rest_id'];
-            $link_rest_page = "rest.php?rest=$rest_name&id=$rest_id&city=$city_name";
+            $link_rest_page = "rest.php?id=$rest_id";
 
             //output row
             echo "<tr>";
