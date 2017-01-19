@@ -34,13 +34,10 @@ function createButtons($conn)
     global $city;
     $items = $cnt * 12;
     $sql = "select Category.name
-			from (
-			select CategoryMain.main_id as y
-			from CategoryMain
-			group by CategoryMain.main_id
-			) as x, Category, City, Restaurant
-			where Category.id=x.y and Restaurant.category_id=Category.id and City.name='$city' and Restaurant.city_id=City.id
-			group by Category.name
+            from CategoryMain , Category, City, Restaurant
+            where City.name='$city' and Restaurant.city_id=City.id and Restaurant.has_menu=1 
+                        and Restaurant.category_id=Category.id and Category.id=CategoryMain.main_id
+            group by Category.name
 			limit 12
 			offset $items";
 
