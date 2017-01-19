@@ -63,9 +63,9 @@ else if ($badget==3){
 $conn = connect(); 
 if($story==3) {
 	
-$sql1 = "select name, restaurant_avg
+$sql1 = "select name, restaurant_avg, id
 from (
-select restaurant_table.name as name, avg(restaurant_table.section_avg) as restaurant_avg
+select restaurant_table.name as name, restaurant_table.id as id, avg(restaurant_table.section_avg) as restaurant_avg
 from (
 select section_table.name, section_table.id, section_table.section_name , 
 avg(section_table.price) as section_avg 
@@ -73,11 +73,11 @@ from (
 select Restaurant.name, Restaurant.id , Dish.section_name , Dish.name as name1  , Dish.price
 from Restaurant , City , Category , Dish
 where  City.name='$city' and Category.name='$category' and City.id=Restaurant.city_id and 
-Restaurant.category_id=Category.id and Dish.restaurant_id=Restaurant.id
+Restaurant.category_id=Category.id and Restaurant.has_menu=1 and Dish.restaurant_id=Restaurant.id
 ) as section_table
 group by section_table.section_name
 ) as restaurant_table
-group by restaurant_table.name desc
+group by restaurant_table.id desc
 ) as avg_by_budget
 where $from < restaurant_avg and restaurant_avg < $to
 limit 15";
@@ -128,7 +128,7 @@ if($story==3){	?>
 	<tr>
 			<td> <?php echo $i+1; ?> </td>
 			<?php  $row = $result->fetch_assoc(); ?>
-			<td><a href="rest.php?rest=<?php echo $row["name"]; ?>&id=<?php echo $row["id"]; ?>&city=<?php echo $city; ?>"> <?php echo $row["name"]; ?> </a></td>
+			<td><a href="rest.php?id=<?php echo $row["id"]; ?>"> <?php echo $row["name"]; ?> </a></td>
 			<td> <?php echo $row["restaurant_avg"]; ?> </td>
 	</tr>
 <?php } ?>	
@@ -146,7 +146,7 @@ if($story==3){	?>
 	<tr>
 			<td> <?php echo $i+1; ?> </td>
 			<?php  $row = $result->fetch_assoc(); ?>
-			<td><a href="rest.php?rest=<?php echo $row["name"]; ?>&id=<?php echo $row["id"]; ?>&city=<?php echo $city; ?>"> <?php echo $row["name"]; ?> </a></td>
+			<td><a href="rest.php?id=<?php echo $row["id"]; ?>"> <?php echo $row["name"]; ?> </a></td>
 			<td> <?php echo $row["checkinsCount"]; ?> </td>
 	</tr>
 <?php } ?>	

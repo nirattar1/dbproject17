@@ -51,9 +51,7 @@
 
 <?php
 require_once("connectToDB.php");
-$rest = $_GET["rest"];
 $id = $_GET["id"];
-$city = $_GET["city"];
 
 $conn = connect();
 $sql = "select * from Restaurant where id=\"$id\" limit 1";
@@ -64,7 +62,7 @@ if ($result->num_rows > 0)
 
 <div class="container">
     <header>
-        <h1><?php echo $rest; ?></h1>
+        <h1><?php echo $row["name"]; ?></h1>
     </header>
     <nav>
         <button id="Get current CheckIns count" value=<?php echo $row["checkinsCount"]; ?> onclick="checkinFunction()">
