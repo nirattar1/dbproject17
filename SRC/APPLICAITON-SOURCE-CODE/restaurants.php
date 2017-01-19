@@ -133,7 +133,7 @@ else if($story==1){
 		$str=$str." and o.day=".$day;
 	}
 
-	$sql1 = "select r.name, r.checkinsCount , r.id
+	$sql1 = "select r.name, r.address , r.checkinsCount , r.id
 					FROM Restaurant r
 					WHERE EXISTS 
   					(SELECT * FROM City c, OpenHours o 
