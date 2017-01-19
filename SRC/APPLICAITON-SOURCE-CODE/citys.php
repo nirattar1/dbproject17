@@ -21,7 +21,7 @@
 require_once("connectToDB.php");
 $story = $_GET["story"];
 $currentRows = 0;
-$cnt = 0;
+$cnt = $_GET["page"];
 $conn = connect();
 
 function createButtons($conn)
@@ -127,10 +127,36 @@ if ($currentRows < $totalRows) {
            type="button"
            value="more cities"
            align="center"
-           onclick="window.location.href='moreCities.php?story=<?php echo $story ?>&page=<?php echo $cnt ?>'"/>
+           onclick="window.location.href='citys.php?story=<?php echo $story ?>&page=<?php echo $cnt ?>'"/>
     <?php
 }
-?>
+
+if ($currentRows == $totalRows) {
+    ?>
+
+<input style="text-align: center
+				width: 170px; 
+				padding: 30px; 
+				margin: auto;
+				cursor: pointer; 
+				position: center;
+				box-shadow: 6px 6px 5px; #999; 
+				-webkit-box-shadow: 6px 6px 5px #999; 
+				-moz-box-shadow: 6px 6px 5px #999; 
+				font-weight: bold; 
+				background: #8fbc8f; 
+				color: #000; 
+				border-radius: 
+				10px; border: 1px solid #999; 
+				font-size: 150%;"
+       type="button"
+       value="the city is not in the list.."
+       align="center"
+       onclick="window.location.href='newCity.php?story=<?php echo $story ?>&badget=<?php echo $badget ?>&page=<?php echo $cnt ?>'"/>
+       
+ <?php
+} ?>
+
 
 <?php $conn->close(); ?>
 </body>
