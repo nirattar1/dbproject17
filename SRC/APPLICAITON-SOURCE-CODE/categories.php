@@ -99,17 +99,15 @@ createButtons($conn);
        onclick="history.go(-1);"/>
 
 <?php
-$sql2 = "select COUNT(catgory_per_city) as total
-			from (
-			select Category.name as catgory_per_city
-			from (
-			select CategoryMain.main_id as y
-			from CategoryMain
-			group by CategoryMain.main_id
-			) as x, Category, City, Restaurant
-			where Category.id=x.y and Restaurant.category_id=Category.id and City.name='$city' and Restaurant.city_id=City.id
-			group by Category.name
-			) as z";
+
+$sql2 = "select COUNT(*) as total
+from(
+select Category.name
+            from CategoryMain , Category, City, Restaurant
+            where  City.name='New York' and Restaurant.city_id=City.id and Restaurant.has_menu=1 
+                        and Restaurant.category_id=Category.id and Category.id=CategoryMain.main_id
+            group by Category.name
+) as num";
 $result2 = $conn->query($sql2);
 $row = $result2->fetch_assoc();
 $totalRows = $row['total'];
