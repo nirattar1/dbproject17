@@ -155,7 +155,7 @@ if($story==3){	?>
 		<td><b>Restaurant Name</b></td>
    <td><b>Restaurant Catgory</b></td>
 		<td><b>Checkins Count</b></td>
-		<td><b>Restaurant average price for dish</b></td>
+		<td><b>Restaurant average menu price</b></td>
 	</tr>
 	
 	<?php for($i=0; $i< $result->num_rows ; $i++){?>
