@@ -101,7 +101,7 @@ $result = $conn->query($sql);
             <?php $row = $result->fetch_assoc(); ?>
             <td><?php echo $row["city_name"]; ?> </td>
             <td>
-                <a href="rest.php?rest=<?php echo $row["rest_name"]; ?>&id=<?php echo $row["r_id"]; ?>&city=<?php echo $city; ?>"><?php echo $row["rest_name"]; ?> </a>
+                <a href="rest.php?id=<?php echo $row["r_id"]; ?>"><?php echo $row["rest_name"]; ?> </a>
             </td>
             <td> <?php echo $row["cat_name"]; ?> </td>
         </tr>
