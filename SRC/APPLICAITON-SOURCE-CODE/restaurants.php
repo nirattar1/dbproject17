@@ -190,7 +190,16 @@ if($story==3){	?>
 <?php } ?>	
 </table>
 <?php } ?>
+<?php } 
+
+if ( $result->num_rows == 0 ){
+    echo '<script language="javascript">';
+    echo 'alert("There is no restaurants in selected budget")';
+    echo '</script>';  
+?>   
+    <meta http-equiv="refresh" content="0; url='badget.php?story=<?php echo $story ?>&city=<?php echo $city ?>&category=<?php echo $category ?>'"/>
 <?php } ?>
+
 
 <h3 align="center">
 	<input style="text-align: center
