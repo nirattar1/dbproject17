@@ -63,25 +63,57 @@ else if ($badget==3){
 $conn = connect(); 
 if($story==3) {
 	
-$sql1 = "select name, restaurant_avg, id
-from (
-select restaurant_table.name as name, restaurant_table.id as id, avg(restaurant_table.section_avg) as restaurant_avg
-from (
-select section_table.name, section_table.id, section_table.section_name , 
-avg(section_table.price) as section_avg 
-from (
-select Restaurant.name, Restaurant.id , Dish.section_name , Dish.name as name1  , Dish.price
-from Restaurant , City , Category , Dish
-where  City.name='$city' and Category.name='$category' and City.id=Restaurant.city_id and 
-Restaurant.category_id=Category.id and Restaurant.has_menu=1 and Dish.restaurant_id=Restaurant.id
-) as section_table
-group by section_table.section_name
-) as restaurant_table
-group by restaurant_table.id desc
-) as avg_by_budget
-where $from < restaurant_avg and restaurant_avg < $to
-limit 15";
+$sql1 = "
+SELECT table3.id
+,table3.name
+,table3.Category_name
+	,table3.checkinsCount
+	,restaurant_avg
+FROM (
+	SELECT table2.id
+ ,table2.name
+ ,table2.Category_name
+		,table2.checkinsCount
+		,avg(table2.section_avg) AS restaurant_avg
+	FROM (
+		SELECT table1.id
+   ,table1.name
+   ,table1.Category_name
+			,table1.checkinsCount
+			,table1.section_name
+			,avg(table1.price) AS section_avg
+		FROM (
+			SELECT Restaurant.id
+      ,Restaurant.name
+      ,Category.name as Category_name
+				,Restaurant.checkinsCount
+				,Dish.section_name
+				,Dish.price
+			FROM Restaurant
+				,City
+				,Category
+				,Dish
+        ,( select x.name as main_name, y.name as sub_name
+        from CategoryMain, Category as x, Category as y
+        where CategoryMain.main_id=x.id and x.name='$category' and CategoryMain.category_id=y.id )as sub_catgoryes
+			WHERE City.NAME = '$city'
+        AND City.id = Restaurant.city_id
+				AND sub_catgoryes.main_name = '$category'
+        and sub_catgoryes.sub_name = Category.name
+		    AND Category.id = Restaurant.category_id
+				AND Restaurant.has_menu = 1
+				AND Dish.restaurant_id = Restaurant.id
+			) AS table1
+		GROUP BY table1.section_name
+		) AS table2
+	GROUP BY table2.id DESC
+ 	order by table2.checkinsCount desc
+	) AS table3
+WHERE $from < restaurant_avg
+	AND restaurant_avg < $to limit 15
+  ";
 }
+
 
 else if($story==1){
 	$str="";
@@ -119,8 +151,10 @@ if ( $result->num_rows > 0 ){
 if($story==3){	?>	
 <table>
 	<tr>
-		<td><b>Popolarity Number</b> </td>
+		<td><b></b> </td>
 		<td><b>Restaurant Name</b></td>
+   <td><b>Restaurant Catgory</b></td>
+		<td><b>Checkins Count</b></td>
 		<td><b>Restaurant average price for dish</b></td>
 	</tr>
 	
@@ -129,6 +163,8 @@ if($story==3){	?>
 			<td> <?php echo $i+1; ?> </td>
 			<?php  $row = $result->fetch_assoc(); ?>
 			<td><a href="rest.php?id=<?php echo $row["id"]; ?>"> <?php echo $row["name"]; ?> </a></td>
+          <td> <?php echo $row["Category_name"]; ?> </td>
+      <td> <?php echo $row["checkinsCount"]; ?> </td>
 			<td> <?php echo $row["restaurant_avg"]; ?> </td>
 	</tr>
 <?php } ?>	
@@ -137,8 +173,9 @@ if($story==3){	?>
 <?php if($story==1){	?>
 <table>
 	<tr>
-		<td><b>Popolarity Number</b> </td>
+		<td><b></b> </td>
 		<td><b>Restaurant Name</b></td>
+   <td><b>Restaurant Addres</b></td>
 		<td><b>Checkins Count</b></td>
 	</tr>
 	
@@ -147,6 +184,7 @@ if($story==3){	?>
 			<td> <?php echo $i+1; ?> </td>
 			<?php  $row = $result->fetch_assoc(); ?>
 			<td><a href="rest.php?id=<?php echo $row["id"]; ?>"> <?php echo $row["name"]; ?> </a></td>
+      <td> <?php echo $row["address"]; ?> </td>
 			<td> <?php echo $row["checkinsCount"]; ?> </td>
 	</tr>
 <?php } ?>	
