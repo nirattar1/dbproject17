@@ -3,47 +3,48 @@ set_time_limit(0);
 ini_set('memory_limit', '2024M');
 require_once("php-foursquare-master/src/FoursquareApi.php");
 require_once("0_functions.php");
+require_once("addValuesToTables.php");
 
+$conn = createConnection();
+searchHoursAndMenusPerCity($conn,$jsonsDir,'Seattle');
+closeConnection($conn);
 
-
-function searchHoursAndMenusPerCity($conn,$cityNameDir){
+function searchHoursAndMenusPerCity($conn,$jsonsDir,$cityNameDir){
 	$foursquare = createNewFoursqaure('2');
-	searchHoursPerCity($conn,$cityNameDir);
-	searchMenusPerCity($conn,$cityNameDir);
+	searchHoursPerCity($conn,$foursquare,$jsonsDir,$cityNameDir);
+	searchMenusPerCity($conn,$foursquare,$jsonsDir,$cityNameDir);
 }
 
 // hours
-function searchHoursPerCity($conn,$cityNameDir){
+function searchHoursPerCity($conn,$foursquare,$jsonsDir,$cityNameDir){
 	$cityId = getCityIdByName($conn,str_replace('_',' ',$cityNameDir));
 	$venuesArr = getVenuesArrFromDB($conn,$cityId);
-	searchMenusOrHoursByVenueArr($venuesArr,$foursquare,$jsonsDir,'menus/',$cityNameDir);
+	searchMenusOrHoursByVenueArr($venuesArr,$foursquare,$jsonsDir,'hours/','hours',$cityNameDir);
 }
 
 // menus
-function searchMenusPerCity($conn,$cityNameDir){
+function searchMenusPerCity($conn,$foursquare,$jsonsDir,$cityNameDir){
 	// we'll do requests only for venues that hes_menu==1
 	$cityId = getCityIdByName($conn,str_replace('_',' ',$cityNameDir));
 	$venuesArr = getVenuesWithMenusArrFromDB($conn,$cityId);
-	searchMenusOrHoursByVenueArr($venuesArr,$foursquare,$jsonsDir,'menus/',$cityNameDir);
+	searchMenusOrHoursByVenueArr($venuesArr,$foursquare,$jsonsDir,'menus/','menu',$cityNameDir);
 }
 
 // mutual
-function searchMenusOrHoursByVenueArr($venuesArr,$foursquare,$jsonsDir,$menusHoursDir,$cityNameDir){
+function searchMenusOrHoursByVenueArr($venuesArr,$foursquare,$jsonsDir,$menusHoursDir,$type,$cityNameDir){
 	$outputPerCity = $jsonsDir.$menusHoursDir.$cityNameDir.'/';
 	$outputPerCityArr = array_flip(scandir($outputPerCity));
-	if(!in_array($cityNameDir,scandir($jsonsDir.$menusHoursDir)))
 	if(!in_array($cityNameDir,scandir($jsonsDir.$menusHoursDir)))
 		mkdir($outputPerCity);
 	
 	foreach($venuesArr as $venueId){
-		requestForVenue($foursquare,$venueId,"menu",$outputPerCity,$outputPerCityArr);
+		requestForVenue($foursquare,$venueId,$type,$outputPerCity,$outputPerCityArr);
 	}
 }
 
 // request
 function requestForVenue($foursquare,$venueId,$type,$outputDirPerCity,$outputPerCityArr){
-	//foreach($vanuesArrPerCity as $id=>$s){
-		
+	
 	$requestType = "venues/$venueId/".$type;
 	$params = array();
 	$nameParams = array($venueId);
@@ -52,9 +53,8 @@ function requestForVenue($foursquare,$venueId,$type,$outputDirPerCity,$outputPer
 	$fileName = createFileNameByParams($nameParams);
 	
 	if(!array_key_exists($fileName,$outputPerCityArr)){
+		echo "writing $fileName ";
 		getAndSaveJSON($foursquare,$requestType,$params,$fileName,$outputDirPerCity);
-	}else{
-		copy($outputDirPerCityOld.$fileName,$outputDirPerCity.$fileName);
 	}
 }
 
