@@ -29,10 +29,10 @@ function searchMenusPerCity($conn,$foursquare,$jsonsDir,$cityNameDir){
 // mutual
 function searchMenusOrHoursByVenueArr($venuesArr,$foursquare,$jsonsDir,$menusHoursDir,$type,$cityNameDir){
 	$outputPerCity = $jsonsDir.$menusHoursDir.$cityNameDir.'/';
-	$outputPerCityArr = array_flip(scandir($outputPerCity));
 	if(!in_array($cityNameDir,scandir($jsonsDir.$menusHoursDir)))
 		mkdir($outputPerCity);
 	
+	$outputPerCityArr = array_flip(scandir($outputPerCity));
 	foreach($venuesArr as $venueId){
 		requestForVenue($foursquare,$venueId,$type,$outputPerCity,$outputPerCityArr);
 	}

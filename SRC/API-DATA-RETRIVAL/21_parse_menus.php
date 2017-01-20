@@ -66,10 +66,9 @@ function loadMenusPerCity($jsonsDir,$menusDir,$cityNameDir,$loadToDB,$conn,$writ
 					$indexedArr[$titleToIndex['venueId']] = $venueId;
 					$indexedArr[$titleToIndex['sectionName']] = $sectionName;
 
-					if($indexedArr[$titleToIndex['price']] === null){
-						echo "skipping price = null<br>"; //TODO: delete
+					if($indexedArr[$titleToIndex['price']] === null)// we don't add dishes without price
 						continue;
-					}
+					
 					
 					if($loadToDB){
 						addEntryToDishTable($conn,$indexedArr,$titleToIndex);		

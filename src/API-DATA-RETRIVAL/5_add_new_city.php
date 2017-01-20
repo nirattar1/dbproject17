@@ -9,11 +9,9 @@ require_once("21_parse_menus.php");
 require_once("31_parse_hours.php");
 require_once("addValuesToTables.php");
 
-echo "outside";
-addNewCityStory('Miami',$jsonsDir,$venuesDir);
+addNewCityStory('San diego',$jsonsDir,$menusDir,$hoursDir,$venuesDir);
 
-function addNewCityStory($cityName,$jsonsDir,$venuesDir){
-	echo "inside";
+function addNewCityStory($cityName,$jsonsDir,$menusDir,$hoursDir,$venuesDir){
 	$writeLogs = fopen('5_logs.txt','w');
 	
 	// params:
@@ -27,7 +25,7 @@ function addNewCityStory($cityName,$jsonsDir,$venuesDir){
 	$foursquare = createNewFoursqaure('5');
 	// connet to DB
 	$conn = createConnection();
-	$cityNameDir = str_replace('_',' ',$cityName);
+	$cityNameDir = str_replace(' ','_',$cityName);
 
 
 	// -- start --
@@ -52,7 +50,7 @@ function addNewCityStory($cityName,$jsonsDir,$venuesDir){
 	fwrite($writeLogs,date("H:i:s")." - after loadVenuesPerCity\r\n");
 
 	// search_menus_hours (2_search_menus_hours.php)
-	searchHoursAndMenusPerCity($conn,$cityNameDir);
+	searchHoursAndMenusPerCity($conn,$jsonsDir,$cityNameDir);
 	fwrite($writeLogs,date("H:i:s")." - after searchHoursAndMenusPerCity\r\n");
 
 	// load menus to DB (21_parse_menus.php)
