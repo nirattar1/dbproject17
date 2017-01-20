@@ -7,12 +7,6 @@ require_once("addValuesToTables.php");
 // input
 $citiesInputFile = $inputDir."citiesInput.txt";
 
-
-//two uses to this script:
-//1. load cities into cities table (done only once). (will be done when loadToDB==1)
-//2. (primary usage) search venues data using the API. (when requestData==1).
-// see below addNewCity
-
 $runForAllCities = 0;
 
 //(only one time - controlled by flag $runForAllCities)
@@ -40,7 +34,10 @@ if($runForAllCities){
 		closeConnection($conn);
 }
 
-
+//two uses to this script:
+//1. load cities into cities table (done only once). (will be done when loadToDB==1)
+//2. (primary usage) search venues data using the API. (when requestData==1).
+// returns something og the form array(boolean, "error message")
 function addNewCity($foursquare,$cityName, // cityName - no underscore
 		$jsonsDir,$venuesDir,$splitNum,$categotyId,$loadToDB,$requestData,$conn){
 		
@@ -48,18 +45,13 @@ function addNewCity($foursquare,$cityName, // cityName - no underscore
 	$googleApiKey = "AIzaSyDutGO-yGZstF2N3IjGOUv8kWYWi9aGGGk";
 	$boundingBox = $foursquare->getBoundingBox($cityName,$googleApiKey);
 	if($boundingBox==null){
-		// TODO: something went wrong message
-		return false;
+		return array(false,"Something went wrong... Please try again");
 	}
 	if(!inUSA($boundingBox)){
-		// TODO: seems that this city is not in usa. try different city
-		echo "this city is not in USA<br>";
-		return false;
+		return array(false,"This city is not in the USA");
 	}
 	if(cityAlreadyInTableBB($conn,$boundingBox)){
-		// TODO: this city is already in our DB
-		echo "We already have this city<br>";
-		return false;
+		return array(false,"We already have this city");
 	}
 	
 	$titleToIndex = array('cityId'=>0,'cityName'=>1,'north_lat'=>2,'south_lat'=>3, 'east_lon'=>4,'west_lon'=>5);
@@ -76,7 +68,7 @@ function addNewCity($foursquare,$cityName, // cityName - no underscore
 		addEntryToCityTable($conn, $cityArr, $titleToIndex);
 	}
 	if(!$requestData)
-		return 0; // when already have the data
+		return array(true,''); // when already have the data
 	
 	//assume city already exists in db
 	//now do the api requsts
@@ -85,15 +77,12 @@ function addNewCity($foursquare,$cityName, // cityName - no underscore
 	$cityNameDir = str_replace(' ','_',$cityName).'/';
 	$outputDir = $jsonsDir.$venuesDir.$cityNameDir;
 	
-	if(!in_array(str_replace('/','',$cityNameDir),scanDir($jsonsDir.$venuesDir))){
+	if(!in_array(str_replace('/','',$cityNameDir),scanDir($jsonsDir.$venuesDir)))
 		mkdir($outputDir);
-		if($cityNameDir=='San_Francisco')
-			echo "create new directory for $cityNameDir";
-	}
 	
 	requestCityFunc($foursquare,$cityName,$boundingBox,$requestType,$categotyId,$outputDir,$splitNum);	
 	
-	return true;
+	return array(true,'');
 }
 
 ?>

@@ -9,9 +9,8 @@ require_once("21_parse_menus.php");
 require_once("31_parse_hours.php");
 require_once("addValuesToTables.php");
 
-addNewCityStory('San diego',$jsonsDir,$menusDir,$hoursDir,$venuesDir);
 
-function addNewCityStory($cityName,$jsonsDir,$menusDir,$hoursDir,$venuesDir){
+function addNewCityStory($cityName,$jsonsDir='jsons/',$venuesDir='venues/',$menusDir='menus/',$hoursDir='hours/'){ // allowing default params
 	$writeLogs = fopen('5_logs.txt','w');
 	
 	// params:
@@ -32,13 +31,12 @@ function addNewCityStory($cityName,$jsonsDir,$menusDir,$hoursDir,$venuesDir){
 	fwrite($writeLogs,date("H:i:s")." - start\r\n");
 
 	// search_venues (1_search_venues.php)
-	$isOk = addNewCity($foursquare,$cityName, // cityName - no underscore
+	list($isOk,$errorStr) = addNewCity($foursquare,$cityName, // cityName - no underscore
 			$jsonsDir,$venuesDir,$splitNum,$categoryId,$loadToDB,$requestData,$conn);
 	fwrite($writeLogs,date("H:i:s")." - after addNewCity\r\n");
 	
 	if($isOk === false){
-		// TODO
-		exit;
+		return $errorStr;
 	}
 	
 	$cityId = getCityIdByName($conn,$cityName);
@@ -63,6 +61,8 @@ function addNewCityStory($cityName,$jsonsDir,$menusDir,$hoursDir,$venuesDir){
 
 	// close connection to DB
 	closeConnection($conn);
+	
+	
 }
 
 ?>
