@@ -62,7 +62,7 @@ function addNewCityStory($cityName,$jsonsDir='jsons/',$venuesDir='venues/',$menu
 	// close connection to DB
 	closeConnection($conn);
 	
-	
+	return true;
 }
 
 ?>
