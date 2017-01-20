@@ -9,7 +9,13 @@ function connect(){
     $conn = new mysqli($servername, $username, $password, $dbname);
     // Check connection
     if ($conn->connect_error) {
-        die("Connection failed: " . $conn->connect_error);
+
+		echo '<script language="javascript">';
+		echo 'alert("Connection the data base failed:  '.$conn->connect_error.'")';
+		echo '</script>'; 
+?>
+		<meta http-equiv="refresh" content="0; url='welcome.php'"/>
+<?php
     }
     return $conn;
 }
