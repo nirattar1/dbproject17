@@ -212,7 +212,17 @@ if ($result->num_rows > 0) {
         ?>
     </table>
 
-<?php } ?>
+<?php 
+} 
+elseif($result->num_rows==0 && $dish_name_search != ''){
+		
+		echo '<script language="javascript">';
+		echo 'alert("dish name '.$dish_name_search.' does not exist")';
+		echo '</script>'; 
+	
+}
+
+?>
 
 
 <h3 align="center">
