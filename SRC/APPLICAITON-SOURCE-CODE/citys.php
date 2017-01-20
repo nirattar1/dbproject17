@@ -18,10 +18,17 @@
 <h1>Press on the city in which you want to find restuarents </h1>
 
 <?php
+
 require_once("connectToDB.php");
+
+// Save starting page the user chosen
 $story = $_GET["story"];
 $currentRows = 0;
+
+// Save # of diferent city pages appeared
 $cnt = $_GET["page"];
+
+// conecting to DB server
 $conn = connect();
 
 function createButtons($conn)
@@ -30,6 +37,8 @@ function createButtons($conn)
     global $currentRows;
     global $story;
     $items = $cnt * 12;
+	
+	# Query - select the cities.
     $sql = "SELECT name FROM City LIMIT 12 OFFSET $items";
 
     $result = $conn->query($sql);
@@ -42,6 +51,7 @@ function createButtons($conn)
         // output data of each row
         for ($i = 1; $i <= 12 and $result->num_rows >= $i; $i++) //while($row = $result->fetch_assoc())
         {
+			// create the right url to move depend on the starting page
             $row = $result->fetch_assoc();
             if ($story == 1) {
                 $url = "'" . 'hours.php?story=' . $story . '&city=' . $row["name"] . "'";
@@ -55,6 +65,9 @@ function createButtons($conn)
             if ($story == 5) {
                 $url = "'" . 'expensive.php?story=' . $story . '&city=' . $row["name"] . "'";
             }
+			
+			//button to Cities 
+			
             echo '<input style="width: 300px; 
 							padding: 30px; 
 							margin: 10px;
@@ -77,6 +90,8 @@ function createButtons($conn)
     }
 }
 createButtons($conn);
+
+//button to move the previous page 
 ?>
 
 </br></br>
@@ -102,10 +117,15 @@ createButtons($conn);
        onclick="history.go(-1);"/>
 
 <?php
+
+# Query - calculate number of citys.
+
 $sql2 = "SELECT COUNT(*) as total FROM City";
 $result2 = $conn->query($sql2);
 $row = $result2->fetch_assoc();
 $totalRows = $row['total'];
+
+//button to show more citys
 
 if ($currentRows < $totalRows) {
     ?>
@@ -130,6 +150,8 @@ if ($currentRows < $totalRows) {
            onclick="window.location.href='citys.php?story=<?php echo $story ?>&page=<?php echo $cnt ?>'"/>
     <?php
 }
+
+//button to create new city
 
 if ($currentRows == $totalRows) {
     ?>

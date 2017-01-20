@@ -58,6 +58,9 @@ $sql = "select * from Restaurant where id=\"$id\" limit 1";
 $result = $conn->query($sql);
 if ($result->num_rows > 0)
     $row = $result->fetch_assoc();
+$sql2 = "select * from OpenHours where  restaurant_id =\"$id\" order by day limit 100";
+$hour_result = $conn->query($sql2);
+
 ?>
 
 <div class="container">
@@ -92,10 +95,27 @@ if ($result->num_rows > 0)
 
     <article>
         <h1><?php echo $rest; ?></h1>
-        <p>Address: <?php echo $row["address"] . ", " . $city; ?> </p>
-        <p>URL: <a href="<?php echo $row["url"]; ?>"> <?php echo $row["url"]; ?> </a></p>
-        <p>Phone: <?php echo $row["phone"]; ?> </p>
-        <p>Open Hours: </p>
+        <p><b>Address:</b> <?php echo $row["address"] . ", " . $city; ?> </p>
+        <p><b>URL:</b> <a href="<?php echo $row["url"]; ?>"> <?php echo $row["url"]; ?> </a></p>
+        <p><b>Phone:</b> <?php echo $row["phone"]; ?> </p>
+        <p><b>Open Hours:</b><br>
+            <?php
+            $days=array(
+                1=>"Sunday",
+                2=>"Monday",
+                3=>"Tuesday",
+                4=>"Wednesday",
+                5=>"Thursday",
+                6=>"Friday",
+                7=>"Saturday");
+            for($i=0; $i< $hour_result->num_rows ; $i++) {
+                $hour_row = $hour_result->fetch_assoc();
+                if (array_key_exists($hour_row["day"], $days))
+                    echo "                 ".$days[$hour_row["day"]] . ": " . substr($hour_row["open_hour"],0,5) . "-" . substr($hour_row["close_hour"],0,5);
+                ?>
+            <br>
+            <?php
+            }?></p>
     </article>
 
 </div>

@@ -57,32 +57,33 @@
 <?php
 require_once("connectToDB.php");
 $conn = connect();
-$sql = "SELECT c.name as city_name , r.name as rest_name,r.id as r_id , max(r.checkinsCount) as chekins, best_cat.cat_name
+//select the most popular restaurant in the city by number of checkins,
+// and the most popular category in the city, by the amount of restaurants in the category.
+
+$sql = "
+SELECT c.name AS city_name , r.name AS rest_name,r.id AS r_id , max(r.checkinsCount) AS chekins, best_cat.cat_name
 FROM Restaurant r, City c, Category cat,
 (
-
-select x.city_name, y.cat_name
-from
- (select city_categories.city_name, max(city_categories.cnt) as m
- from
+	SELECT x.city_name, y.cat_name
+	FROM
+		(SELECT city_categories.city_name, max(city_categories.cnt) AS m
+		FROM
 			(
-			select distinct City.name as city_name, c.name as cat_name,count(c.name) as cnt
-			from Restaurant r, Category c, City
-			where r.category_id = c.id and City.id= r.city_id
-			group by  City.name,c.name
-			) as city_categories
+			SELECT distinct City.name AS city_name, c.name AS cat_name,count(c.name) AS cnt
+			FROM Restaurant r, Category c, City
+			WHERE r.category_id = c.id and City.id= r.city_id
+			GROUP BY  City.name,c.name
+			) AS city_categories
 
- group by city_categories.city_name) as x ,
+	GROUP BY city_categories.city_name) AS x ,
  	(
-			select distinct City.name as city_name, c.name as cat_name,count(c.name) as cnt
-			from Restaurant r, Category c, City
-			where r.category_id = c.id and City.id= r.city_id
-			group by  City.name,c.name
-			) as y
-where x.city_name= y.city_name and x.m= y.cnt
- 
-
-) as best_cat 
+			SELECT distinct City.name AS city_name, c.name AS cat_name,count(c.name) AS cnt
+			FROM Restaurant r, Category c, City
+			WHERE r.category_id = c.id and City.id= r.city_id
+			GROUP BY  City.name,c.name
+	) AS y
+	WHERE x.city_name= y.city_name and x.m= y.cnt
+) AS best_cat 
 WHERE r.city_id=c.id and r.category_id= cat.id and best_cat.city_name= c.name
 GROUP BY c.name";
 $result = $conn->query($sql);
@@ -94,8 +95,10 @@ $result = $conn->query($sql);
         <td><b>The most popular restaurant</b></td>
         <td><b>The most popular category</b></td>
     </tr>
-
-    <?php for ($i = 0; $i < $result->num_rows; $i++) { ?>
+	
+    <?php for ($i = 0; $i < $result->num_rows; $i++) { 
+	// for each city, we build a row in the table to represent the resaults.
+	?>
         <tr>
 
             <?php $row = $result->fetch_assoc(); ?>
