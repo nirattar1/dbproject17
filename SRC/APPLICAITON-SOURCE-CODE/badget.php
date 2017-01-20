@@ -22,9 +22,15 @@
 <h1>Choose a range for the average price you are willing to pay for a meal </h1>
 
 <?php
+
+// Save starting page, city and category the user chosen
+
 $story = $_GET["story"];
 $city = $_GET["city"];
 $category = $_GET["category"];
+
+
+//button of badget and back button
 ?>
 
 </br>

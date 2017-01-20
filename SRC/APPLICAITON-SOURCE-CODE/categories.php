@@ -19,9 +19,14 @@
 <h1>Press on the food category you want to find restaurant for </h1>
 
 <?php
+
 require_once("connectToDB.php");
+
+// Save starting page and city the user chosen
 $story = $_GET["story"];
 $city = $_GET["city"];
+
+// Save # of diferent city pages appeared
 $cnt = $_GET["page"];
 $currentRows = 0;
 $conn = connect();
@@ -33,6 +38,10 @@ function createButtons($conn)
     global $story;
     global $city;
     $items = $cnt * 12;
+	
+	# Query - select the categores.
+	##show only main category. 
+	
     $sql = "select Category.name
             from CategoryMain , Category, City, Restaurant
             where City.name='$city' and Restaurant.city_id=City.id and Restaurant.has_menu=1 
@@ -51,6 +60,9 @@ function createButtons($conn)
         {
             $row = $result->fetch_assoc();
             $url = "'" . 'badget.php?story=' . $story . '&city=' . $city . '&category=' . $row["name"] . "'";
+			
+			//button to categores
+			
             echo '<input style="width: 300px; 
 							padding: 30px; 
 							margin: 10px;
@@ -74,6 +86,8 @@ function createButtons($conn)
 }
 
 createButtons($conn);
+
+//button to move the previous page 
 ?>
 
 </br></br>
@@ -100,6 +114,8 @@ createButtons($conn);
 
 <?php
 
+# Query - calculate number of catgores.
+
 $sql2 = "select COUNT(*) as total
 from(
 select Category.name
@@ -111,6 +127,9 @@ select Category.name
 $result2 = $conn->query($sql2);
 $row = $result2->fetch_assoc();
 $totalRows = $row['total'];
+
+//button to show more categores
+
 if ($currentRows < $totalRows) {
     ?>
     <input style="text-align: center

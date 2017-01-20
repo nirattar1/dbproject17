@@ -36,7 +36,11 @@ tr:nth-child(6n+5) { background: hsl(200, 99%, 50%); }
 <p>Here are the best matches to your search criteria:</p>
 <h1>the result order is based on the popularity of the place</h1>
 <?php
+
 require_once("connectToDB.php");
+
+// Save starting page, city, category, budget, hours and days the user chosen
+
 $city= $_GET["city"];
 $category= $_GET["category"];
 $badget= $_GET["badget"];
@@ -47,6 +51,9 @@ $day= $_GET["day"];
 $from;
 $to;
 
+// Update budget range according to the information from previous page in case the story = 3
+if($story==3) {
+	
 if ($badget==1){
 	$from=0;
 	$to=10;
@@ -59,9 +66,13 @@ else if ($badget==3){
 	$from=50;
 	$to=10000;
 }
+}
 
 $conn = connect(); 
 if($story==3) {
+
+# Query - popular restaurants according to $city, $category and $budget by the user choice. 
+## restaurants in the budget range if average menu in the range. subcategories of catgory considered in $category and therefore will be shown in the result.
 	
 $sql1 = "
 SELECT table3.id
@@ -114,6 +125,7 @@ WHERE $from < restaurant_avg
   ";
 }
 
+// calculate SQL condition of opening hours and day by the user choice 
 
 else if($story==1){
 	$str="";
@@ -133,6 +145,8 @@ else if($story==1){
 		$str=$str." and o.day=".$day;
 	}
 
+# Query - popular restaurants according to $city and opening hours and day requested by the user. 	
+	
 	$sql1 = "select r.name, r.address , r.checkinsCount , r.id
 					FROM Restaurant r
 					WHERE EXISTS 
@@ -146,6 +160,8 @@ else if($story==1){
 
 
 $result = $conn->query($sql1);
+
+//Construction of the appropriate table
 
 if ( $result->num_rows > 0 ){ 
 if($story==3){	?>	
@@ -192,6 +208,8 @@ if($story==3){	?>
 <?php } ?>
 <?php } 
 
+//An error message if no results to display
+
 if ( $result->num_rows == 0 ){
 	if($story==3){
     echo '<script language="javascript">';
@@ -208,11 +226,11 @@ else if($story==1){
     <meta http-equiv="refresh" content="0; url='hours.php?story=<?php echo $story ?>&city=<?php echo $city ?>'"/>
 <?php }
 
-
+//button to move the previous page  
 
  }?>
 
-
+ 
 <h3 align="center">
 	<input style="text-align: center
 				width: 170px;
