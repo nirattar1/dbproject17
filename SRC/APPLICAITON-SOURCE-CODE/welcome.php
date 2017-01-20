@@ -17,7 +17,7 @@
     </style>
 
 </head>
-<body>
+<body style="background-image:url(background.jpg)">
 <p>Hungry?</p>
 <h1>Let us help you find the best place to eat based on your preferences</h1>
 
@@ -48,10 +48,7 @@ $story;
             var link_params = "citys.php?story=5";
             window.location.href = link_params;
         }
-        if (value == 6) {
-            var link_params = "???.php?story=6";
-            window.location.href = link_params;
-        }
+
     }
 </script>
 

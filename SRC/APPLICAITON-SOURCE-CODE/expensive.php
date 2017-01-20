@@ -53,7 +53,7 @@
     </style>
 
 </head>
-<body>
+<body style="background-image:url(background.jpg)">
 <p> Celebrate special event?<br /> Want to impress her with a fancy restaurant?<br /> Let us help you <p>
 <?php $city = $_GET["city"];
 //city is the user's choice from previous page.

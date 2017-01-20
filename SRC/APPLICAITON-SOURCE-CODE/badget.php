@@ -17,7 +17,8 @@
     </style>
 
 </head>
-<body>
+<body style="background-image:url(background.jpg)">
+
 <p>What is your budget?</p>
 <h1>Choose a range for the average price you are willing to pay for a meal </h1>
 

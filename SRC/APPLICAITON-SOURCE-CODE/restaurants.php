@@ -32,7 +32,7 @@ tr:nth-child(6n+4) { background: hsl(190, 90%, 50%); }
 tr:nth-child(6n+5) { background: hsl(200, 99%, 50%); }	
 </style>	
 	
-<body>
+<body style="background-image:url(background.jpg)">
 <p>Here are the best matches to your search criteria:</p>
 <h1>the result order is based on the popularity of the place</h1>
 <?php

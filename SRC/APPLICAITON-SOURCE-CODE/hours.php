@@ -66,7 +66,7 @@
     </style>
 
 </head>
-<body>
+<body style="background-image:url(background.jpg)">
 <p>choose your favorite hours </p>
 <h2>let us know when you would like to go out</h2>
 

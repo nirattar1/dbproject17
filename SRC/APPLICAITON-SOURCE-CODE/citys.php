@@ -13,7 +13,7 @@
         font-size: 150%;
     }
 </style>
-<body>
+<body style="background-image:url(background.jpg)">
 <p>Choose City</p>
 <h1>Press on the city in which you want to find restuarents </h1>
 

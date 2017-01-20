@@ -47,7 +47,7 @@
         }
     </style>
 </head>
-<body>
+<body style="background-image:url(background.jpg)">
 
 <?php
 require_once("connectToDB.php");

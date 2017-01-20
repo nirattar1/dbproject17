@@ -14,7 +14,7 @@
     }
 </style>
 
-<body>
+<body style="background-image:url(background.jpg)">
 <p>Choose Category</p>
 <h1>Press on the food category you want to find restaurant for </h1>
 

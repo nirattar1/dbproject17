@@ -50,7 +50,7 @@
     </style>
 
 </head>
-<body>
+<body style="background-image:url(background.jpg)">
 <p>popularty is you thing?</p>
 <h1>here are the most popular restrurant and food category in every city:</h1>
 
@@ -111,6 +111,10 @@ $result = $conn->query($sql);
         <?php
     } ?>
 
+	
+<?php	
+//button to move the previous page 
+?>
 </table>
 <h2 align="center">
     <h3 align="center">
@@ -136,6 +140,8 @@ $result = $conn->query($sql);
     </h3>
 </h2>
 
-<?php $conn->close(); ?>
+<?php
+//close the connection to the database
+ $conn->close(); ?>
 </body>
 </html>

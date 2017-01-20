@@ -85,7 +85,7 @@
     </style>
 
 </head>
-<body>
+<body style="background-image:url(background.jpg)">
 <p>choose your favorite dish...</p>
 <h2>Search for specific dish name (for example pizza)</h2>
 
