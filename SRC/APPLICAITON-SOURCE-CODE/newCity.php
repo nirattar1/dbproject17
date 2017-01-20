@@ -39,39 +39,20 @@
     }
 
 </style>
+<body>
+<p>Add City</p>
+
 
 <?php
 $story = $_GET["story"];
 $city_name = $_POST['txt_city'];
-$pattern = '/[A-Za-z]+/';
-if (isset($_POST['btn_go'])) {
-    if (!empty($_POST['txt_city'])) {
-        if (ctype_alpha($city_name) == 1) {
-            echo $city_name;
-        } else {
-            //echo "error!";
-            echo '<script language="javascript">';
-            echo 'alert("aaaaammmmiiiittttt!!!!!")';
-            echo '</script>';
-        }
-    }
-}
-
-?>
-
-<body>
-<p>Choose City</p>
-
-
-<?php
-require_once("connectToDB.php");
-$currentRows = 0;
-$badget = $_GET["badget"];
-$category = $_GET["category"];
-$conn = connect();
+//require_once("connectToDB.php");
+require_once("5_add_new_city.php");
+//$conn = connect();
 ?>
 
 <h1>Enter a city name:</h1>
+
 <h2 align="center">
 <form method="post">
     <input type="text" name="txt_city">
@@ -79,6 +60,20 @@ $conn = connect();
     <input type="submit" value="Let's go!" name="btn_go">
 </form>
     </h2>
+<?php    
+
+if (isset($_POST['btn_go'])) {
+    if (!empty($city_name)) {
+        $errorStr = addNewCityStory($cityName);
+        if($errorStr !== true){
+            echo '<script language="javascript">';
+            echo 'alert("aaaaammmmiiiittttt!!!!!")';
+            echo '</script>';
+        }
+    }
+}
+?>
+    
 </br>
 <h2 align="center">
 <h3 align="center">
