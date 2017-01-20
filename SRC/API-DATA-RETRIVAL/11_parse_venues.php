@@ -4,60 +4,59 @@ ini_set('memory_limit', '2024M');
 require_once("0_functions.php");
 require_once("addValuesToTables.php");
 
-
 // input
-$inputDir = 'input/';
-$loadToDB = 1; // otherwise - goes to csv
-$writeVenuesWithMenuMode = 1;
+$runForAllCities = 0;
 
-// parse
-$titleToIndex = array('cityId'=>0,'id'=>1,'name'=>2,'url'=>3,'hasMenu'=>4,'phone'=>5,
-					'address'=>6,'city'=>7,'state'=>8,'country'=>9,
-					'category'=>10,'checkinsCount'=>11,'usersCount'=>12,'tipCount'=>13);
+//(only one time - controlled by flag $runForAllCities)
+if($runForAllCities){
+	$loadToDB = 1; // otherwise - goes to csv for testing
 
-
-if($loadToDB){
-	$conn = createConnection();
-}else{	
-	$citiesInputFile = $inputDir."citiesInput.txt";
-	$city2idArr = getCity2idArr($citiesInputFile);
-	
-	$space = "\r\n";			
-	$writeFileName = $csvDir."venues_new_17_01_17.csv";
-	$write = fopen($writeFileName,'w');
-	fwrite($write,implode(',',array_keys($titleToIndex)).$space);
-	
-	if($writeVenuesWithMenuMode)
-		$writeVenuesWithMenu = fopen($inputDir."VenuesWithMenus.txt",'w');
-}
+	// parse
+	$titleToIndex = array('cityId'=>0,'id'=>1,'name'=>2,'url'=>3,'hasMenu'=>4,'phone'=>5,
+						'address'=>6,'city'=>7,'state'=>8,'country'=>9,
+						'category'=>10,'checkinsCount'=>11,'usersCount'=>12,'tipCount'=>13);
 
 
-foreach(scandir($jsonsDir.$venuesDir) as $cityNameDir){
-	if($cityNameDir==='.' || $cityNameDir==='..')
-		continue;
-	
 	if($loadToDB){
-		$cityId = getCityIdByName($conn,str_replace('_',' ',$cityNameDir));
-		echo "$cityNameDir=$cityId<br>";
-		if($cityId===FALSE){
-			echo "cityName $cityNameDir wasn't found<br>";
-			continue;
-		}
-	}else{
-		$cityId = $city2idArr[str_replace('_',' ',$cityNameDir)];
-		$conn = 0;//won't be used in this case
+		$conn = createConnection();
+	}else{	
+		// for testing before loading to the DB
+		
+		$citiesInputFile = $inputDir."citiesInput.txt";
+		$city2idArr = getCity2idArr($citiesInputFile);
+		
+		$space = "\r\n";			
+		$writeFileName = $csvDir."venues_new_17_01_17.csv";
+		$write = fopen($writeFileName,'w');
+		fwrite($write,implode(',',array_keys($titleToIndex)).$space);
 	}
-	
-	loadVenuesPerCity($jsonsDir,$venuesDir,$cityNameDir,$cityId,$loadToDB,$conn);//$write,$writeVenuesWithMenuMode);
-}
 
-if($loadToDB){
-	closeConnection($conn);
-}else{
-	fclose($write);
-}
 
-exit;
+	foreach(scandir($jsonsDir.$venuesDir) as $cityNameDir){
+		if($cityNameDir==='.' || $cityNameDir==='..')
+			continue;
+		
+		if($loadToDB){
+			$cityId = getCityIdByName($conn,str_replace('_',' ',$cityNameDir));
+			echo "$cityNameDir=$cityId<br>";
+			if($cityId===FALSE){
+				echo "cityName $cityNameDir wasn't found<br>";
+				continue;
+			}
+		}else{
+			$cityId = $city2idArr[str_replace('_',' ',$cityNameDir)];
+			$conn = 0;//won't be used in this case
+		}
+		
+		loadVenuesPerCity($jsonsDir,$venuesDir,$cityNameDir,$cityId,$loadToDB,$conn);//$write,$writeVenuesWithMenuMode);
+	}
+
+	if($loadToDB){
+		closeConnection($conn);
+	}else{
+		fclose($write);
+	}
+}
 
 
 function loadVenuesPerCity($jsonsDir,$venuesDir,$cityNameDir,$cityId,$loadToDB,$conn,$write=null,$writeVenuesWithMenuMode=false){

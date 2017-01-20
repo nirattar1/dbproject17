@@ -4,30 +4,34 @@ ini_set('memory_limit', '2024M');
 require_once("0_functions.php");
 require_once("addValuesToTables.php");
 
-$loadToDB = 1;
-$titleToIndex = array('venueId'=>0,'sectionName'=>1,'dishId'=>2,'dishName'=>3,'description'=>4,'price'=>5);
+// input
+$runForAllCities = 0;
+
+//(only one time - controlled by flag $runForAllCities)
+if($runForAllCities){
+	$loadToDB = 1;
+	$titleToIndex = array('venueId'=>0,'sectionName'=>1,'dishId'=>2,'dishName'=>3,'description'=>4,'price'=>5);
 
 
-if($loadToDB){
-	$conn = createConnection();
-	//TODO
-	//$conn->query("DELETE FROM Dish");
-	//exit;
-}else{	
-	$space = "\r\n";
-	$writeFileName = $csvDir.$menusDir."all.csv";
-	$write = fopen($writeFileName,'w');
-	fwrite($write,implode(',',array_keys($titleToIndex)).$space);
+	if($loadToDB){
+		$conn = createConnection();
+	}else{	
+		// for testing before loading to the DB
+
+		$space = "\r\n";
+		$writeFileName = $csvDir.$menusDir."all.csv";
+		$write = fopen($writeFileName,'w');
+		fwrite($write,implode(',',array_keys($titleToIndex)).$space);
+	}
+
+	foreach(scandir($jsonsDir.$menusDir) as $cityNameDir){
+		if($cityNameDir==='.' || $cityNameDir==='..')
+			continue;
+		
+		loadMenusPerCity($jsonsDir,$menusDir,$cityNameDir,$loadToDB,$conn);
+	}
 }
 
-foreach(scandir($jsonsDir.$menusDir) as $cityNameDir){
-	if($cityNameDir==='.' || $cityNameDir==='..')
-		continue;
-	
-	
-	loadMenusPerCity($jsonsDir,$menusDir,$cityNameDir,$loadToDB,$conn);
-	
-}
 
 function loadMenusPerCity($jsonsDir,$menusDir,$cityNameDir,$loadToDB,$conn,$write=null){
 	$titleToIndex = array('venueId'=>0,'sectionName'=>1,'dishId'=>2,'dishName'=>3,'description'=>4,'price'=>5);
@@ -54,7 +58,7 @@ function loadMenusPerCity($jsonsDir,$menusDir,$cityNameDir,$loadToDB,$conn,$writ
 		foreach($jsonArr['response']['menu']['menus']['items'] as $i=>$oneMenu){ // convert json to indexed array and to line in csv / entry in DB	
 			foreach($oneMenu['entries']['items'] as $j=>$itemSection){ // section in the menu: salads, sandwiches, desserts
 				// menu section (like "Sandwiches")
-				$sectionName = fixString($itemSection['name']); // we must have this field, some times dish names can't be understood without the section name
+				$sectionName = getFieldOrNull($itemSection,'name',1,$loadToDB); // we must have this field, some times dish names can't be understood without the section name
 				
 				foreach($itemSection['entries']['items'] as $k=>$dishDetails){
 					$indexedArr = dishJson2indexedArr($dishDetails,$titleToIndex,$loadToDB);
@@ -81,9 +85,6 @@ function loadMenusPerCity($jsonsDir,$menusDir,$cityNameDir,$loadToDB,$conn,$writ
 
 
 }
-
-exit;
-
 
 
 ?>

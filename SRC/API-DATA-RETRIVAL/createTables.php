@@ -18,7 +18,7 @@ exit;
 function createCityTable($conn)
 {
     $sql = "CREATE TABLE IF NOT EXISTS City (
-            id INT(6) PRIMARY KEY,
+            id INT(6) NOT NULL AUTO_INCREMENT PRIMARY KEY,
             name VARCHAR(30) NOT NULL,
 			north_lat DECIMAL(50,7) NOT NULL,
 			south_lat DECIMAL(50,7) NOT NULL,
@@ -89,7 +89,7 @@ function createRestaurantTable($conn)
 function createDishTable($conn)
 {
     $sql = "CREATE TABLE IF NOT EXISTS Dish (
-            id VARCHAR(32) PRIMARY KEY,
+            id int(16) NOT NULL AUTO_INCREMENT PRIMARY KEY,
             restaurant_id VARCHAR(32) NOT NULL,
             FOREIGN KEY(restaurant_id) REFERENCES Restaurant(id),
             section_name VARCHAR(256),

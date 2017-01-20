@@ -5,22 +5,20 @@ require_once("0_functions.php");
 require_once("addValuesToTables.php");
 
 
-$inputDir = 'input/';
 $citiesInputFile = $inputDir."citiesInput.txt";
 $loadToDB = 1; // otherwise - goes to csv
-
 
 // parse
 
 $titleToIndex = array('main_category'=>0,'son_catgory'=>1);
 
-$city2idArr = getCity2idArr($citiesInputFile);
 
 if($loadToDB){
 	$conn = createConnection();
-}else{	
+}else{
+	// for testing before loading to the DB
  	$space = "\r\n";			
-	$writeFileName = $csvDir.$venuesDir."categories.csv";
+	$writeFileName = $csvDir."categories.csv";
 	$write = fopen($writeFileName,'w');
 	fwrite($write,implode(',',array_keys($titleToIndex)).$space);
 }
@@ -53,7 +51,6 @@ if($loadToDB){
 }else{
 	fclose($write);
 }
-exit;
 
 
 function getSonsCategoryIds($categoriesJson,$conn,$loadToDB){

@@ -1,7 +1,9 @@
 <?php
 require_once("php-foursquare-master/src/FoursquareApi.php");
 
-// output
+// output directories - mutual to all retrival-data scripts
+// create directories if not exists
+$inputDir = 'input/';
 $jsonsDir = 'jsons/';
 $csvDir = 'csv/';
 if(!in_array(str_replace('/','',$jsonsDir),scandir('.')))
@@ -13,7 +15,6 @@ if(!in_array(str_replace('/','',$csvDir),scandir('.')))
 $venuesDir = 'venues/';
 $menusDir = 'menus/';
 $hoursDir = 'hours/';
-$updatesDir = 'updates/';
 if(!in_array(str_replace('/','',$venuesDir),scandir($jsonsDir)))
 	mkdir($jsonsDir.$venuesDir);
 if(!in_array(str_replace('/','',$menusDir),scandir($jsonsDir)))
@@ -26,6 +27,10 @@ if(!in_array(str_replace('/','',$menusDir),scandir($csvDir)))
 	mkdir($csvDir.$menusDir);
 
 
+// --- mutual to all retrival-data scripts ---
+
+// foursquare object to use the class FoursquareApi
+// $i is the script number creating this object, for easier logs writing
 function createNewFoursqaure($i){
 	// Set your client key and secret
 	$client_key = "PNQBKVKJSRGNN4NXJGMU2J2X1OXWLGM2W5ARZDYDAPUXEJWN";
@@ -38,7 +43,7 @@ function createNewFoursqaure($i){
 
 
 function getAndSaveJSON($foursquare,$requestType,$params,$fileName,$outputDir){
-	// Perform a request to a public resource
+	// Perform a request
 	$response = $foursquare->GetPublic($requestType,$params); // might be null (if null - check fails file - the fail url is there)
 	
 	if(empty($response)){
@@ -55,13 +60,35 @@ function getAndSaveJSON($foursquare,$requestType,$params,$fileName,$outputDir){
 	}	
 }
 
+function createFileNameByParams($params){
+	$fileName = '';
+	foreach($params as $key=>$val){
+		$fileName = $fileName.str_replace(' ','_',$val).',';
+	}
+	return substr($fileName,0,strlen($fileName)-1).".json";
+}
 
 
+// --- used in 1_search_venues.php ---
+
+// check that the boundingBox is inside of USA's boundingBox
+function inUSA($boundingBox){
+	// based on USA boundingBox (from google api)
+	$a = $boundingBox['north_lat'] < 71.5388001;
+	$b = $boundingBox['south_lat'] > 18.7763;
+	$c = $boundingBox['east_lon'] < -66.885417; // from -66.885417 to -180
+	$d = $boundingBox['west_lon'] > 170.5957;	// from 170.5957 to 180
+	
+	return ($a && $b && ($c || $d));
+}
+
+
+// creates the requests by splitting the city to few rectangles to get more venues for the city
 function requestCityFunc($foursquare,$cityName,$boundingBox,$requestType,$categoryId,$outputDir,$splitNum){
 	$outputDirArr = array_flip(scanDir($outputDir));
 
 	list($bbMat,$deltaNS,$deltaEW) = getBoundingBoxMat($boundingBox,$splitNum);
-	$c=0;
+
 	foreach($bbMat as $lat=>$latArr){	
 		foreach($latArr as $lon=>$stam){
 			$ne = formatCoodrdinates($lat).','.formatCoodrdinates($lon);
@@ -80,20 +107,12 @@ function requestCityFunc($foursquare,$cityName,$boundingBox,$requestType,$catego
 			// request api only if not exists
 			if(!array_key_exists($fileName,$outputDirArr)){
 				getAndSaveJSON($foursquare,$requestType,$params,$fileName,$outputDir);
-				$c++;
 			}
 		}
 	}
 }
 
-function createFileNameByParams($params){
-	$fileName = '';
-	foreach($params as $key=>$val){
-		$fileName = $fileName.str_replace(' ','_',$val).',';
-	}
-	return substr($fileName,0,strlen($fileName)-1).".json";
-}
-
+// splitting the city to few rectangles
 function getBoundingBoxMat($boundingBox,$splitNum){
 	$bbMat = array();
 	
@@ -123,12 +142,13 @@ function formatCoodrdinates($coord){
 	return $head.'.'.substr($tail,0,4);
 }
 
-
+/// --- parsing foursquare jsons ---
 function getFieldOrNull($arr,$key,$isStr,$loadToDB){
+	// field doesn't exist:
 	if(!array_key_exists($key,$arr))
 		return null;
 		
-	// found:
+	// field exists:
 	$val = $arr[$key];
 	if($isStr){
 		$val = fixString($val);
@@ -138,6 +158,7 @@ function getFieldOrNull($arr,$key,$isStr,$loadToDB){
 	return $val;
 }
 
+// parse venue (restaurant)
 function venueJson2indexedArr($venueDetails,$titleToIndex,$loadToDB){
 	$arrToWrite = array_fill(0,sizeof($titleToIndex),'');
 	
@@ -171,6 +192,7 @@ function venueJson2indexedArr($venueDetails,$titleToIndex,$loadToDB){
 	return $arrToWrite;
 }
 
+// parse dish
 function dishJson2indexedArr($dishDetails,$titleToIndex,$loadToDB){
 	$arrToWrite = array_fill(0,sizeof($titleToIndex),'');
 	
@@ -188,30 +210,8 @@ function fixString($str){
 	return $str;
 }
 
-//TODO: delete
-function getCity2idArr($fileName){
-	$city2id = array();
-	$read = fopen($fileName,'r') or die ("can't open file");
-	$cityId = 0; //row number
-	while(!feof($read)){
-		$cityName = trim(fgets($read));
-		if($cityName==='')
-			continue;
-		$city2id[$cityName] = $cityId++;
-	}
-	fclose($read);
-	return $city2id;
-}
-
-function fstRow2IndexArr($line,$delimiter = ','){
-	$arr = array();
-	$parts = explode($delimiter,$line);
-	foreach($parts as $i=>$title){		
-		$arr[str_replace('"','',$title)] = $i;
-	}
-	return $arr;
-}
-
+// --- 31_parse_hours functions ---
+// deal with time range that ends the next day (hour has +) - and saving a param that says that we need to split that range
 function formatTime($timeStr){
 	$isNextDay = false;
 	if(strpos($timeStr,'+')!==false){
@@ -226,6 +226,7 @@ function formatTime($timeStr){
 	return array($hh.':'.$mm.':00',$isNextDay);
 }
 
+// split time range that ends the next day
 function splitRangeIfNeeded($startFrame,$endFrame,$isNextDay,$day){
 	$maybeSplitedRanges = array();
 	if(!$isNextDay){

@@ -4,29 +4,35 @@ ini_set('memory_limit', '2024M');
 require_once("0_functions.php");
 require_once("addValuesToTables.php");
 
+// input
+$runForAllCities = 0;
 
-$loadToDB = 1;
-$titleToIndex = array('venueId'=>0,'day'=>1,'start'=>2,'end'=>3);
+//(only one time - controlled by flag $runForAllCities)
+if($runForAllCities){
+	$loadToDB = 1;
+	$titleToIndex = array('venueId'=>0,'day'=>1,'start'=>2,'end'=>3);
 
 
-if($loadToDB){
-	$conn = createConnection();
-}else{	
-	$space = "\r\n";
-	$writeFileName = $csvDir.$hoursDir."hours.csv";
-	$write = fopen($writeFileName,'w');
-	fwrite($write,implode(',',array_keys($titleToIndex)).$space);
+	if($loadToDB){
+		$conn = createConnection();
+	}else{	
+		// for testing before loading to the DB
+
+		$space = "\r\n";
+		$writeFileName = $csvDir.$hoursDir."hours.csv";
+		$write = fopen($writeFileName,'w');
+		fwrite($write,implode(',',array_keys($titleToIndex)).$space);
+	}
+
+	foreach(scandir($jsonsDir.$hoursDir) as $cityNameDir){
+		if($cityNameDir==='.' || $cityNameDir==='..')
+			continue;
+		
+		loadHoursPerCity($jsonsDir,$hoursDir,$cityNameDir,$loadToDB,$conn);
+	}
+	closeConnection($conn);
 }
 
-foreach(scandir($jsonsDir.$hoursDir) as $cityNameDir){
-	if($cityNameDir==='.' || $cityNameDir==='..')
-		continue;
-	
-	loadHoursPerCity($jsonsDir,$hoursDir,$cityNameDir,$loadToDB,$conn);
-}
-closeConnection($conn);
-
-exit;
 
 function loadHoursPerCity($jsonsDir,$hoursDir,$cityNameDir,$loadToDB,$conn,$write=null){
 	$titleToIndex = array('venueId'=>0,'day'=>1,'start'=>2,'end'=>3);

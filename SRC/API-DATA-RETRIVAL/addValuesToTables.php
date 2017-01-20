@@ -49,18 +49,14 @@ function addEntryToCategoryTable($conn,$id,$name)
 
 // return new cityId
 function addEntryToCityTable($conn,$cityArr,$titleToIndex){
-	$sql = $conn->query("select max(id) max from City");
-	$row = $result->fetch_assoc()
-	
-    $id = $row['max'] + 1;
-    $name		= $cityArr[$titleToIndex['cityName']];
+	$name		= $cityArr[$titleToIndex['cityName']];
 	$north_lat 	= $cityArr[$titleToIndex['north_lat']];
 	$south_lat 	= $cityArr[$titleToIndex['south_lat']];
 	$east_lon 	= $cityArr[$titleToIndex['east_lon']];
 	$west_lon 	= $cityArr[$titleToIndex['west_lon']];
 	
-    $sql = $conn->prepare("INSERT INTO City (id,name,north_lat,south_lat,east_lon,west_lon) VALUES (?,?,?,?,?,?)");
-    $sql->bind_param("isdddd",$id,$name,$north_lat,$south_lat,$east_lon,$west_lon);
+    $sql = $conn->prepare("INSERT INTO City (name,north_lat,south_lat,east_lon,west_lon) VALUES (?,?,?,?,?)");
+    $sql->bind_param("sdddd",$name,$north_lat,$south_lat,$east_lon,$west_lon);
 
     if ($sql->execute() === TRUE) {
         echo "Added city ".$name." successfully";
@@ -69,8 +65,6 @@ function addEntryToCityTable($conn,$cityArr,$titleToIndex){
     }
 
     $sql->close();
-	
-	return $id;
 }
 
 
@@ -110,8 +104,8 @@ function addEntryToDishTable($conn,$DishArr,$titleToIndex)
     $description	= $DishArr[$titleToIndex['description']];
     $price			= $DishArr[$titleToIndex['price']];
 
-    $sql = $conn->prepare("INSERT INTO Dish (id,restaurant_id,section_name,name,description,price) VALUES (?,?,?,?,?,?)");
-    $sql->bind_param("ssssss",$id,$restaurantId,$section,$name,$description,$price);
+    $sql = $conn->prepare("INSERT INTO Dish (restaurant_id,section_name,name,description,price) VALUES (?,?,?,?,?)");
+    $sql->bind_param("sssss",$restaurantId,$section,$name,$description,$price);
 
     if ($sql->execute() === TRUE) {
         echo "Added dish ".$name." successfully";
@@ -155,10 +149,9 @@ function addEntryToHoursTable($conn,$indexedArr,$titleToIndex){
 }
 
 
-//returns true if city already in table and false otherwise
-function cityAlreadyInTable($conn,$cityId)
+function cityAlreadyInTableBB($conn,$boundingBox)
 {
-    $result = $conn->query("SELECT * FROM City where id = $cityId LIMIT 1");
+    $result = $conn->query("SELECT * FROM City where north_lat=".$boundingBox['north_lat']." and south_lat=".$boundingBox['south_lat']." and east_lon=".$boundingBox['east_lon']." and west_lon=".$boundingBox['west_lon']);
 
     if ($result->num_rows > 0) {
         return TRUE;
@@ -217,5 +210,6 @@ function indexDish($conn){
 	$conn->query("CREATE FULLTEXT INDEX 'idx_Dish_name'  ON 'DbMysql07'.'Dish' (name) COMMENT ''");
 	//TODO: check
 }
+
 
 ?>

@@ -5,50 +5,43 @@ require_once("0_functions.php");
 require_once("addValuesToTables.php");
 
 // input
-$inputDir = 'input/';
 $citiesInputFile = $inputDir."citiesInput.txt";
 
 
 //two uses to this script:
 //1. load cities into cities table (done only once). (will be done when loadToDB==1)
-//2. (primary usage) fetch venues data using the API. (when loadToDB==0, default).
+//2. (primary usage) search venues data using the API. (when requestData==1).
 // see below addNewCity
 
-$loadToDB = 1;
+$runForAllCities = 0;
 
+//(only one time - controlled by flag $runForAllCities)
+if($runForAllCities){
+	$loadToDB = 1;
+	$foursquare = createNewFoursqaure('1');
 
-// request
+	// requesting all venues data (for the cities we wanted to retrive)
+	// determined by the input file.
+	$getCitiesToAdd = getCity2idArr($citiesInputFile);
 
-//$foursquare = new FoursquareApi($client_key,$client_secret,$requestsOutputFile,$failsOutputFile);
-$foursquare = createNewFoursqaure('1');
+	if ($loadToDB)
+		$conn = createConnection();
 
-// requesting all venues data
-//note: city id is determined by line in input file.
-//city2idArr is a mapping between city name to its id.
-$city2idArr = getCity2idArr($citiesInputFile);
+	foreach($getCitiesToAdd as $cityName){
+		$splitNum = 10;
+		$categoryId = "4d4b7105d754a06374d81259";
+		$requestData = 0;
+		
+		addNewCity($foursquare,$cityName,
+			$jsonsDir,$venuesDir,$splitNum,$categoryId,$loadToDB,$requestData,$conn);
+	}
 
-if ($loadToDB)
-	$conn = createConnection();
-
-
-foreach($city2idArr as $cityName=>$cityId){
-	$splitNum = 10;
-	$categoryId = "4d4b7105d754a06374d81259";
-	$requestData = 0;
-	
-	addNewCity($foursquare,$cityName,//$cityId,
-		$jsonsDir,$venuesDir,$splitNum,$categoryId,$loadToDB,$requestData,$conn);
+	if ($loadToDB)
+		closeConnection($conn);
 }
 
-if ($loadToDB)
-	closeConnection($conn);
 
-exit;
-
-// -- add new city functions --
-
-
-function addNewCity($foursquare,$cityName,//$cityId,
+function addNewCity($foursquare,$cityName, // cityName - no underscore
 		$jsonsDir,$venuesDir,$splitNum,$categotyId,$loadToDB,$requestData,$conn){
 		
 	// google API part
@@ -56,17 +49,21 @@ function addNewCity($foursquare,$cityName,//$cityId,
 	$boundingBox = $foursquare->getBoundingBox($cityName,$googleApiKey);
 	if($boundingBox==null){
 		// TODO: something went wrong message
-		return 0;
+		return false;
 	}
 	if(!inUSA($boundingBox)){
 		// TODO: seems that this city is not in usa. try different city
 		echo "this city is not in USA<br>";
-		return 0;
+		return false;
+	}
+	if(cityAlreadyInTableBB($conn,$boundingBox)){
+		// TODO: this city is already in our DB
+		echo "We already have this city<br>";
+		return false;
 	}
 	
 	$titleToIndex = array('cityId'=>0,'cityName'=>1,'north_lat'=>2,'south_lat'=>3, 'east_lon'=>4,'west_lon'=>5);
 	$cityArr = array_fill(0,sizeof($titleToIndex),'');
-	//$cityArr[$titleToIndex['cityId']] = $cityId;
 	$cityArr[$titleToIndex['cityName']] = $cityName;
 	$cityArr[$titleToIndex['north_lat']] = $boundingBox['north_lat'];
 	$cityArr[$titleToIndex['south_lat']] = $boundingBox['south_lat'];
@@ -95,20 +92,8 @@ function addNewCity($foursquare,$cityName,//$cityId,
 	}
 	
 	requestCityFunc($foursquare,$cityName,$boundingBox,$requestType,$categotyId,$outputDir,$splitNum);	
-}
-
-
-function inUSA($boundingBox){
-	// check that the boundingBox is inside of USA's boundingBox
-	$a = $boundingBox['north_lat'] < 49.38;
-	$b = $boundingBox['south_lat'] > 25.82;
-	$c = $boundingBox['east_lon'] < -66.94;
-	$d = $boundingBox['west_lon'] > -124.39;
 	
-	return ($a && $b && $c && $d);
+	return true;
 }
-
-
-
 
 ?>

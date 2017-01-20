@@ -1,13 +1,9 @@
 <?php
 set_time_limit(0);
 ini_set('memory_limit', '2024M');
-require_once("php-foursquare-master/src/FoursquareApi.php");
 require_once("0_functions.php");
 require_once("addValuesToTables.php");
 
-$conn = createConnection();
-searchHoursAndMenusPerCity($conn,$jsonsDir,'Seattle');
-closeConnection($conn);
 
 function searchHoursAndMenusPerCity($conn,$jsonsDir,$cityNameDir){
 	$foursquare = createNewFoursqaure('2');
