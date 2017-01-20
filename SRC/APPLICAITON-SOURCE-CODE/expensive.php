@@ -55,25 +55,30 @@
 </head>
 <body>
 <p> Celebrate special event?<br /> Want to impress her with a fancy restaurant?<br /> Let us help you <p>
-<?php $city = $_GET["city"]; ?>
+<?php $city = $_GET["city"];
+//city is the user's choice from previous page.
+ ?>
 <h1> * The most expensive dishes/drinks in <?php echo(str_replace('_', ' ', $city)) ?> *</h1>
 
 <?php
 require_once("connectToDB.php");
 $conn = connect();
-
-$sql0 = "select c.id as id from City as c where c.name='$city'";
+//get the city_id
+$sql0 = "SELECT c.id AS id from City AS c WHERE c.name='$city'";
 $result0 = $conn->query($sql0);
 $row0 = $result0->fetch_assoc();
 $city_id = $row0["id"];
 
-$sql = "select distinct d.name, r.name as rest, d.price, r.id as r_id 
-from Dish d, Restaurant r , (select max(d.price) as price
-from Dish d , Restaurant r
-where r.id=d.restaurant_id and r.city_id=$city_id) as t
-where d.price=t.price and r.id=d.restaurant_id and r.city_id=$city_id
-order by d.name
-limit 10
+//select the most expensive dish in the city. take maximun 10 dishes with the maximal price.
+$sql = "
+SELECT DISTINCT d.name, r.name AS rest, d.price, r.id AS r_id 
+FROM Dish d, Restaurant r ,(
+	SELECT max(d.price) as price
+	FROM Dish d , Restaurant r
+	WHERE r.id=d.restaurant_id AND r.city_id=$city_id) as t
+WHERE d.price=t.price AND r.id=d.restaurant_id AND r.city_id=$city_id
+ORDER BY d.name
+LIMIT 10
 ;";
 $result = $conn->query($sql);
 ?>
@@ -85,7 +90,11 @@ $result = $conn->query($sql);
         <td><b>Restaurant Name</b></td>
         <td><b>Price</b></td>
     </tr>
-    <?php for ($i = 0; $i < $result->num_rows; $i++) { ?>
+	
+    <?php
+	// build a table with maximum 10 dishes, that has the maximal price
+	for ($i = 0; $i < $result->num_rows; $i++) { ?>
+	
         <tr>
             <td> <?php echo $i + 1; ?> </td>
             <?php $row = $result->fetch_assoc(); ?>
@@ -106,17 +115,20 @@ $result = $conn->query($sql);
 </br>
 
 <?php
-$sql2 = "select expensive_rest.name as r_name, Dish.section_name, Dish.name as d_name, max(Dish.price) as max_p, expensive_rest.r_id
-		from Dish, (
-					select rest_prices.name,rest_prices.id as r_id, max(rest_prices.price)
-					from Restaurant as r, Dish as d, (
-															select r.name,r.id, avg(d.price) as price
-															from Restaurant as r, Dish as d
-															where r.id= d.restaurant_id and r.city_id=$city_id and d.price is not NULL
-															group by r.id) as rest_prices
-					where r.id= d.restaurant_id and r.city_id=$city_id and d.price is not NULL ) as expensive_rest
-where Dish.restaurant_id= expensive_rest.r_id and Dish.price is not NULL
-group by Dish.section_name";
+//select the most expensive restaurant in the city, by average of the dish prices, 
+//then select the most expensive dish in each section of the menu.
+$sql2 = "
+SELECT expensive_rest.name AS r_name, Dish.section_name, Dish.name AS d_name, max(Dish.price) AS max_p, expensive_rest.r_id
+FROM Dish, (
+			SELECT rest_prices.name,rest_prices.id AS r_id, max(rest_prices.price)
+			FROM Restaurant AS r, Dish AS d, (
+												SELECT r.name,r.id, avg(d.price) AS price
+												FROM Restaurant AS r, Dish AS d
+												WHERE r.id= d.restaurant_id AND r.city_id=$city_id AND d.price IS NOT NULL
+												GROUP BY r.id) AS rest_prices
+			WHERE r.id= d.restaurant_id AND r.city_id=$city_id AND d.price IS NOT NULL ) AS expensive_rest
+WHERE Dish.restaurant_id= expensive_rest.r_id AND Dish.price IS NOT NULL
+GROUP BY Dish.section_name";
 
 $result2 = $conn->query($sql2);
 $row2 = $result2->fetch_assoc();
