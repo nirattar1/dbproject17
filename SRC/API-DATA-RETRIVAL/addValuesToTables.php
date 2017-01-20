@@ -49,10 +49,10 @@ function addEntryToCategoryTable($conn,$id,$name)
 
 // return new cityId
 function addEntryToCityTable($conn,$cityArr,$titleToIndex){
-	$sql = $conn->query("select * from City");
+	$sql = $conn->query("select max(id) max from City");
+	$row = $result->fetch_assoc()
 	
-    $id = $sql->num_rows;
-    //$id=$cityArr[$titleToIndex['cityId']];
+    $id = $row['max'] + 1;
     $name		= $cityArr[$titleToIndex['cityName']];
 	$north_lat 	= $cityArr[$titleToIndex['north_lat']];
 	$south_lat 	= $cityArr[$titleToIndex['south_lat']];

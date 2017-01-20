@@ -62,31 +62,22 @@ function requestCityFunc($foursquare,$cityName,$boundingBox,$requestType,$catego
 
 	list($bbMat,$deltaNS,$deltaEW) = getBoundingBoxMat($boundingBox,$splitNum);
 	$c=0;
-	foreach($bbMat as $lat=>$latArr){
-		$size = sizeof($bbMat)*sizeof($bbMat[$lat]);
-		//echo "number of requests for $cityName = $size<br>";
-		//echo "time: ".($size/1700)." hours<br>";
-		//return 0;
-		//exit;
-		
+	foreach($bbMat as $lat=>$latArr){	
 		foreach($latArr as $lon=>$stam){
-			
-			// TODO: check this
 			$ne = formatCoodrdinates($lat).','.formatCoodrdinates($lon);
 			$sw = formatCoodrdinates($lat-$deltaNS).','.formatCoodrdinates($lon-$deltaEW);
-			
 			
 			// Prepare parameters
 			$params = array("sw"=>"$sw",
 							"ne"=>"$ne",
 							"categoryId"=>$categoryId, // food category
 							"intent"=>"browse");
-			
+			// build fileName
 			$nameParams = $params;
 			array_unshift($nameParams,$cityName);
+			$fileName = createFileNameByParams($nameParams);
 			
 			// request api only if not exists
-			$fileName = createFileNameByParams($nameParams);
 			if(!array_key_exists($fileName,$outputDirArr)){
 				getAndSaveJSON($foursquare,$requestType,$params,$fileName,$outputDir);
 				$c++;
@@ -197,7 +188,7 @@ function fixString($str){
 	return $str;
 }
 
-//note: city id is determined by line number in input file.
+//TODO: delete
 function getCity2idArr($fileName){
 	$city2id = array();
 	$read = fopen($fileName,'r') or die ("can't open file");

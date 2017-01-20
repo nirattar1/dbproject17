@@ -129,6 +129,7 @@ function createCategoryMainTable($conn)
 {
     $sql = "CREATE TABLE IF NOT EXISTS CategoryMain (
             category_id VARCHAR(32) PRIMARY KEY,
+			FOREIGN KEY(category_id) REFERENCES Category(id),
             main_id VARCHAR(32),
             created_at TIMESTAMP
             )";
