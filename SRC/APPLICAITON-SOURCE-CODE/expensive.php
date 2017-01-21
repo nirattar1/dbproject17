@@ -190,6 +190,25 @@ $row2 = $result2->fetch_assoc();
            value="back"
            align="center"
            onclick="window.location.href='citys.php?story=<?php echo $story ?>'"/>
+    <input style="text-align: center
+				width: 170px;
+				padding: 30px;
+				margin: auto;
+				cursor: pointer;
+				position: center;
+				box-shadow: 6px 6px 5px; #999;
+				-webkit-box-shadow: 6px 6px 5px #999;
+				-moz-box-shadow: 6px 6px 5px #999;
+				font-weight: bold;
+				background: #8fbc8f;
+				color: #000;
+				border-radius:
+				10px; border: 1px solid #999;
+				font-size: 150%;"
+           type="button"
+           value="new search"
+           align="center"
+           onclick="window.location.href='welcome.php'"/>
 </h3>
 
 <?php $conn->close(); ?>
