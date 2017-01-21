@@ -186,7 +186,7 @@ function venueAlreadyInTable($conn,$venueId)
 
 
 function getVenuesWithMenusArrFromDB($conn,$cityId){
-	$result = $conn->query("SELECT id FROM Restaurant where id=$cityId and has_menu=1"); // this will work onlt after making new DB
+	$result = $conn->query("SELECT id FROM Restaurant where city_id=$cityId and has_menu=1"); // this will work onlt after making new DB
 	$arr = array();
 	while ($row = $result->fetch_assoc()) {
 		$arr[] = $row['id'];

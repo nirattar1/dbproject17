@@ -5,8 +5,7 @@ require_once("0_functions.php");
 require_once("addValuesToTables.php");
 
 
-function searchHoursAndMenusPerCity($conn,$jsonsDir,$cityNameDir){
-	$foursquare = createNewFoursqaure('2');
+function searchHoursAndMenusPerCity($conn,$foursquare,$jsonsDir,$cityNameDir){
 	searchHoursPerCity($conn,$foursquare,$jsonsDir,$cityNameDir);
 	searchMenusPerCity($conn,$foursquare,$jsonsDir,$cityNameDir);
 }

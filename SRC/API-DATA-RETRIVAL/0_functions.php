@@ -87,6 +87,7 @@ function inUSA($boundingBox){
 function requestCityFunc($foursquare,$cityName,$boundingBox,$requestType,$categoryId,$outputDir,$splitNum){
 	$outputDirArr = array_flip(scanDir($outputDir));
 
+	// splitting the city to few rectangles
 	list($bbMat,$deltaNS,$deltaEW) = getBoundingBoxMat($boundingBox,$splitNum);
 
 	foreach($bbMat as $lat=>$latArr){	

@@ -9,12 +9,26 @@ require_once("21_parse_menus.php");
 require_once("31_parse_hours.php");
 require_once("addValuesToTables.php");
 
+$conn = createConnection();
+$venuesArr = getVenuesWithMenusArrFromDB($conn,23);
+print_r($venuesArr);
+closeConnection($conn);
 
+exit;
+
+/* $conn = createConnection();
+$str = (deleteCityData($conn,22) ? "city deleted" : "error occured while deleting city");
+echo $str;
+closeConnection($conn);
+ */
+ 
+addNewCityStory('san francisco');
+ 
 function addNewCityStory($cityName,$jsonsDir='jsons/',$venuesDir='venues/',$menusDir='menus/',$hoursDir='hours/'){ // allowing default params
 	$writeLogs = fopen('5_logs.txt','w');
 	
 	// params:
-	$cityName = str_replace(',','',$cityName); //making sure there are no commas (the rest illegal chars is handled in the html page
+	$cityName = ucwords(strtolower(str_replace(',','',$cityName))); //making sure there are no commas (the rest illegal chars is handled in the html page + first letter capital and the rest is lower case
 	$splitNum = 2; // = 4-9 requests for venues
 	$categoryId = "4d4b7105d754a06374d81259"; // main food categoryId
 	$loadToDB = 1;
@@ -48,7 +62,7 @@ function addNewCityStory($cityName,$jsonsDir='jsons/',$venuesDir='venues/',$menu
 	fwrite($writeLogs,date("H:i:s")." - after loadVenuesPerCity\r\n");
 
 	// search_menus_hours (2_search_menus_hours.php)
-	searchHoursAndMenusPerCity($conn,$jsonsDir,$cityNameDir);
+	searchHoursAndMenusPerCity($conn,$foursquare,$jsonsDir,$cityNameDir);
 	fwrite($writeLogs,date("H:i:s")." - after searchHoursAndMenusPerCity\r\n");
 
 	// load menus to DB (21_parse_menus.php)
@@ -64,5 +78,41 @@ function addNewCityStory($cityName,$jsonsDir='jsons/',$venuesDir='venues/',$menu
 	
 	return true;
 }
+
+
+function deleteCityData($conn,$cityId){
+	// delete entries:
+	$deleteDishes = "delete from Dish
+					where Dish.restaurant_id in
+					(select Restaurant.id 
+					from Restaurant
+					where Restaurant.city_id=$cityId)";
+					
+	$deleteHours = "delete from OpenHours
+					where OpenHours.restaurant_id in
+					(select Restaurant.id 
+					from Restaurant
+					where Restaurant.city_id=$cityId)";
+					
+	$deleteVenues = "delete from Restaurant where city_id=$cityId";
+
+	$deleteCity = "delete from City where id=$cityId";
+	
+	if( ! $conn->query($deleteDishes)){
+		return false;
+	}
+	if( ! $conn->query($deleteHours)){
+		return false;
+	}
+	if( ! $conn->query($deleteVenues)){
+		return false;
+	}
+	if( ! $conn->query($deleteCity)){
+		return false;
+	}
+	
+	return true;
+}
+
 
 ?>
