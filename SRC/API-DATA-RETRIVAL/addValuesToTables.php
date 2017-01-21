@@ -213,4 +213,10 @@ function indexDish($conn){
 }
 
 
+function optimizeDishTable($conn){
+	echo "Optimizing table Dish.";
+	$result = $conn->query("OPTIMIZE TABLE Dish;");
+	return $result;
+}
+
 ?>

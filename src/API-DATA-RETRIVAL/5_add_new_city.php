@@ -54,7 +54,10 @@ function addNewCityStory($cityName,$jsonsDir='jsons/',$venuesDir='venues/',$menu
 	// load menus to DB (21_parse_menus.php)
 	loadMenusPerCity($jsonsDir,$menusDir,$cityNameDir,$loadToDB,$conn);
 	fwrite($writeLogs,date("H:i:s")." - after loadMenusPerCity\r\n");
-
+	
+	//optimize the dish table (just in case many data was inserted and index should be reuilt)
+	optimizeDishTable($conn);
+	
 	// load hours to DB (31_parse_hours.php)
 	loadHoursPerCity($jsonsDir,$hoursDir,$cityNameDir,$loadToDB,$conn);
 	fwrite($writeLogs,date("H:i:s")." - after loadHoursPerCity\r\n");
