@@ -136,7 +136,7 @@ $result = $conn->query($sql);
                type="button"
                value="back"
                align="center"
-               onclick="history.go(-1);"/>
+               onclick="window.location.href='welcome.php'"/>
     </h3>
 </h2>
 

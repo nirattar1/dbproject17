@@ -244,7 +244,7 @@ elseif($result->num_rows==0 && $dish_name_search != ''){
            type="button"
            value="back"
            align="center"
-           onclick="history.go(-1);"/>
+           onclick="window.location.href='citys.php?story=<?php echo $story ?>'"/>
 </h3>
 <?php $conn->close(); ?>
 </body>

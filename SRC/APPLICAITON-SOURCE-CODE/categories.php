@@ -110,7 +110,7 @@ createButtons($conn);
        type="button"
        value="back"
        align="center"
-       onclick="history.go(-1);"/>
+       onclick="window.location.href='citys.php?story=<?php echo $story ?>'"/>
 
 <?php
 

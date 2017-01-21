@@ -154,7 +154,7 @@ $city = $_GET["city"];
        type="button"
        value="back"
        align="center"
-       onclick="history.go(-1);"/>
+       onclick="window.location.href='citys.php?story=<?php echo $story ?>'"/>
 
 <input type="button" value="next" align="center" onclick="submitHoursData()">
 

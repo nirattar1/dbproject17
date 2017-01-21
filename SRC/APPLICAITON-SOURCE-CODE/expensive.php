@@ -186,7 +186,7 @@ $row2 = $result2->fetch_assoc();
            type="button"
            value="back"
            align="center"
-           onclick="history.go(-1);"/>
+           onclick="window.location.href='citys.php?story=<?php echo $story ?>'"/>
 </h3>
 
 <?php $conn->close(); ?>
