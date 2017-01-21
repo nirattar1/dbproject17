@@ -120,13 +120,12 @@ $result = $conn->query($sql);
 $sql2 = "
 SELECT expensive_rest.name AS r_name, Dish.section_name, Dish.name AS d_name, max(Dish.price) AS max_p, expensive_rest.r_id
 FROM Dish, (
-			SELECT rest_prices.name,rest_prices.id AS r_id, max(rest_prices.price)
-			FROM Restaurant AS r, Dish AS d, (
-												SELECT r.name,r.id, avg(d.price) AS price
+			SELECT r.name ,r.id AS r_id, avg(d.price) AS price
 												FROM Restaurant AS r, Dish AS d
-												WHERE r.id= d.restaurant_id AND r.city_id=$city_id AND d.price IS NOT NULL
-												GROUP BY r.id) AS rest_prices
-			WHERE r.id= d.restaurant_id AND r.city_id=$city_id AND d.price IS NOT NULL ) AS expensive_rest
+												WHERE r.id= d.restaurant_id AND r.city_id=1 AND d.price IS NOT NULL
+												GROUP BY r.id
+												ORDER BY price desc
+												LIMIT 1 ) AS expensive_rest
 WHERE Dish.restaurant_id= expensive_rest.r_id AND Dish.price IS NOT NULL
 GROUP BY Dish.section_name";
 
