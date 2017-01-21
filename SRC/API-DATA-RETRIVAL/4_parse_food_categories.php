@@ -5,7 +5,6 @@ require_once("0_functions.php");
 require_once("addValuesToTables.php");
 
 
-$citiesInputFile = $inputDir."citiesInput.txt";
 $loadToDB = 1; // otherwise - goes to csv
 
 // parse

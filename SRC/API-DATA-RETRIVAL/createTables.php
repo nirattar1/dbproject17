@@ -131,6 +131,7 @@ function createCategoryMainTable($conn)
             category_id VARCHAR(32) PRIMARY KEY,
 			FOREIGN KEY(category_id) REFERENCES Category(id),
             main_id VARCHAR(32),
+			FOREIGN KEY(main_id) REFERENCES Category(id),
             created_at TIMESTAMP
             )";
 
