@@ -120,7 +120,7 @@ $sql2 = "select COUNT(*) as total
 from(
 select Category.name
             from CategoryMain , Category, City, Restaurant
-            where  City.name='New York' and Restaurant.city_id=City.id and Restaurant.has_menu=1 
+            where  City.name='$city' and Restaurant.city_id=City.id and Restaurant.has_menu=1 
                         and Restaurant.category_id=Category.id and Category.id=CategoryMain.main_id
             group by Category.name
 ) as num";
