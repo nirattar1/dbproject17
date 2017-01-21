@@ -91,7 +91,7 @@
 
 <?php
 require_once("connectToDB.php");
-
+$story = $_GET["story"];
 //will get parameters.
 //return SQL record set.
 function runDishQuery($conn, $cityId, $strDishSearchTerm,

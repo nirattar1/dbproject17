@@ -55,7 +55,10 @@
 </head>
 <body style="background-image:url(background.jpg)">
 <p> Celebrate special event?<br /> Want to impress her with a fancy restaurant?<br /> Let us help you <p>
-<?php $city = $_GET["city"];
+
+<?php 
+$city = $_GET["city"];
+$story = $_GET["story"];
 //city is the user's choice from previous page.
  ?>
 <h1> * The most expensive dishes/drinks in <?php echo(str_replace('_', ' ', $city)) ?> *</h1>
