@@ -122,7 +122,7 @@ SELECT expensive_rest.name AS r_name, Dish.section_name, Dish.name AS d_name, ma
 FROM Dish, (
 			SELECT r.name ,r.id AS r_id, avg(d.price) AS price
 												FROM Restaurant AS r, Dish AS d
-												WHERE r.id= d.restaurant_id AND r.city_id=1 AND d.price IS NOT NULL
+												WHERE r.id= d.restaurant_id AND r.city_id=$city AND d.price IS NOT NULL
 												GROUP BY r.id
 												ORDER BY price desc
 												LIMIT 1 ) AS expensive_rest
