@@ -8,6 +8,7 @@ require_once("addValuesToTables.php");
 $runForAllCities = 0;
 
 //(only one time - controlled by flag $runForAllCities)
+//important note: when running validate that loop ended - otherwise index won't be created.
 if($runForAllCities){
 	$loadToDB = 1;
 	$titleToIndex = array('venueId'=>0,'sectionName'=>1,'dishId'=>2,'dishName'=>3,'description'=>4,'price'=>5);
@@ -30,6 +31,11 @@ if($runForAllCities){
 		
 		loadMenusPerCity($jsonsDir,$menusDir,$cityNameDir,$loadToDB,$conn);
 	}
+		
+	//all cities inserted data - time to create index.
+	//note: index doesn't need to rebuild on new city
+	$result = indexDish($conn);
+	
 }
 
 

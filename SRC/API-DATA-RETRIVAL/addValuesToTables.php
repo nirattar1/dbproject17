@@ -207,8 +207,9 @@ function getVenuesArrFromDB($conn,$cityId){
 }
 
 function indexDish($conn){
-	$conn->query("CREATE FULLTEXT INDEX 'idx_Dish_name'  ON 'DbMysql07'.'Dish' (name) COMMENT ''");
-	//TODO: check
+	echo "Creating index (dish table).";
+	$result = $conn->query("CREATE FULLTEXT INDEX idx_Dish_name ON Dish (name);");
+	return $result;
 }
 
 
