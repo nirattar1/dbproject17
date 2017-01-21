@@ -24,6 +24,7 @@ if($runForAllCities){
 		fwrite($write,implode(',',array_keys($titleToIndex)).$space);
 	}
 
+	// load open hours foreach city
 	foreach(scandir($jsonsDir.$hoursDir) as $cityNameDir){
 		if($cityNameDir==='.' || $cityNameDir==='..')
 			continue;
@@ -44,7 +45,6 @@ function loadHoursPerCity($jsonsDir,$hoursDir,$cityNameDir,$loadToDB,$conn,$writ
 		
 		$jsonStr = file_get_contents($jsonsDir.$hoursDir.$cityNameDir.'/'.$fileName);
 		$jsonArr = json_decode($jsonStr,true);
-		// TODO: make sure that the json is valid
 		
 		$venueId = substr($fileName,0,strpos($fileName,'.'));
 		
@@ -56,12 +56,12 @@ function loadHoursPerCity($jsonsDir,$hoursDir,$cityNameDir,$loadToDB,$conn,$writ
 		if(!isset($jsonArr['response']['hours']['timeframes']))
 			continue;
 		
-		
+		// build the array that will be passed to the func addEntryToHoursTable
 		$indexedArr = array_fill(0,sizeof($titleToIndex),'');
 		$indexedArr[$titleToIndex['venueId']] = $venueId;
 
-		
-		foreach($jsonArr['response']['hours']['timeframes'] as $i=>$oneTimeframe){ // convert json to indexed array and to line in csv / entry in DB
+		// convert json to indexed array and to line in csv / entry in DB
+		foreach($jsonArr['response']['hours']['timeframes'] as $i=>$oneTimeframe){ 
 			foreach($oneTimeframe['days'] as $j=>$day){ 
 				
 				foreach($oneTimeframe['open'] as $k=>$rangeArr){

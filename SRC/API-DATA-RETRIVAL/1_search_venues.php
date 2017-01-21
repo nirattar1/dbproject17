@@ -44,14 +44,18 @@ function addNewCity($foursquare,$cityName, // cityName - no underscore
 	// google API part
 	$googleApiKey = "AIzaSyDutGO-yGZstF2N3IjGOUv8kWYWi9aGGGk";
 	$boundingBox = $foursquare->getBoundingBox($cityName,$googleApiKey);
-	if($boundingBox==null){
-		return array(false,"Something went wrong... Please try again");
+	// null when we have problem in requesting google api
+	if($boundingBox === null){
+		return array(false,"Something went wrong... Please try again."); // error
+	}
+	if($boundingBox === 0){
+		return array(false,"City wasn't found. Try a different city."); // error
 	}
 	if(!inUSA($boundingBox)){
-		return array(false,"This city is not in the USA");
+		return array(false,"This city is not in the USA"); // error
 	}
 	if(cityAlreadyInTableBB($conn,$boundingBox)){
-		return array(false,"We already have this city");
+		return array(false,"We already have this city"); // error (kind of)
 	}
 	
 	$titleToIndex = array('cityId'=>0,'cityName'=>1,'north_lat'=>2,'south_lat'=>3, 'east_lon'=>4,'west_lon'=>5);
@@ -80,7 +84,11 @@ function addNewCity($foursquare,$cityName, // cityName - no underscore
 	if(!in_array(str_replace('/','',$cityNameDir),scanDir($jsonsDir.$venuesDir)))
 		mkdir($outputDir);
 	
-	requestCityFunc($foursquare,$cityName,$boundingBox,$requestType,$categotyId,$outputDir,$splitNum);	
+	$requestsNum = requestCityFunc($foursquare,$cityName,$boundingBox,$requestType,$categotyId,$outputDir,$splitNum);
+	
+	// not enough results for the city
+	if($requestsNum<$splitNum)
+		return array(false,"Requesting restaurants has failed. Please try again."); // error
 	
 	return array(true,'');
 }

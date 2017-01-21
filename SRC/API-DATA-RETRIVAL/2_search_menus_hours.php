@@ -5,8 +5,12 @@ require_once("0_functions.php");
 require_once("addValuesToTables.php");
 
 
-function searchHoursAndMenusPerCity($conn,$foursquare,$jsonsDir,$cityNameDir){
+function searchHoursAndMenusPerCity($conn,$foursquare,$jsonsDir,$cityNameDir,$userRequest=false){
+	if($userRequest)
+		userFeedback("Getting open hours for restaurants");
 	searchHoursPerCity($conn,$foursquare,$jsonsDir,$cityNameDir);
+	if($userRequest)
+		userFeedback("Getting dishes");
 	searchMenusPerCity($conn,$foursquare,$jsonsDir,$cityNameDir);
 }
 
@@ -48,29 +52,13 @@ function requestForVenue($foursquare,$venueId,$type,$outputDirPerCity,$outputPer
 	$fileName = createFileNameByParams($nameParams);
 	
 	if(!array_key_exists($fileName,$outputPerCityArr)){
-		echo "writing $fileName ";
 		getAndSaveJSON($foursquare,$requestType,$params,$fileName,$outputDirPerCity);
 	}
 }
 
-
-/* non DB way
-function getVenuesWithMenusArr($readFileName){
-	$venuesWithMenusArr = array();
-	$read = fopen($readFileName,'r');
-	while(!feof($read)){
-		$line = trim(fgets($read));
-		if($line==='')
-			continue;
-		
-		list($cityName,$venueId) = explode(',',$line);
-		if(!array_key_exists($cityName,$venuesWithMenusArr))
-			$venuesWithMenusArr[$cityName] = array();
-		$venuesWithMenusArr[$cityName][] = $venueId;
-	}
-	fclose($read);
-	return $venuesWithMenusArr;
+// this used for adding new city
+function userFeedback($str){
+	echo "<h1>$str:</h1><br>";
 }
- */
 
 ?>

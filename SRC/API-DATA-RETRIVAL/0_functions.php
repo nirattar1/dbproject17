@@ -41,23 +41,26 @@ function createNewFoursqaure($i){
 	return new FoursquareApi($client_key,$client_secret,$requestsOutputFile,$failsOutputFile);
 }
 
-
+// perform request to foursquare api
+// returns true if was successfull, otherwise - false
 function getAndSaveJSON($foursquare,$requestType,$params,$fileName,$outputDir){
 	// Perform a request
 	$response = $foursquare->GetPublic($requestType,$params); // might be null (if null - check fails file - the fail url is there)
 	
 	if(empty($response)){
-		// TODO:
-		echo "TODO: foursquare->GetPublic returns null in getAndSaveJSON<br>";
+		return false;
 	}else{
 		file_put_contents($outputDir.$fileName,$response);
 	}
 
 	// check if rate_limit_exceeded
 	if($foursquare->rate_limit_exceeded){
+		// TODO
 		echo "rate limit exceeded<br>";
 		exit;
-	}	
+	}
+	
+	return true;
 }
 
 function createFileNameByParams($params){
@@ -84,7 +87,9 @@ function inUSA($boundingBox){
 
 
 // creates the requests by splitting the city to few rectangles to get more venues for the city
+// returns the number of good requests done
 function requestCityFunc($foursquare,$cityName,$boundingBox,$requestType,$categoryId,$outputDir,$splitNum){
+	$requestsNum = 0;
 	$outputDirArr = array_flip(scanDir($outputDir));
 
 	// splitting the city to few rectangles
@@ -107,10 +112,13 @@ function requestCityFunc($foursquare,$cityName,$boundingBox,$requestType,$catego
 			
 			// request api only if not exists
 			if(!array_key_exists($fileName,$outputDirArr)){
-				getAndSaveJSON($foursquare,$requestType,$params,$fileName,$outputDir);
+				$isGoodResponse = getAndSaveJSON($foursquare,$requestType,$params,$fileName,$outputDir);
+				if($isGoodResponse)
+					$requestsNum++;
 			}
 		}
 	}
+	return $requestsNum;
 }
 
 // splitting the city to few rectangles
