@@ -40,15 +40,14 @@
 
 </style>
 <body style="background-image:url(background.jpg)">
-<p>Add City</p>
+<p>Add City in USA</p>
 
 
 <?php
 $story = $_GET["story"];
-$city_name = $_POST['txt_city'];
-//require_once("connectToDB.php");
+$cnt = $_GET["page"];
+$cityName = $_POST['txt_city'];
 require_once("API-DATA-RETRIVAL/5_add_new_city.php");
-//$conn = connect();
 ?>
 
 <h1>Enter a city name:</h1>
@@ -63,14 +62,19 @@ require_once("API-DATA-RETRIVAL/5_add_new_city.php");
 <?php    
 
 if (isset($_POST['btn_go'])) {
-    if (!empty($city_name)) {
+    if (!empty($cityName)) {
         $errorStr = addNewCityStory($cityName);
-        echo $errorStr;
         if($errorStr !== true){
             echo '<script language="javascript">';
-            echo 'alert('.$errorStr.')';
+            echo 'alert("'.$errorStr.'")';
             echo '</script>';
         }
+        else{
+        ?>
+        <meta http-equiv="refresh" content="0; url='citys.php?story=<?php echo $story ?>&page=<?php echo $cnt ?>'"/>
+        <?php
+        }
+        
     }
 }
 ?>
