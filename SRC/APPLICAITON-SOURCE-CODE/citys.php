@@ -47,7 +47,7 @@ function createButtons($conn)
     $items = $cnt * 12;
 	
 	# Query - select the cities.
-    $sql = "SELECT name FROM City LIMIT 12 OFFSET $items";
+    $sql = "SELECT name FROM City ORDER BY id LIMIT 12 OFFSET $items";
 
     $result = $conn->query($sql);
     $numRows = $result->num_rows;
