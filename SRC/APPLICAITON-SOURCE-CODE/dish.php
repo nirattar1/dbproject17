@@ -92,17 +92,24 @@
 <?php
 require_once("connectToDB.php");
 $story = $_GET["story"];
-//will get parameters.
-//return SQL record set.
+
+
+
+//#Query: Searches dishes by name (full-text search) in a given city. 
+// This query is used for retrieving dish entities,
+// based on: 1. full-text search on the dish's name. 2. city id.
+// joined tables: Dish, Restaurant, City,  (a dish belongs to a restaurant, which is located in a city.)
+// additional requirements: a. retrieves only dishes with a not-null price. b. paging parameters.
+//function parameters: connection and parameters for search.
+//function returns: SQL record set.
 function runDishQuery($conn, $cityId, $strDishSearchTerm,
                       $items_per_page, $offset_items)
 {
 
     $sql = "SELECT 
-		Dish.id AS dish_id, Dish.name AS dish_name, Dish.price AS dish_price,
+		Dish.name AS dish_name, Dish.price AS dish_price,
 		Restaurant.id AS rest_id, Restaurant.name AS rest_name, 
-		Dish.section_name AS dish_section, Dish.description AS dish_description, 
-		City.id AS city_id, City.name AS city_name
+		Dish.section_name AS dish_section, Dish.description AS dish_description
 
 		FROM City 
 			INNER JOIN Restaurant 
