@@ -39,8 +39,8 @@ function createButtons($conn)
     global $city;
     $items = $cnt * 12;
 	
-	# Query - select the categores.
-	##show only main category. 
+# Query - returns 12 categories in $city. show only main category. We present all categories of the $city when the user ask of more and skipping those already displayed by using  $ITEMS.
+
 	
     $sql = "select Category.name
             from CategoryMain , Category, City, Restaurant
@@ -114,7 +114,7 @@ createButtons($conn);
 
 <?php
 
-# Query - calculate number of catgores.
+# Query - calculate total number of main categories to show.
 
 $sql2 = "select COUNT(*) as total
 from(

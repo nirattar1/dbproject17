@@ -87,8 +87,8 @@ else if ($badget==3){
 $conn = connect(); 
 if($story==3) {
 
-# Query - popular restaurants according to $city, $category and $budget by the user choice. 
-## restaurants in the budget range if average menu in the range. subcategories of catgory considered in $category and therefore will be shown in the result.
+# Query - returns popular restaurants according to $city, $category and $budget by the user choice. restaurants in the budget range if average menu in the range. subcategories of category considered in $category and therefore will be shown in the result.
+
 
 //first resolve category id from name.
 $cat_id = getCategoryIdByName($conn, $category);
