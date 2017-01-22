@@ -87,7 +87,7 @@ function addNewCity($foursquare,$cityName, // cityName - no underscore
 	$requestsNum = requestCityFunc($foursquare,$cityName,$boundingBox,$requestType,$categotyId,$outputDir,$splitNum);
 	
 	// not enough results for the city
-	if($requestsNum<$splitNum)
+	if($requestsNum<=$splitNum)
 		return array(false,"Requesting restaurants has failed. Please try again."); // error
 	
 	return array(true,'');

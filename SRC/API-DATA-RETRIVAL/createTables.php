@@ -3,17 +3,7 @@ set_time_limit(0);
 ini_set('memory_limit', '2024M');
 require_once("addValuesToTables.php");
 
-$conn = createConnection();
-
-createCityTable($conn);
-createCategoryTable($conn);
-createRestaurantTable($conn);
-createDishTable($conn);
-createCategoryMainTable($conn);
-createOpenHoursTable($conn);
-
-closeConnection($conn);
-exit;
+// all the functions in this file are run in backend to create tables in our DB
 
 function createCityTable($conn)
 {
@@ -37,13 +27,6 @@ function createCityTable($conn)
 
 function createCategoryTable($conn)
 {
-/* 	$sql = "DROP TABLE Category";
-
-    if ($conn->query($sql) === TRUE) {
-        echo "Category Table created successfully\n";
-    } else {
-        echo "Error creating table: " . $conn->error;
-    } */
     
 	$sql = "CREATE TABLE IF NOT EXISTS Category (
             id VARCHAR(32) PRIMARY KEY,

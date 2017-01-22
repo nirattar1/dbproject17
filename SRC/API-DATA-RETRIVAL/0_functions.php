@@ -1,4 +1,5 @@
 <?php
+error_reporting(0);
 require_once("php-foursquare-master/src/FoursquareApi.php");
 
 // output directories - mutual to all retrival-data scripts
@@ -51,16 +52,8 @@ function getAndSaveJSON($foursquare,$requestType,$params,$fileName,$outputDir){
 		return false;
 	}else{
 		file_put_contents($outputDir.$fileName,$response);
-	}
-
-	// check if rate_limit_exceeded
-	if($foursquare->rate_limit_exceeded){
-		// TODO
-		echo "rate limit exceeded<br>";
-		exit;
-	}
-	
-	return true;
+		return true;
+	}	
 }
 
 function createFileNameByParams($params){
@@ -115,6 +108,8 @@ function requestCityFunc($foursquare,$cityName,$boundingBox,$requestType,$catego
 				$isGoodResponse = getAndSaveJSON($foursquare,$requestType,$params,$fileName,$outputDir);
 				if($isGoodResponse)
 					$requestsNum++;
+			}else{
+				$requestsNum++; // as if a request succeeded
 			}
 		}
 	}
