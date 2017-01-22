@@ -171,6 +171,7 @@ $numRows = $result->num_rows;
 
 <form action="dish.php" method="GET">
     <input type="hidden" name="city" value="<?php echo $city_name ?>">
+    <input type="hidden" name="story" value="<?php echo $story ?>">	
     <div class="container">
         <h1>Filter name:</h1>
         <input type="text" name="dish_name_search" id="dish_name_search">
