@@ -78,6 +78,14 @@ if (isset($_POST['btn_go'])) {
     }
 }
 ?>
+
+<h1> It will take about a minute. </h1>
+
+<h1> We are looking for you  </h1> 
+
+<h1> a variety restaurants and menus </h1> 
+
+<h1> in the city of your choice </h1> 
     
 </br>
 <h2 align="center">
