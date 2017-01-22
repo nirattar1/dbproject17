@@ -72,6 +72,7 @@
 
 <?php
 $city = $_GET["city"];
+$story = $_GET["story"];
 ?>
 
 <h1>From hour:</h1>
