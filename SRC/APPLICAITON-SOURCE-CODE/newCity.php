@@ -55,7 +55,6 @@ require_once("API-DATA-RETRIVAL/5_add_new_city.php");
 <h2 align="center">
 <form method="post">
     <input type="text" name="txt_city">
-    </br>
     <input type="submit" value="Let's go!" name="btn_go">
 </form>
     </h2>
