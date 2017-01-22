@@ -39,6 +39,19 @@ tr:nth-child(6n+5) { background: hsl(200, 99%, 50%); }
 
 require_once("connectToDB.php");
 
+//get category name. returns category Id.
+//will return -1 on failure.
+function getCategoryIdByName($conn, $category)
+{
+    $sql = "SELECT id FROM Category WHERE name='$category'";
+    $result = $conn->query($sql);
+    if ($row = $result->fetch_assoc()) {
+        return $row['id'];
+    } else {
+        return -1;
+    }
+}
+
 // Save starting page, city, category, budget, hours and days the user chosen
 
 $city= $_GET["city"];
@@ -50,6 +63,9 @@ $to_hour= $_GET["to_hour"];
 $day= $_GET["day"];
 $from;
 $to;
+
+
+
 
 // Update budget range according to the information from previous page in case the story = 3
 if($story==3) {
@@ -73,6 +89,9 @@ if($story==3) {
 
 # Query - popular restaurants according to $city, $category and $budget by the user choice. 
 ## restaurants in the budget range if average menu in the range. subcategories of catgory considered in $category and therefore will be shown in the result.
+
+//first resolve category id from name.
+$cat_id = getCategoryIdByName($conn, $category);
 	
 $sql1 = "
 SELECT table3.id
@@ -104,13 +123,13 @@ FROM (
 				,City
 				,Category
 				,Dish
-        ,( select x.name as main_name, y.name as sub_name
+        ,( select x.id as main_id, y.id as sub_id
         from CategoryMain, Category as x, Category as y
-        where CategoryMain.main_id=x.id and x.name='$category' and CategoryMain.category_id=y.id )as sub_catgoryes
+        where CategoryMain.main_id=x.id and x.id='$cat_id' and CategoryMain.category_id=y.id )as sub_catgoryes
 			WHERE City.NAME = '$city'
         AND City.id = Restaurant.city_id
-				AND sub_catgoryes.main_name = '$category'
-        and sub_catgoryes.sub_name = Category.name
+				AND sub_catgoryes.main_id = '$cat_id'
+        and sub_catgoryes.sub_id = Category.id
 		    AND Category.id = Restaurant.category_id
 				AND Restaurant.has_menu = 1
 				AND Dish.restaurant_id = Restaurant.id
