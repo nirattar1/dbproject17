@@ -122,7 +122,7 @@ createButtons($conn);
        type="button"
        value="back"
        align="center"
-       onclick="window.location.href='welcome.php'"/>
+       onclick="history.go(-1);"/>
 
 <?php
 
