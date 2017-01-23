@@ -84,8 +84,8 @@ class FoursquareApi {
 		$this->ClientLanguage = $language;
 		$this->RedirectUri = $redirect_uri;
         $this->Version = $api_version;
-        $this->requestsOutput = fopen($requestsOutputFile,'a') or die ("can't open file: $requestsOutputFile");
-		$this->failsOutput = fopen($failsOutputFile,'a') or die ("can't open file: $failsOutputFile");
+        $this->requestsOutput = fopen($requestsOutputFile,'a');
+		$this->failsOutput = fopen($failsOutputFile,'a');
 		$this->rate_limit_exceeded = false;
 	}
     
@@ -190,7 +190,8 @@ class FoursquareApi {
 	// try to make request unlit gets good response, limited to 5 attemps
 	function requestOrFail($url,$isFS){
 		$src = ($isFS ? 'fourSquareAPI' : 'googleMapsAPI');
-		fwrite($this->requestsOutput,$src.','.date("H:i:s").','.$this->LastUrl."\r\n");
+		if(! empty($this->requestsOutput))
+			fwrite($this->requestsOutput,$src.','.date("H:i:s").','.$this->LastUrl."\r\n");
 		$response = file_get_contents($url);
 		
 		$cntFails = 0;
@@ -198,13 +199,17 @@ class FoursquareApi {
 			sleep(2);
 			
 			// write request
-			fwrite($this->requestsOutput,$src.','.$this->LastUrl."\r\n");
+			if(!empty($this->requestsOutput))
+				fwrite($this->requestsOutput,$src.','.$this->LastUrl."\r\n");
+			
+			// try again
 			$response = file_get_contents($url);
 			$cntFails++;
 			
 			//to fail list after 5 attempts
 			if ($cntFails==5){ // give up
-				fwrite($this->failsOutput,$src.','.$this->LastUrl."\r\n");
+				if(!empty($this->failsOutput))
+					fwrite($this->failsOutput,$src.','.$this->LastUrl."\r\n");
 				return null;
 			}
 		}
