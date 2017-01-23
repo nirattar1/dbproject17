@@ -51,8 +51,11 @@ function getAndSaveJSON($foursquare,$requestType,$params,$fileName,$outputDir){
 	if(empty($response)){
 		return false;
 	}else{
-		file_put_contents($outputDir.$fileName,$response);
-		return true;
+		if(file_put_contents($outputDir.$fileName,$response)){
+			return true;		
+		}else{
+			return false; //problem in writting file - if always happen -> (chmod -R 777 html) -> if not working -> system help
+		}
 	}	
 }
 
