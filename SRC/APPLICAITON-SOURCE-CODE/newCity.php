@@ -50,7 +50,6 @@ $cityName = $_POST['txt_city'];
 require_once("API-DATA-RETRIVAL/5_add_new_city.php");
 
 function isGoodInput($str){
-	echo $str;
 	$check = preg_match('/^[a-zA-Z ,]+$/', $str);
 	return ($check === 1);
 }
