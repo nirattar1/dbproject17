@@ -48,6 +48,13 @@ $story = $_GET["story"];
 $cnt = $_GET["page"];
 $cityName = $_POST['txt_city'];
 require_once("API-DATA-RETRIVAL/5_add_new_city.php");
+
+function isGoodInput($str){
+	echo $str;
+	$check = preg_match('/^[a-zA-Z ,]+$/', $str);
+	return ($check === 1);
+}
+
 ?>
 
 <h1>Enter a city name:</h1>
@@ -62,19 +69,25 @@ require_once("API-DATA-RETRIVAL/5_add_new_city.php");
 
 if (isset($_POST['btn_go'])) {
     if (!empty($cityName)) {
-        $errorStr = addNewCityStory($cityName);
-        if($errorStr !== true){
-            echo '<script language="javascript">';
-            echo 'alert("'.$errorStr.'")';
-            echo '</script>';
+        if ( isGoodInput($cityName)==true ){
+            $errorStr = addNewCityStory($cityName);
+            if($errorStr !== true){
+                echo '<script language="javascript">';
+                echo 'alert("'.$errorStr.'")';
+                echo '</script>';
+            }
+            else{
+            ?>
+                <meta http-equiv="refresh" content="0; url='citys.php?story=<?php echo $story ?>&page=<?php echo $cnt ?>'"/>
+            <?php
+            }
         }
         else{
-        ?>
-        <meta http-equiv="refresh" content="0; url='citys.php?story=<?php echo $story ?>&page=<?php echo $cnt ?>'"/>
-        <?php
-        }
-        
-    }
+            echo '<script language="javascript">';
+            echo 'alert("Invalid character")';
+            echo '</script>';
+        }   
+  }
 }
 ?>
 
