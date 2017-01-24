@@ -118,7 +118,7 @@ $category = $_GET["category"];
        type="button"
        value="back"
        align="center"
-       onclick="history.go(-1);"/>
+       onclick="window.location.href='categories.php?story=<?php echo $story ?>&city=<?php echo $city ?>'"/>
 </h2>
 </body>
 </html>
